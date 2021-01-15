@@ -12,7 +12,7 @@ namespace controldma.App_Code
     public class Cs_cons
     {
 
-        public enum Database { dma , dma2 , PortalDB };
+        public enum Database { dma , dma2 , PortalDB , PortalDB_sense };
         public Cs_cons()
         {
 
@@ -23,7 +23,7 @@ namespace controldma.App_Code
             StringBuilder ConStr = new StringBuilder();
             StringBuilder RtnStr = new StringBuilder();
 
-            string s = "Data Source=164.115.22.222;Initial Catalog=RTU;User ID=sense;Password=sense";
+            string s = "Data Source=164.115.22.222;Initial Catalog=RTU;User ID=sa;Password=fugvH,gv#91753";
             string sss = EDCryptor.Crypting(s.ToString(), iMode.Encode);
 
             ConStr.Remove(0, ConStr.Length);
@@ -32,8 +32,11 @@ namespace controldma.App_Code
                 case Database.dma2:
                     ConStr.Append("yYdhbOWZlYW0rS7ObFDtiPpcB7278othpYDGfNHPtYp7SeOHGqUA67gEd0/882Os+sXZzDDa8n7nUIkkvtFbg3TosTYJ55aueR5TwUNxHV/nbIuv2t+UWQ==");
                     break;
-                case Database.PortalDB:
+                case Database.PortalDB_sense:
                     ConStr.Append("yYdhbOWZlYV56gcZojntQHo6ihdxo08UwfWoij5/6S0bV5odjO6VfTycdDL7FoPk7U1l5hbvANzCK81w5UmMjqN+wXMscZuUm8kDgcohbgQ=");
+                    break;
+                case Database.PortalDB:
+                    ConStr.Append("yYdhbOWZlYV56gcZojntQHo6ihdxo08UwfWoij5/6S0bV5odjO6VfTycdDL7FoPk7U1l5hbvANzMha3eX+6gQxVnf3iElZDFYhqVpkfb/CWvMWcHo4qI2Q==");
                     break;
             }
 

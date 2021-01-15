@@ -14,9 +14,10 @@ namespace controldma.service
     public partial class api1 : System.Web.UI.Page
     {
         public static WebManageUserData user;
-
+        public static string _wwcode;
         public static string _dmacode;
         public static string _remote_name;
+        public static string _dvtype_id;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -187,7 +188,7 @@ namespace controldma.service
                 user = new WebManageUserData(userDetail);
                 Cs_initaldata inl = new Cs_initaldata(user);
                 if (_remote_name != null) {
-                    String strSQL = "EXEC sp_ctr_get_realtime @id_name = '" + _remote_name + "';";
+                    String strSQL = "EXEC sp_ctr_get_realtime_dmama2 @id_name = '" + _remote_name + "';";
 
                     DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
 
@@ -196,6 +197,40 @@ namespace controldma.service
                     return JsonConvert.SerializeObject(resultArr);
                 }
                
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetHistoryDataCtr002()
+        {/*
+             * ตรวจสอบว่า User ผ่านการ Login มาหรือยัง
+             */
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                if (_wwcode != null && _dvtype_id != null)
+                {
+                    String strSQL = string.Empty;
+                    if (_dvtype_id == "2")
+                    {
+                        strSQL = "EXEC sp_ctrl_get_bvcmdlog_dmama2 @wwcode = '" + _wwcode + "',@dmacode= '" + _dmacode + "';";
+                    }
+                    else {
+                        strSQL = "EXEC sp_ctrl_get_prvtcmdlog_dmama2 @wwcode = '" + _wwcode + "',@dmacode= '" + _dmacode + "';";
+                    }
+                 
+                    DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                    var resultArr = dt.Rows.Cast<DataRow>().Select(r => r.ItemArray).ToArray();
+
+                    return JsonConvert.SerializeObject(resultArr);
+                }
+
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
@@ -251,6 +286,9 @@ namespace controldma.service
                 }
                 var mainData = tempMainData.Rows[0];
                 String wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
+                //set global variable _dvtype_id type of bv / prv 
+                _dvtype_id = mainData["$_datatype"].ToString();
+
                 #region _manual
                 string strSQL = @"SELECT vt.wwcode, vt.dmacode,cf.pilot_num_ord,vt.remote_name,vt.dvtype_id,vt.pilot_num,convert(varchar,hprvt.pilot_no) as pilot_no,cf.pilot_pressure
                         FROM tb_ctr_dmavalvetype vt left join (select top 1 * from tb_ctr_cmdprvthead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "' and control_mode = '0' order by cmdprvthead_id desc) hprvt on vt.dmacode = hprvt.dmacode right join tb_ctr_dmaconfigpressure cf on cf.wwcode = vt.wwcode And cf.dmacode = vt.dmacode where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "'";
@@ -554,7 +592,7 @@ namespace controldma.service
                 Html_4 += "                         <th>วันที่ตั้งค่า</th>";
                 Html_4 += "                         <th>รายละเอียด</th>";
                 Html_4 += "                         <th>สั่งโดย</th>";
-                Html_4 += "                         <th>ไฟล์</th>";
+                //Html_4 += "                         <th>ไฟล์</th>";
                 Html_4 += "                         <th>หมายเหตุ</th>";
                 Html_4 += "                     </tr>";
                 Html_4 += "             </thead>";
@@ -614,7 +652,8 @@ namespace controldma.service
                     return JsonConvert.SerializeObject(new { status = "fail" });
                 }
                 var mainData = tempMainData.Rows[0];
-
+                Cs_initaldata inl = new Cs_initaldata(user);
+                _wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
                 _dmacode = mainData["$_dmacode"].ToString();
                 _remote_name = mainData["$_remote_name"].ToString();
 

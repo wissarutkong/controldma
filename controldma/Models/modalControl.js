@@ -39,7 +39,8 @@ $(document).on("click", ".editvalva", function () {
         let mainData = []
         mainData.push({
             $_dmacode: dmacode,
-            $_remote_name: $(this).attr('data-remote')
+            $_remote_name: $(this).attr('data-remote'),
+            $_wwcode: getCookie('_wwcode')
         })
         Setvariableapi(mainData);
         //element.style.display = null;
@@ -58,8 +59,9 @@ $(document).on("click", ".editvalva", function () {
                 $('#_History_PRV').html(data._History)
                 GeneratePRV('tblBvAutomatic')
             }).then(() => {
-                CallApigettable_modal('dt_grid_realtime', '_Realtime')
-                CallApigettable_modal('dt_grid_history', '_History')
+                CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
+                    CallApigettable_modal('dt_grid_history', '_History')
+                })                
             })
             //element.style.visibility = "collapse";
         }

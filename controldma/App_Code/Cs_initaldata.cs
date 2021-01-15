@@ -100,5 +100,25 @@ namespace controldma.App_Code
             cons.Close();
             return dt;
         }
+
+        public DataTable GetDmaList(string wwcode) {
+            DataTable dt = new DataTable();
+            SqlConnection cons = new SqlConnection(user.UserCons_PortalDB);
+            cons.Open();
+            String strSQL = string.Empty;
+            strSQL += " SELECT code as name , name as description , is_enable , is_controllable , meter_type ";
+            strSQL += " FROM loggers WHERE is_enable = 1 AND is_controllable = 1 AND meter_type in (1,2) ";
+            strSQL += " AND code like '%"+ wwcode + "%' ";
+            strSQL += " ORDER BY meter_type desc, [order] ";
+            SqlCommand command = new SqlCommand(strSQL, cons);
+            try
+            {
+                using (SqlDataAdapter dtAdapter = new SqlDataAdapter(command)) dtAdapter.Fill(dt);
+            }
+            catch (Exception ex) { throw; }
+            cons.Close();
+            return dt;
+
+        }
     }
 }

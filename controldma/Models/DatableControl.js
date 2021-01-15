@@ -39,13 +39,13 @@ function CallApigetdatatable() {
 
 function CallApigettable_modal(Id,type) {
     return new Promise((resolve, reject) => {
-
-        GenerateTable(Id)
+        GenerateTablePage20(Id)
          .then((data) => {
-             $documentable = data
-             CallAPI('/service/api.aspx/' + (type == '_Realtime' ? 'GetRealtimeDataCtr002' : ''),
+             $documentableModal = data
+             CallAPI('/service/api.aspx/' + (type == '_Realtime' ? 'GetRealtimeDataCtr002' : 'GetHistoryDataCtr002'),
                            ''
                      ).then((data) => {
+                         console.log(data)
                          $documentableModal.clear().rows.add(data).draw(true)
                          resolve()
                      }).catch((error) => {
@@ -76,6 +76,29 @@ function GenerateTable(Id) {
         "autoWidth": false,
         "destroy": true,
         "processing": true
+    });
+
+    return Promise.resolve($table)
+}
+
+function GenerateTablePage20(Id) {
+
+    var $table = $('#' + Id + '').DataTable({
+        "oLanguage": {
+            "sLengthMenu": "แสดง _MENU_ เร็คคอร์ด ต่อหน้า",
+            "sZeroRecords": "ไม่เจอข้อมูลที่ค้นหา",
+            "sInfo": "แสดง _START_ ถึง _END_ ของ _TOTAL_ทั้งหมด",
+            "sInfoEmpty": "แสดง 0 ถึง 0 ของ 0 เร็คคอร์ด",
+            "sInfoFiltered": "(จากเร็คคอร์ดทั้งหมด _MAX_ เร็คคอร์ด)",
+            "sSearch": "ค้นหา :"
+        },
+        "responsive": true,
+        "pageLength": 20,
+        "destroy": true,
+        "searching": false,
+        "info": true,
+        "ordering": true,
+        "paging": true,
     });
 
     return Promise.resolve($table)
