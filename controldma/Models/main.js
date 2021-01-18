@@ -137,6 +137,16 @@ function showPage_content() {
     document.getElementById("div_content_load").style.display = "block";
 }
 
+function hidePage_content_modal() {
+    document.getElementById("loader_content_modal").style.display = "block";
+    document.getElementById("tabs_prv").style.display = "none";
+}
+
+function showPage_content_modal() {
+    document.getElementById("loader_content_modal").style.display = "none";
+    document.getElementById("tabs_prv").style.display = "block";
+}
+
 function setCookie(cname, cvalue) {
     //var d = new Date();
     //d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));

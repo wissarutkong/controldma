@@ -84,7 +84,8 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-
+    <input type="hidden" id="txtdvtypeid" value="" />
+    <input type="hidden" id="typepopup" value="" />
 
     <div class="modal fade" id="Modal_info_valva">
         <div class="modal-dialog modal-lg">
@@ -301,7 +302,7 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
+   
     <div class="modal fade Modal_edit" id="Modal_edit_prv">
         <div class="modal-dialog modal-dialog-scrollable modal-xl">
             <div class="modal-content">
@@ -314,9 +315,11 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
+                 
+                <div class="modal-body" >        
+                             
+                    <div class="row" >
+                        <div class="col-md-12" >
                             <div class="card card-primary card-outline card-outline-tabs">
                                 <div class="card-header p-0 border-bottom-0">
                                     <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
@@ -334,7 +337,9 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="card-body">
+                                <%--id="div_content_modal_load"--%>
+                                <div class="card-body" >
+                                    <div id="loader_content_modal"></div> 
                                     <div class="tab-content" id="tabs_prv">
                                         <div class="tab-pane fade show active" id="tab1_prv" role="tabpanel" aria-labelledby="tab1_prv">
                                             <div class="row">
@@ -373,11 +378,11 @@
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>Real Time Data</h5>
                                                     <div class="row" style="margin-top: 2%;">
-                                                        <div class="col-md-12">
-                                                            <div style="width: 100%;">
+                                                        <div class="col-md-12 col-12">
+                                                            <%--<div style="width: 100%;">--%>
                                                                 <div id="_Realtime_PRV">
                                                                 </div>
-                                                            </div>
+                                                            <%--</div>--%>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -522,10 +527,10 @@
                         </div>
                     </div>
                 </div>
-                <%--                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>--%>
+                <div class="modal-footer">
+<%--                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>--%>
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -537,6 +542,7 @@
     <!-- Bootstrap Switch -->
     <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
     <script src="Models/DatableControl.js"></script>
+    <script src="Models/saveControl.js"></script>
     <script type="text/javascript">
         <%--        console.log('<%= user.UserNAME.ToString() %>')--%>
         //$(document).ready(function () {

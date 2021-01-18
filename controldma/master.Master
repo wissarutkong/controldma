@@ -895,11 +895,11 @@
         <script src="dist/js/demo.js"></script>
         <script src="Models/dropdownControl.js"></script>
         <script src="Models/main.js"></script>
-        <script src="Models/DatableControl.js"></script>      
-        <script src="Models/saveControl.js"></script>     
+        <script src="Models/DatableControl.js"></script>                 
         <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
         </asp:ContentPlaceHolder>
         <script src="Models/modalControl.js"></script>
+        
     </div>
     </form>
 

@@ -69,6 +69,54 @@ namespace controldma.App_Code
             return sResult;
         }
 
+        public int executeSQLreturnint(String sStringSQL, String sCon)
+        {
+            DataTable dt = new DataTable();
+            Boolean sResult = false;
+            SqlConnection cons = new SqlConnection(sCon);
+            String strSQL = string.Empty;
+            strSQL += sStringSQL;
+            int modified = 0;
+            using (SqlCommand cmd = new SqlCommand(strSQL, cons))
+            {
+                cons.Open();
+                try
+                {
+                    modified = (int)cmd.ExecuteScalar();
+
+                    //cmd.ExecuteNonQuery();
+                    sResult = true;
+                }
+                catch (Exception ex) { sResult = false; }              
+                cons.Close();
+            }
+            return modified;
+        }
+
+        public Boolean executeSQLreturn(String sStringSQL, String sCon)
+        {
+            DataTable dt = new DataTable();
+            Boolean sResult = false;
+            SqlConnection cons = new SqlConnection(sCon);
+            String strSQL = string.Empty;
+            strSQL += sStringSQL;
+            //int modified = 0;
+            using (SqlCommand cmd = new SqlCommand(strSQL, cons))
+            {
+                cons.Open();
+                try
+                {
+                    //modified = (int)cmd.ExecuteScalar();
+
+                    cmd.ExecuteNonQuery();
+                    sResult = true;
+                }
+                catch (Exception ex) { sResult = false; }
+                cons.Close();
+            }
+            return sResult;
+        }
+
         public DataTable GetConfigpressure(String wwcode , String dmacode, String sCon)
         {
             DataTable dt = new DataTable();

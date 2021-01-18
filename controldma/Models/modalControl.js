@@ -32,6 +32,9 @@ $(document).on("click", ".infovalva", function () {
 
 $(document).on("click", ".editvalva", function () {
     var datatype = $(this).attr("data-type")
+    hidePage_content_modal()
+    $('#txtdvtypeid').val(datatype)
+    document.getElementById('typepopup').value = "";
     let element = document.getElementById('overlay_modal');
     //element.style.visibility = null;
     if ($(this).val() != '' && $(this).val() != null && getCookie('_wwcode') != '' && getCookie('_wwcode') != null) {
@@ -60,7 +63,9 @@ $(document).on("click", ".editvalva", function () {
                 GeneratePRV('tblBvAutomatic')
             }).then(() => {
                 CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
-                    CallApigettable_modal('dt_grid_history', '_History')
+                    CallApigettable_modal('dt_grid_history', '_History').then(() => {
+                        showPage_content_modal();
+                    })
                 })                
             })
             //element.style.visibility = "collapse";
@@ -143,7 +148,7 @@ function generateHtml_prv(_wwcode, dmacode, datatype) {
             //$('#_Manual_PRV').html(data.html)
             resolve(data)
         }).catch((error) => {
-            console.log(error)
+            //console.log(error)
             reject()
         })
     })
@@ -153,6 +158,26 @@ function generateHtml_prv(_wwcode, dmacode, datatype) {
 
 function Popup(id, type) {
     GetCommandTimeOut()
+    document.getElementById("save_remark").style.borderColor = "";
+    document.getElementById("save_remark").value = "";
+    document.getElementById("save_remark").focus();
+    if (type == "manual") {
+        if (id == 1) {
+            $("#aboutModal").modal("show");
+        } else {
+            $("#aboutModal_save").modal("show");
+        }
+        document.getElementById('typepopup').value = "manual";
+    }
+    else if (type == "auto") {
+        if (id == 0) {
+            $("#aboutModal_save").modal("show");
+            document.getElementById('typepopup').value = "auto";
+        } else if (id == 1) {
+            $("#aboutModal_save").modal("show");
+            document.getElementById('typepopup').value = "auto_prv";
+        }
+    }
 
 }
 
@@ -162,7 +187,7 @@ function GetCommandTimeOut() {
     CallAPI('/service/api.aspx/GetCommandTimeOut',
             ''
     ).then((data) => {
-        console.log(data)
+        //console.log(data)
 
         $.each(data, function (i, item) {
             document.getElementById("counter_s").style.display = "block";
@@ -187,7 +212,7 @@ function GetCommandTimeOut() {
         }
 
     }).catch((error) => {
-        console.log(error)
+        //console.log(error)
         reject()
     })
 }

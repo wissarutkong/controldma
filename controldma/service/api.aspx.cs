@@ -318,7 +318,7 @@ namespace controldma.service
                     Html += "</div>";
                     count++; ischecked = string.Empty;
                 }
-                Html += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(" + dt_Solenoid.Rows[0]["dvtype_id"].ToString() + ",'manual')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
+                Html += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(2,'manual')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
                 #endregion
 
                 #region _Automatic
@@ -552,13 +552,14 @@ namespace controldma.service
                 }
                 Html_2 += "     </tbody>";
                 Html_2 += "</table>";
+                Html_2 += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(1,'auto')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
                 #endregion
 
                 #region _Realtime
 
                 String Html_3 = string.Empty;
 
-                Html_3 += "<div style=\"width: 100%;\">";
+                //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
                 Html_3 += "         <table id=\"dt_grid_realtime\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
                 Html_3 += "             <thead>";
@@ -574,7 +575,7 @@ namespace controldma.service
                 Html_3 += "             </thead>";
                 Html_3 += "         </table>";
                 Html_3 += "     </div>";
-                Html_3 += "</div>";
+                //Html_3 += "</div>";
 
                 #endregion
 
@@ -706,6 +707,105 @@ namespace controldma.service
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
+
+        [System.Web.Services.WebMethod]
+        public static string AddManualPrvt(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+
+                string wwcode = _wwcode.ToString();
+                string dmacode = _dmacode.ToString();
+                string remote_name = _remote_name.ToString();
+                string newCmdprvhead_id = string.Empty;
+                //int cmdlod_id = 0;
+                try
+                {
+                    newCmdprvhead_id = inl.GetStringbySQL("SELECT ISNULL(max(cmdprvthead_id)+1,1) as NEW_SEQUENT FROM tb_ctr_cmdprvthead", user.UserCons_PortalDB);
+                    String strSQL = string.Empty;
+
+                    strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
+                    strSQL += " ,control_mode ";
+                    strSQL += " ,pilot_no ";
+                    strSQL += " ,pilot_pressure ";
+                    strSQL += " ,remark ";
+                    strSQL += " ,record_status ";
+                    strSQL += " ,create_user ";
+                    strSQL += " ,create_dtm ";
+                    strSQL += " ,last_upd_user ";
+                    strSQL += " ,last_upd_dtm ";
+                    strSQL += " ) output INSERTED.cmdprvthead_id ";
+                    strSQL += " VALUES ( ";
+                    //strSQL += " '" + newCmdprvhead_id + "', ";
+                    strSQL += " '" + wwcode + "', ";
+                    strSQL += " '" + dmacode + "', ";
+                    strSQL += "  GETDATE(),";
+                    strSQL += " '" + remote_name + "', ";
+                    strSQL += " '0', ";
+                    strSQL += " " + Convert.ToInt32(mainData["solenoid"]) + ", ";
+                    strSQL += " 0, ";
+                    strSQL += " '" + mainData["remark"] + "', ";
+                    strSQL += "  'N', ";
+                    strSQL += " '" + user.UserID + "', ";
+                    strSQL += "  GETDATE(), ";
+                    strSQL += "  null,";
+                    strSQL += "  null";
+                    strSQL += " ) ";
+
+                    int cmdprvthead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                    if (cmdprvthead_id != 0)
+                    {
+                        string cmd_desc = "Mode=3," + remote_name + "," + mainData["solenoid"] + ",";
+                        strSQL = string.Empty;
+                        strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                        strSQL += " wwcode, ";
+                        strSQL += " dmacode, ";
+                        strSQL += " cmd_dtm, ";
+                        strSQL += " cmd_dvtypeid, ";
+                        strSQL += " cmd_headid, ";
+                        strSQL += " cmd_desc, ";
+                        strSQL += " record_status, ";
+                        strSQL += " create_user, ";
+                        strSQL += " create_dtm ";
+                        strSQL += " ) VALUES ";
+                        strSQL += " ( ";
+                        strSQL += " '" + wwcode + "', ";
+                        strSQL += " '" + dmacode + "', ";
+                        strSQL += " GETDATE(), ";
+                        strSQL += " " + Convert.ToInt32(mainData["dvtypeid"]) + ", ";
+                        strSQL += " " + cmdprvthead_id + ", ";
+                        strSQL += " '" + cmd_desc + "', ";
+                        strSQL += " 'N', ";
+                        strSQL += " '" + user.UserID + "', ";
+                        strSQL += " GETDATE() ";
+                        strSQL += " ) ";
+                        Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
+                        return JsonConvert.SerializeObject(new { remote_name = remote_name });
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "fail" });
+                    }
+                }
+                catch (Exception ex) {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+
+               
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
 
 
     }
