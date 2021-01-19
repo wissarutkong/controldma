@@ -117,6 +117,27 @@ namespace controldma.App_Code
             return sResult;
         }
 
+        public string executeSQLreturnerror(String sStringSQL, String sCon)
+        {
+            DataTable dt = new DataTable();
+            string error = "";
+            SqlConnection cons = new SqlConnection(sCon);
+            String strSQL = string.Empty;
+            strSQL += sStringSQL;
+            //int modified = 0;
+            using (SqlCommand cmd = new SqlCommand(strSQL, cons))
+            {
+                cons.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) { error = ex.Message.ToString(); }
+                cons.Close();
+            }
+            return error;
+        }
+
         public DataTable GetConfigpressure(String wwcode , String dmacode, String sCon)
         {
             DataTable dt = new DataTable();

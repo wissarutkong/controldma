@@ -82,7 +82,7 @@
             setCookie("_zone", $(this).val())
             setCookie("_wwcode", '')
             AjaxGetddlsite('_wwcode')
-            console.log(getCookie('_zone'))
+            //console.log(getCookie('_zone'))
             //console.log('_wwcode=' + getCookie('_wwcode'))
         }      
     })

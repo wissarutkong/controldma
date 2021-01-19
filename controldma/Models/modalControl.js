@@ -20,7 +20,7 @@ $(document).on('show.bs.modal', '.modal', function (event) {
     var zIndex = 1040 + (10 * $('.modal:visible').length);
     $(this).css('z-index', zIndex);
     setTimeout(function () {
-        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex -1 ).addClass('modal-stack');
+        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
 });
 
@@ -32,7 +32,7 @@ $(document).on("click", ".infovalva", function () {
 
 $(document).on("click", ".editvalva", function () {
     var datatype = $(this).attr("data-type")
-    hidePage_content_modal()
+    
     $('#txtdvtypeid').val(datatype)
     document.getElementById('typepopup').value = "";
     let element = document.getElementById('overlay_modal');
@@ -54,19 +54,8 @@ $(document).on("click", ".editvalva", function () {
         }
         else if (datatype == 3) {
             $('#Modal_edit_prv').modal('show');
-            $('.modal_title_setting').text("PRV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-            generateHtml_prv(getCookie('_wwcode'), dmacode, datatype).then((data) => {
-                $('#_Manual_PRV').html(data._manual)              
-                $('#_Automatic_PRV').html(data._Automatic)
-                $('#_Realtime_PRV').html(data._Realtime)
-                $('#_History_PRV').html(data._History)
-                GeneratePRV('tblBvAutomatic')
-            }).then(() => {
-                CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
-                    CallApigettable_modal('dt_grid_history', '_History').then(() => {
-                        showPage_content_modal();
-                    })
-                })                
+            generateHtml_prv(dmacode, $('#txtdvtypeid').val()).then(() => {
+
             })
             //element.style.visibility = "collapse";
         }
@@ -82,9 +71,12 @@ $(document).on("click", ".editvalva", function () {
 $(document).on("click", ".addvalva", function () {
     if ($(this).val() != '' && $(this).val() != null && getCookie('_wwcode') != '' && getCookie('_wwcode') != null) {
         var dmacode = $(this).val();
-        $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : "+dmacode)
+        $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : " + dmacode)
     }
 })
+
+
+
 
 function getinfovalva(dmacode) {
     var element = document.getElementById('overlay_wrapper');
@@ -134,7 +126,7 @@ function getinfovalva(dmacode) {
     }
 }
 
-function generateHtml_prv(_wwcode, dmacode, datatype) {
+function getHtml_prv(_wwcode, dmacode, datatype) {
     return new Promise((resolve, reject) => {
         let mainData = []
         mainData.push({
@@ -149,6 +141,31 @@ function generateHtml_prv(_wwcode, dmacode, datatype) {
             resolve(data)
         }).catch((error) => {
             //console.log(error)
+            reject()
+        })
+    })
+}
+
+function generateHtml_prv(dmacode, datatype) {
+    return new Promise((resolve, reject) => {
+        hidePage_content_modal()
+        $('.modal_title_setting').text("PRV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
+        getHtml_prv(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+            $('#_Manual_PRV').html(data._manual)
+            $('#_Automatic_PRV').html(data._Automatic)
+            $('#_Realtime_PRV').html(data._Realtime)
+            $('#_History_PRV').html(data._History)
+            GeneratePRV('tblBvAutomatic')
+        }).then(() => {
+            CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
+                CallApigettable_modal('dt_grid_history', '_History').then(() => {
+                    resolve()
+                    showPage_content_modal();
+                }).catch((error) => {
+                    reject()
+                })
+            })
+        }).catch((error) => {
             reject()
         })
     })

@@ -187,7 +187,8 @@ namespace controldma.service
                 userDetail = (Hashtable)context.Session["USER"];
                 user = new WebManageUserData(userDetail);
                 Cs_initaldata inl = new Cs_initaldata(user);
-                if (_remote_name != null) {
+                if (_remote_name != null)
+                {
                     String strSQL = "EXEC sp_ctr_get_realtime_dmama2 @id_name = '" + _remote_name + "';";
 
                     DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
@@ -196,7 +197,7 @@ namespace controldma.service
 
                     return JsonConvert.SerializeObject(resultArr);
                 }
-               
+
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
@@ -223,7 +224,7 @@ namespace controldma.service
                     else {
                         strSQL = "EXEC sp_ctrl_get_prvtcmdlog_dmama2 @wwcode = '" + _wwcode + "',@dmacode= '" + _dmacode + "';";
                     }
-                 
+
                     DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
 
                     var resultArr = dt.Rows.Cast<DataRow>().Select(r => r.ItemArray).ToArray();
@@ -323,6 +324,7 @@ namespace controldma.service
 
                 #region _Automatic
                 DataTable dt_cmdprvthead = new DataTable(); DataTable dt_cmdprvtdetail = new DataTable(); DataTable dt_pilot_num = new DataTable();
+
                 try
                 {
                     strSQL = string.Empty;
@@ -352,19 +354,14 @@ namespace controldma.service
                 var isDevice = true;
                 var tblAutomatic = "tblAutomatic";
                 string timevalue = "";
+                int total = 1;
+                int pilot_num = 1;
                 DataTable dt_timeList = inl.TimerList();
 
+                total = dt_cmdprvtdetail.Rows.Count;
+                if (total == 0) { total = 1; }
+                pilot_num = Convert.ToInt32(dt_pilot_num.Rows[0]["pilot_num"]);
 
-                Html_2 += " <table class=\"table table-striped table-bordered dt-responsive clear-center\" id=\"tblBvAutomatic\" name=\"tblBvAutomatic\">";
-                Html_2 += "     <thead>";
-                Html_2 += "         <tr>";
-                Html_2 += "             <th width=\"5%\">No.</th>";
-                Html_2 += "             <th width=\"10%\">Device Mode</th>";
-                Html_2 += "             <th width=\"10%\">Time</th>";
-                foreach (DataRow row in dt_Solenoid.Rows)
-                {
-                    Html_2 += "<th>ตัวที่ " + row["pilot_num_ord"].ToString() + " Pressure " + row["pilot_pressure"].ToString() + " (bar)</th>";
-                }
                 IndexNo = 0;
                 foreach (DataRow row in dt_cmdprvtdetail.Rows)
                 {
@@ -400,6 +397,18 @@ namespace controldma.service
                         Html_2 += "<input type=\"hidden\" id=\"" + idpilot + "\" value=\"0\" />";
                     }
                 }
+
+                Html_2 += " <table class=\"table table-striped table-bordered dt-responsive clear-center\" id=\"tblBvAutomatic\" name=\"tblBvAutomatic\">";
+                Html_2 += "     <thead>";
+                Html_2 += "         <tr>";
+                Html_2 += "             <th width=\"5%\">No.</th>";
+                Html_2 += "             <th width=\"10%\">Device Mode</th>";
+                Html_2 += "             <th width=\"10%\">Time</th>";
+                foreach (DataRow row in dt_Solenoid.Rows)
+                {
+                    Html_2 += "<th>ตัวที่ " + row["pilot_num_ord"].ToString() + " Pressure " + row["pilot_pressure"].ToString() + " (bar)</th>";
+                }
+
                 Html_2 += "         </tr>";
                 Html_2 += "     </thead>";
                 Html_2 += "     <tbody>";
@@ -530,6 +539,7 @@ namespace controldma.service
                             pilotid = "pilot_" + IndexNo.ToString();
                             if (k == 1)
                             {
+                                //เปลี่ยนจำนวนช่วง pilot ได้
                                 for (int pilot = 1; pilot <= 6; pilot++)
                                 {
                                     Html_2 += "<input type=\"hidden\" id=\"pilot_" + pilot + "\" />";
@@ -553,6 +563,8 @@ namespace controldma.service
                 Html_2 += "     </tbody>";
                 Html_2 += "</table>";
                 Html_2 += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(1,'auto')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
+                Html_2 += " <input type=\"hidden\" id=\"txtRow\" name=\"txtRow\" value=\"" + total + "\" /> ";
+                Html_2 += " <input type=\"hidden\" id=\"txtpilot_num\" value=\"" + pilot_num + "\" />";
                 #endregion
 
                 #region _Realtime
@@ -726,11 +738,11 @@ namespace controldma.service
                 string wwcode = _wwcode.ToString();
                 string dmacode = _dmacode.ToString();
                 string remote_name = _remote_name.ToString();
-                string newCmdprvhead_id = string.Empty;
+                //string newCmdprvhead_id = string.Empty;
                 //int cmdlod_id = 0;
                 try
                 {
-                    newCmdprvhead_id = inl.GetStringbySQL("SELECT ISNULL(max(cmdprvthead_id)+1,1) as NEW_SEQUENT FROM tb_ctr_cmdprvthead", user.UserCons_PortalDB);
+                    //newCmdprvhead_id = inl.GetStringbySQL("SELECT ISNULL(max(cmdprvthead_id)+1,1) as NEW_SEQUENT FROM tb_ctr_cmdprvthead", user.UserCons_PortalDB);
                     String strSQL = string.Empty;
 
                     strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
@@ -753,7 +765,7 @@ namespace controldma.service
                     strSQL += " '0', ";
                     strSQL += " " + Convert.ToInt32(mainData["solenoid"]) + ", ";
                     strSQL += " 0, ";
-                    strSQL += " '" + mainData["remark"] + "', ";
+                    strSQL += " '" + mainData["remark"].ToString() + "', ";
                     strSQL += "  'N', ";
                     strSQL += " '" + user.UserID + "', ";
                     strSQL += "  GETDATE(), ";
@@ -789,24 +801,216 @@ namespace controldma.service
                         strSQL += " GETDATE() ";
                         strSQL += " ) ";
                         Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
-                        return JsonConvert.SerializeObject(new { remote_name = remote_name });
+                        if (status) {
+                            return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                        }                      
                     }
                     else {
                         context.Response.StatusCode = 500;
                         return JsonConvert.SerializeObject(new { status = "fail" });
                     }
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     context.Response.StatusCode = 500;
                     return JsonConvert.SerializeObject(new { status = "fail" });
                 }
 
-               
+
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
 
+        [System.Web.Services.WebMethod]
+        public static string AddAutoPrvt(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+                Cs_Controlcenter cs = new Cs_Controlcenter();
+                string error = "";
+                string wwcode = _wwcode.ToString();
+                string dmacode = _dmacode.ToString();
+                string remote_name = _remote_name.ToString();
 
+                try
+                {
+                    String strSQL = string.Empty;
+                    strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
+                    strSQL += " ,control_mode ";
+                    strSQL += " ,pilot_no ";
+                    strSQL += " ,pilot_pressure ";
+                    strSQL += " ,remark ";
+                    strSQL += " ,record_status ";
+                    strSQL += " ,create_user ";
+                    strSQL += " ,create_dtm ";
+                    strSQL += " ,last_upd_user ";
+                    strSQL += " ,last_upd_dtm ";
+                    strSQL += " ) output INSERTED.cmdprvthead_id ";
+                    strSQL += " VALUES ( ";
+                    strSQL += " '" + wwcode + "', ";
+                    strSQL += " '" + dmacode + "', ";
+                    strSQL += "  GETDATE(),";
+                    strSQL += " '" + remote_name + "', ";
+                    strSQL += " '1', ";
+                    strSQL += " null, ";
+                    strSQL += " 0, ";
+                    strSQL += " '" + mainData["remark"].ToString() + "', ";
+                    strSQL += "  'N', ";
+                    strSQL += " '" + user.UserID + "', ";
+                    strSQL += "  GETDATE(), ";
+                    strSQL += "  null,";
+                    strSQL += "  null";
+                    strSQL += " ) ";
+
+                    int cmdprvthead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                    if (cmdprvthead_id != 0)
+                    {
+                        string cmd_desc = "Sync=1," + remote_name + ","
+                           + "0,"
+                           + "4,"
+                           + "0,"
+                           + "0,"
+                           + "0,"
+                           + "0,"
+                           + "0,"
+                           + "0,"
+                           + "0,";
+
+                        DataTable dt_arrtime = (DataTable)mainData["cmdprvtdetail"];
+
+                        int index = 1;
+                        Hashtable arrTime = new Hashtable();
+                        arrTime = cs.GetTimPrvtdetaile(dt_arrtime);
+                        if (arrTime.Count > 0)
+                        {
+                            DateTime create_dtm = DateTime.Now;
+                            foreach (DataRow row in dt_arrtime.Rows)
+                            {
+                                object[] Time = new object[2];
+                                Time = (object[])arrTime[index];
+                                string pressure_value = "0.00";
+                                string flow_value = "0.00";
+                                string valve_value = "0";
+                                TimeSpan time_start = TimeSpan.Parse(Time[0].ToString());
+                                TimeSpan time_end = TimeSpan.Parse(Time[1].ToString());
+
+                                cmd_desc += row["failure_mode"].ToString() + "/" +
+                                    time_start.ToString(@"hhmm") + "/" +
+                                    time_end.ToString(@"hhmm") + "/" +
+                                    pressure_value + "/" +
+                                    flow_value + "/" +
+                                    valve_value + "/" +
+                                    row["pilot_no"].ToString() + ",";
+
+                                #region sql insert to tb_ctr_cmdprvtdetail
+                                strSQL = string.Empty;
+                                strSQL += " INSERT INTO tb_ctr_cmdprvtdetail ( ";
+                                strSQL += " cmdprvthead_id, ";
+                                strSQL += " dmacode, ";
+                                strSQL += " cmd_data_dtm, ";
+                                strSQL += " order_time, ";
+                                strSQL += " failure_mode, ";
+                                strSQL += " time_end, ";
+                                strSQL += " time_start, ";
+                                strSQL += " pilot_no, ";
+                                strSQL += " pilot_pressure, ";
+                                strSQL += " record_status, ";
+                                strSQL += " create_user, ";
+                                strSQL += " create_dtm, ";
+                                strSQL += " last_upd_user, ";
+                                strSQL += " last_upd_dtm ";
+                                strSQL += " ) VALUES  ";
+                                strSQL += " ( ";
+                                strSQL += " '" + cmdprvthead_id + "', "; //cmdprvthead_id
+                                strSQL += " '" + dmacode + "', ";
+                                strSQL += " GETDATE(), ";
+                                strSQL += " " + Convert.ToInt32(row["order_time"]) + ", ";
+                                strSQL += " " + Convert.ToInt32(row["failure_mode"]) + ", ";
+                                strSQL += " '" + time_end + "', ";
+                                strSQL += " '" + time_start + "', ";
+                                strSQL += " " + row["pilot_no"] + ", ";
+                                strSQL += " 0, ";
+                                strSQL += " 'N', ";
+                                strSQL += " '" + user.UserID + "', ";
+                                strSQL += " GETDATE(), ";
+                                strSQL += " null, ";
+                                strSQL += " null ";
+                                strSQL += " ) ";
+                                #endregion
+
+                                error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+
+                                index += 1;
+                            }
+
+                            if (error == "")
+                            {
+                                if (arrTime.Count != 6)
+                                {
+                                    for (int i = 0; i < 6 - arrTime.Count; i++)
+                                    {
+                                        cmd_desc += "0" + "/" + "0000" + "/" + "0000" + "/0/0/0/0/,";
+                                    }
+                                }
+
+                                strSQL = string.Empty;
+                                strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                                strSQL += " wwcode, ";
+                                strSQL += " dmacode, ";
+                                strSQL += " cmd_dtm, ";
+                                strSQL += " cmd_dvtypeid, ";
+                                strSQL += " cmd_headid, ";
+                                strSQL += " cmd_desc, ";
+                                strSQL += " record_status, ";
+                                strSQL += " create_user, ";
+                                strSQL += " create_dtm ";
+                                strSQL += " ) VALUES ";
+                                strSQL += " ( ";
+                                strSQL += " '" + wwcode + "', ";
+                                strSQL += " '" + dmacode + "', ";
+                                strSQL += " GETDATE(), ";
+                                strSQL += " " + Convert.ToInt32(mainData["dvtypeid"]) + ", ";
+                                strSQL += " " + cmdprvthead_id + ", ";
+                                strSQL += " '" + cmd_desc + "', ";
+                                strSQL += " 'N', ";
+                                strSQL += " '" + user.UserID + "', ";
+                                strSQL += " GETDATE() ";
+                                strSQL += " ) ";
+
+                                error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+
+                                return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                            }                          
+                        }
+                        else {
+                            context.Response.StatusCode = 500;
+                            return JsonConvert.SerializeObject(new { status = "Error:GetTimBvdetaile" });
+                        }
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "Error:AddBvhead" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+
+                return null;
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
 
     }
 }
