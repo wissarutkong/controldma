@@ -163,6 +163,10 @@ namespace controldma
             return cookie.Value;
         }
 
+        public string unit_percent() {
+            return "%".ToString();
+        }
+
         public Hashtable GetTimPrvtdetaile(DataTable arrtime)
         {
             string t1s = "";

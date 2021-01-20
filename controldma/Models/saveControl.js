@@ -123,4 +123,67 @@ $(document).on("click", "#_Automatic_PRV input[type='checkbox']", function () {
     }
 })
 
+// ทำการ delete แถว
+function delRow(r) {
+    if (parseInt(document.getElementById("txtRow").value) > 1) {
+        document.getElementById("tblBvAutomatic").deleteRow(parseInt(document.getElementById("txtRow").value));
+        document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) - 1;
+        document.getElementById("btnAdd").disabled = false;
+    }
+
+
+}
+
+
+//ทำการ ADD แถวใหม่่
+function insertRow(r) {
+    if (document.getElementById("txtRow").value == "6") {
+        document.getElementById("btnAdd").disabled = true;
+        //document.getElementById("btnAdd").style.backgroundColor = "red";
+        return;
+    }
+
+    var searchStr = "btnAdd";
+    var replaceStr = "";
+    var re = new RegExp(searchStr, "g");
+    var result = document.getElementById("txtRow").value;
+
+    console.log(result)
+
+    document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) + 1;
+    var allRow = document.getElementById("txtRow").value;
+    r = parseInt(result) + 1;
+
+    console.log(allRow)
+    console.log(r)
+
+    var row = document.getElementById("tblBvAutomatic").insertRow(r);
+
+    var c1 = row.insertCell(0);
+    var c2 = row.insertCell(1);
+    var c3 = row.insertCell(2);
+
+    c1.innerHTML = '<div  id = "txtRef' + r + '">' + r + '</div>';
+    c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="4">Eanble</option><option value="0">Disable</option></select>';
+    c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
+
+    for (k = 1; k <= document.getElementById("txtpilot_num").value; k++) {
+
+        var id = "pilot_" + (parseInt(result) + 1) + k;
+
+        var pilotid = "pilot_" + (parseInt(result) + 1);
+
+        var pilot_hidden = "";
+        if (k == 1) {
+            // pilot_hidden = "<input type='text' id=" + pilotid + " />";
+        }
+        row.insertCell(2 + parseInt(k)).innerHTML = " <input   id=" + id + " name=" + pilotid + " class='form-control' type='checkbox' value=" + (parseInt(result) + 1) + k + " />" + pilot_hidden;
+
+
+    }
+
+}
+
+function ChangeMode(id) { }
+
 

@@ -49,8 +49,10 @@ $(document).on("click", ".editvalva", function () {
         //element.style.display = null;
         if (datatype == 2) {
             $('#Modal_edit_bv').modal('show');
-            $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-            element.style.visibility = "collapse";
+            generateHtml_bv(dmacode, $('#txtdvtypeid').val()).then(() => {
+
+            })
+            //element.style.visibility = "collapse";
         }
         else if (datatype == 3) {
             $('#Modal_edit_prv').modal('show');
@@ -126,7 +128,7 @@ function getinfovalva(dmacode) {
     }
 }
 
-function getHtml_prv(_wwcode, dmacode, datatype) {
+function getHtml(_wwcode, dmacode, datatype) {
     return new Promise((resolve, reject) => {
         let mainData = []
         mainData.push({
@@ -134,7 +136,7 @@ function getHtml_prv(_wwcode, dmacode, datatype) {
             $_dmacode: dmacode,
             $_datatype: datatype
         })
-        CallAPI('/service/api.aspx/' + (datatype == 3 ? 'Getdata_prv' : ''),
+        CallAPI('/service/api.aspx/' + (datatype == 3 ? 'Getdata_prv' : 'Getdata_bv'),
                 JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             //$('#_Manual_PRV').html(data.html)
@@ -150,7 +152,7 @@ function generateHtml_prv(dmacode, datatype) {
     return new Promise((resolve, reject) => {
         hidePage_content_modal()
         $('.modal_title_setting').text("PRV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-        getHtml_prv(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
             $('#_Manual_PRV').html(data._manual)
             $('#_Automatic_PRV').html(data._Automatic)
             $('#_Realtime_PRV').html(data._Realtime)
@@ -161,6 +163,31 @@ function generateHtml_prv(dmacode, datatype) {
                 CallApigettable_modal('dt_grid_history', '_History').then(() => {
                     resolve()
                     showPage_content_modal();
+                }).catch((error) => {
+                    reject()
+                })
+            })
+        }).catch((error) => {
+            reject()
+        })
+    })
+}
+
+function generateHtml_bv(dmacode, datatype) {
+    return new Promise((resolve, reject) => {
+        //hidePage_content_modal()
+        $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
+        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+            $('#_Manual_Bv').html(data._manual)
+            //$('#_Automatic_PRV').html(data._Automatic)
+            //$('#_Realtime_PRV').html(data._Realtime)
+            //$('#_History_PRV').html(data._History)
+            //GeneratePRV('tblBvAutomatic')
+        }).then(() => {
+            CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
+                CallApigettable_modal('dt_grid_history', '_History').then(() => {
+                    resolve()
+                    //showPage_content_modal();
                 }).catch((error) => {
                     reject()
                 })

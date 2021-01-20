@@ -223,7 +223,7 @@
     <!-- /.modal -->
 
 
-    <div class="modal fade Modal_edit" id="Modal_edit_bv">
+    <%--<div class="modal fade Modal_edit" id="Modal_edit_bv">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div id="overlay_modal" class="overlay d-flex justify-content-center align-items-center">
@@ -301,6 +301,125 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+    <!-- /.modal -->--%>
+
+
+    <div class="modal fade Modal_edit" id="Modal_edit_bv">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <%--                <div  id="overlay_modal" class="overlay d-flex justify-content-center align-items-center">
+                    <i class="fas fa-2x fa-sync fa-spin"></i>
+                </div>--%>
+                <div class="modal-header">
+                    <h4 class="modal-title modal_title_setting">xx</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                 
+                <div class="modal-body" >        
+                             
+                    <div class="row" >
+                        <div class="col-md-12" >
+                            <div class="card card-primary card-outline card-outline-tabs">
+                                <div class="card-header p-0 border-bottom-0">
+                                    <ul class="nav nav-tabs" id="custom-tabs-five-tab-bv" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="tab1_bv_normal" data-toggle="pill" href="#tab1_bv" role="tab" aria-controls="tab1_bv" aria-selected="true">Manual Command</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab2_bv_normal" data-toggle="pill" href="#tab2_bv" role="tab" aria-controls="tab2_bv" aria-selected="false">Automatic Command</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab3_bv_normal" data-toggle="pill" href="#tab3_bv" role="tab" aria-controls="tab3_bv" aria-selected="false">Real Time Data</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab4_bv_normal" data-toggle="pill" href="#tab4_bv" role="tab" aria-controls="tab4_bv" aria-selected="false">History Command</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <%--id="div_content_modal_load"--%>
+                                <div class="card-body" >
+                                    <%--<div id="loader_content_modal"></div>--%> 
+                                    <div class="tab-content" id="tabs_bv">
+                                        <div class="tab-pane fade show active" id="tab1_bv" role="tabpanel" aria-labelledby="tab1_bv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>ตั้งค่าควบคุม Valve <%=unit_percent %></h5>
+                                                    <hr />
+                                                    <div id="_Manual_Bv">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab2_bv" role="tabpanel" aria-labelledby="tab2_bv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>ตั้งค่าควบคุมอัตโนมัติ</h5>
+                                                    <hr />
+                                                    <%--<div class="row">
+                                                        <div class="col-md-12">
+                                                            <button type="button" id="btnAdd" class="btn btn-primary btn-flat col-md-2" onclick="insertRow(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
+                                                            <button type="button" id="btnDelete" class="btn btn-warning btn-flat col-md-2" onclick="delRow(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                        </div>
+                                                    </div>--%>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12">
+                                                            <div style="width: 100%;">
+                                                                <div id="_Automatic_Bv">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                                                           
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab3_bv" role="tabpanel" aria-labelledby="tab3_bv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>Real Time Data</h5>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12 col-12">
+                                                            <%--<div style="width: 100%;">--%>
+                                                                <div id="_Realtime_Bv">
+                                                                </div>
+                                                            <%--</div>--%>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab4_bv" role="tabpanel" aria-labelledby="tab4_bv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>History Command</h5>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12">
+                                                            <div style="width: 100%;">
+                                                                <div id="_History_bv">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%--                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                </div>--%>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
     <!-- /.modal -->
    
     <div class="modal fade Modal_edit" id="Modal_edit_prv">
@@ -358,8 +477,8 @@
                                                     <hr />
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <button type="button" id="btnAdd" class="btn btn-primary btn-flat col-md-2"><i class="fas fa-plus"></i>เพิ่ม</button>
-                                                            <button type="button" id="btnDelete" class="btn btn-warning btn-flat col-md-2"><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                            <button type="button" id="btnAdd" class="btn btn-primary btn-flat col-md-2" onclick="insertRow(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
+                                                            <button type="button" id="btnDelete" class="btn btn-warning btn-flat col-md-2" onclick="delRow(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top: 2%;">

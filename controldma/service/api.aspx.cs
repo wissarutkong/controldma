@@ -629,6 +629,109 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string Getdata_bv(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                Cs_Controlcenter cs = new Cs_Controlcenter();
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                String wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
+                //set global variable _dvtype_id type of bv / prv 
+                _dvtype_id = mainData["$_datatype"].ToString();
+                String unit_percent = cs.unit_percent();
+                #region _manual
+                int percent_valve = 0;
+                DataTable dt_percent_valva = new DataTable();
+                string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.percent_valve,0) percent_valve
+                        FROM tb_ctr_dmavalvetype vt
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                if (dt_ctr_bvmanual.Rows.Count > 0)
+                {
+                    percent_valve = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["percent_valve"]);
+                }
+                else {
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
+                    dt_percent_valva = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                    if (dt_percent_valva.Rows.Count > 0) percent_valve = Convert.ToInt32(dt_percent_valva.Rows[0]["percent_valve"]);
+                }
+                String Html = string.Empty;
+                Html += "<div class=\"list-group-item\"> ";
+                Html += "   <div class=\"row\">";
+                Html += "       <div class=\"col-lg-1\" style=\"margin-top:10px\">";
+                Html += "            Valve " + unit_percent + ": ";
+                Html += "       </div>";
+                Html += "       <div class=\"col-lg-10\" style=\"margin-top:10px\">";
+                Html += "       <input id=\"txtvalve\" type=\"text\" value=\""+ percent_valve + "\"  class=\"form-control\" style=\"width: 100px\" onkeypress=\"return isNumberKey_Valve(event)\" maxlength=\"3\"> ";
+                Html += "       </div> ";
+                Html += "   </div> ";
+                Html += "</div> ";
+                Html += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(2,'manual')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
+                #endregion
+
+                #region _Automatic
+                DataTable dt_cmdbvhead = new DataTable(); DataTable dt_cmdbvdetail = new DataTable();
+                try
+                {
+                    strSQL = string.Empty;
+                    strSQL = @"select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '1' order by cmdbvhead_id desc";
+                    dt_cmdbvhead = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                    strSQL = string.Empty;
+                    strSQL = @" select * from tb_ctr_cmdprvtdetail where cmdprvthead_id 
+                                in(select top 1 cmdprvthead_id from tb_ctr_cmdprvthead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '1' order by cmdprvthead_id desc) order by order_time asc";
+                    dt_cmdbvdetail = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                }
+                catch (Exception ex) {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+
+                int total = 1;
+
+                total = dt_cmdbvdetail.Rows.Count;
+                if (total == 0) { total = 1; }
+
+                String Html_2 = string.Empty;
+
+
+                #endregion
+
+                #region _Realtime
+                String Html_3 = string.Empty;
+
+                #endregion
+
+                #region _History
+                String Html_4 = string.Empty;
+
+                #endregion
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "_manual", Html },
+                   { "_Automatic", Html_2 },
+                   { "_Realtime", Html_3 },
+                   { "_History", Html_4 }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string Get_Automatic_prv(String mainDataText)
         {
             HttpContext context = HttpContext.Current;
@@ -801,9 +904,10 @@ namespace controldma.service
                         strSQL += " GETDATE() ";
                         strSQL += " ) ";
                         Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
-                        if (status) {
+                        if (status)
+                        {
                             return JsonConvert.SerializeObject(new { dmacode = dmacode });
-                        }                      
+                        }
                     }
                     else {
                         context.Response.StatusCode = 500;
@@ -843,6 +947,9 @@ namespace controldma.service
 
                 try
                 {
+
+                    #region tb_ctr_cmdprvthead
+
                     String strSQL = string.Empty;
                     strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
                     strSQL += " ,control_mode ";
@@ -870,6 +977,8 @@ namespace controldma.service
                     strSQL += "  null,";
                     strSQL += "  null";
                     strSQL += " ) ";
+
+                    #endregion
 
                     int cmdprvthead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
                     if (cmdprvthead_id != 0)
@@ -962,6 +1071,8 @@ namespace controldma.service
                                     }
                                 }
 
+                                #region tb_ctr_cmdlog
+
                                 strSQL = string.Empty;
                                 strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                                 strSQL += " wwcode, ";
@@ -985,11 +1096,12 @@ namespace controldma.service
                                 strSQL += " '" + user.UserID + "', ";
                                 strSQL += " GETDATE() ";
                                 strSQL += " ) ";
+                                #endregion
 
                                 error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
 
                                 return JsonConvert.SerializeObject(new { dmacode = dmacode });
-                            }                          
+                            }
                         }
                         else {
                             context.Response.StatusCode = 500;
