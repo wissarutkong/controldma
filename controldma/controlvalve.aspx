@@ -86,6 +86,7 @@
     <!-- /.content-wrapper -->
     <input type="hidden" id="txtdvtypeid" value="" />
     <input type="hidden" id="typepopup" value="" />
+    <input type="hidden" id="txtRow" name="txtRow" value="" />
 
     <div class="modal fade" id="Modal_info_valva">
         <div class="modal-dialog modal-lg">
@@ -316,11 +317,11 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                 
-                <div class="modal-body" >        
-                             
-                    <div class="row" >
-                        <div class="col-md-12" >
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
                             <div class="card card-primary card-outline card-outline-tabs">
                                 <div class="card-header p-0 border-bottom-0">
                                     <ul class="nav nav-tabs" id="custom-tabs-five-tab-bv" role="tablist">
@@ -339,8 +340,8 @@
                                     </ul>
                                 </div>
                                 <%--id="div_content_modal_load"--%>
-                                <div class="card-body" >
-                                    <%--<div id="loader_content_modal"></div>--%> 
+                                <div class="card-body">
+                                    <%--<div id="loader_content_modal"></div>--%>
                                     <div class="tab-content" id="tabs_bv">
                                         <div class="tab-pane fade show active" id="tab1_bv" role="tabpanel" aria-labelledby="tab1_bv">
                                             <div class="row">
@@ -357,12 +358,12 @@
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>ตั้งค่าควบคุมอัตโนมัติ</h5>
                                                     <hr />
-                                                    <%--<div class="row">
+                                                    <div class="row">
                                                         <div class="col-md-12">
-                                                            <button type="button" id="btnAdd" class="btn btn-primary btn-flat col-md-2" onclick="insertRow(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
-                                                            <button type="button" id="btnDelete" class="btn btn-warning btn-flat col-md-2" onclick="delRow(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                            <button type="button" id="btnAdd_bv" class="btn btn-primary btn-flat col-md-2" onclick="insertRow_bv(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
+                                                            <button type="button" id="btnDelete_bv" class="btn btn-warning btn-flat col-md-2" onclick="delRow_bv(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
                                                         </div>
-                                                    </div>--%>
+                                                    </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <div class="col-md-12">
                                                             <div style="width: 100%;">
@@ -371,7 +372,70 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>                                                                                           
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12">
+                                                            <div class="card">
+                                                                <div class="card-header bg-info">
+                                                                    <h3 class="card-title">Failure Mode</h3>
+                                                                    <div class="card-tools">
+                                                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                                            <i class="fas fa-minus"></i>
+                                                                        </button>
+<%--                                                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                                            <i class="fas fa-times"></i>
+                                                                        </button>--%>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /.card-header -->
+                                                                <div class="card-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-row">
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="failure_mode">Mode :</label>
+                                                                                    <select id="failure_mode" name="failure_mode" class="form-control">
+                                                                                        <option value="0">Pressure</option>
+                                                                                        <option value="1">Flow</option>
+                                                                                        <option value="2">Valve</option>
+                                                                                        <option value="4">SAME_Auto_normal</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="step_control_delay">Step Valve (<%=unit_percent %>):</label>
+                                                                                    <input value="" type="text" id="step_control_delay" name="step_control_delay" class="form-control" onkeypress="return isNumberKey(event)">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-row">
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="time_loop">Time Loop Min (minute) :</label>
+                                                                                    <input value="" type="text" id="time_loop" name="time_loop" class="form-control" onkeypress="return isNumberKey(event)">
+                                                                                </div>
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="limit_min">Limit Valve Min (<%=unit_percent %>) :</label>
+                                                                                    <input value="" type="text" id="limit_min" name="limit_min" class="form-control" onkeypress="return isNumberKey(event)">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-row">
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="deadband_pressure">Deadband Pressure (bar) :</label>
+                                                                                    <input value="" type="text" id="deadband_pressure" name="deadband_pressure" class="form-control" onkeypress="return isNumberKey(event)">
+                                                                                </div>
+                                                                                <div class="form-group col-md-6">
+                                                                                    <label for="deadband_flow">Deadband Flow (m³/hr):</label>
+                                                                                    <input value="" type="text" id="deadband_flow" name="deadband_flow" class="form-control" onkeypress="return isNumberKey(event)">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /.card-body -->
+                                                            </div>
+                                                            <!-- /.card -->                                                           
+                                                        </div>
+                                                        <br />
+                                                        <button type="button" class="btn btn-primary btn-flat col-md-2" data-toggle="modal" onclick="Popup(0,'auto')"><i class="fa fa-floppy-o"></i>บันทึก</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade show" id="tab3_bv" role="tabpanel" aria-labelledby="tab3_bv">
@@ -381,8 +445,8 @@
                                                     <div class="row" style="margin-top: 2%;">
                                                         <div class="col-md-12 col-12">
                                                             <%--<div style="width: 100%;">--%>
-                                                                <div id="_Realtime_Bv">
-                                                                </div>
+                                                            <div id="_Realtime_Bv">
+                                                            </div>
                                                             <%--</div>--%>
                                                         </div>
                                                     </div>
@@ -421,7 +485,7 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-   
+
     <div class="modal fade Modal_edit" id="Modal_edit_prv">
         <div class="modal-dialog modal-dialog-scrollable modal-xl">
             <div class="modal-content">
@@ -434,11 +498,11 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                 
-                <div class="modal-body" >        
-                             
-                    <div class="row" >
-                        <div class="col-md-12" >
+
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
                             <div class="card card-primary card-outline card-outline-tabs">
                                 <div class="card-header p-0 border-bottom-0">
                                     <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
@@ -457,8 +521,8 @@
                                     </ul>
                                 </div>
                                 <%--id="div_content_modal_load"--%>
-                                <div class="card-body" >
-                                    <div id="loader_content_modal"></div> 
+                                <div class="card-body">
+                                    <div id="loader_content_modal"></div>
                                     <div class="tab-content" id="tabs_prv">
                                         <div class="tab-pane fade show active" id="tab1_prv" role="tabpanel" aria-labelledby="tab1_prv">
                                             <div class="row">
@@ -477,8 +541,8 @@
                                                     <hr />
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <button type="button" id="btnAdd" class="btn btn-primary btn-flat col-md-2" onclick="insertRow(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
-                                                            <button type="button" id="btnDelete" class="btn btn-warning btn-flat col-md-2" onclick="delRow(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                            <button type="button" id="btnAdd_prv" class="btn btn-primary btn-flat col-md-2" onclick="insertRow(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
+                                                            <button type="button" id="btnDelete_prv" class="btn btn-warning btn-flat col-md-2" onclick="delRow(this.id);"><i class="fas fa-trash-alt"></i>ลบ</button>
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top: 2%;">
@@ -489,7 +553,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>                                                                                           
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade show" id="tab3_prv" role="tabpanel" aria-labelledby="tab3_prv">
@@ -499,8 +563,8 @@
                                                     <div class="row" style="margin-top: 2%;">
                                                         <div class="col-md-12 col-12">
                                                             <%--<div style="width: 100%;">--%>
-                                                                <div id="_Realtime_PRV">
-                                                                </div>
+                                                            <div id="_Realtime_PRV">
+                                                            </div>
                                                             <%--</div>--%>
                                                         </div>
                                                     </div>
@@ -647,7 +711,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-<%--                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <%--                    <button type="button" class="btn btn-primary">Save changes</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>--%>
                 </div>
             </div>

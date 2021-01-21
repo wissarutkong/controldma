@@ -77,7 +77,14 @@ $(document).on("click", ".addvalva", function () {
     }
 })
 
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (charCode != 46 && charCode > 31
+      && (charCode < 48 || charCode > 57))
+        return false;
 
+    return true;
+}
 
 
 function getinfovalva(dmacode) {
@@ -157,7 +164,8 @@ function generateHtml_prv(dmacode, datatype) {
             $('#_Automatic_PRV').html(data._Automatic)
             $('#_Realtime_PRV').html(data._Realtime)
             $('#_History_PRV').html(data._History)
-            GeneratePRV('tblBvAutomatic')
+            $('#txtRow').val(data._txtRow)
+            GeneratePRV('tblPrvAutomatic')
         }).then(() => {
             CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
                 CallApigettable_modal('dt_grid_history', '_History').then(() => {
@@ -179,13 +187,20 @@ function generateHtml_bv(dmacode, datatype) {
         $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
         getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
             $('#_Manual_Bv').html(data._manual)
-            //$('#_Automatic_PRV').html(data._Automatic)
-            //$('#_Realtime_PRV').html(data._Realtime)
-            //$('#_History_PRV').html(data._History)
-            //GeneratePRV('tblBvAutomatic')
+            $('#_Automatic_Bv').html(data._Automatic)
+            $('#_Realtime_Bv').html(data._Realtime)
+            $('#_History_bv').html(data._History)
+            $('#txtRow').val(data._txtRow)
+            $("#failure_mode").val(data._failure_mode);
+            $("#step_control_delay").val(data._step_control_delay);
+            $("#time_loop").val(data._time_loop);
+            $("#limit_min").val(data._limit_min);
+            $("#deadband_pressure").val(data._deadband_pressure);
+            $("#deadband_flow").val(data._deadband_flow);
+            GeneratePRV('tblBvAutomatic')
         }).then(() => {
-            CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
-                CallApigettable_modal('dt_grid_history', '_History').then(() => {
+            CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
+                CallApigettable_modal('dt_grid_history_bv', '_History').then(() => {
                     resolve()
                     //showPage_content_modal();
                 }).catch((error) => {

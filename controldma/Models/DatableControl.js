@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+
     let $documentable = null;
     let $documentableModal = null;
     //$('#dt_controlvalve thead tr').clone(true).appendTo('#dt_controlvalve thead');
@@ -13,7 +14,8 @@
     //    });
     //});
 
-    GenerateTable('tblBvAutomatic')
+    GenerateTable('tblPrvAutomatic')
+    GenerateTable('tblbvAutomatic')
 
 })
 

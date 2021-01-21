@@ -212,7 +212,36 @@ namespace controldma
             return arrTime;
         }
 
+        public String GetBg_Color(string parm,int failure_mode)
+        {
+            string bgc = "#FFFFFF";
+            switch (failure_mode)
+            {
+                case 0:
+                    bgc = "#CCCCCC";
+                    break;
+                case 1:
+                    if (parm != "p")
+                    {
+                        bgc = "#CCCCCC";
+                    }
+                    break;
+                case 2:
+                    if (parm != "f")
+                    {
+                        bgc = "#CCCCCC";
+                    }
+                    break;
+                case 3:
+                    if (parm != "v")
+                    {
+                        bgc = "#CCCCCC";
+                    }
+                    break;
+            }
 
+            return bgc;
+        }
 
     }
 }
