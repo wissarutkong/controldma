@@ -25,19 +25,21 @@ function Modal_save() {
     var type = document.getElementById('typepopup').value;
     if (type == "manual") {
         if (document.getElementById("txtdvtypeid").value == "2") {
-            //Post_Bv_manual();
+            Post_Bv_manual();
+            console.log("Post_Bv_manual")
         } else if (document.getElementById("txtdvtypeid").value == "3") {
             Post_prvt_manual();
         }
     } else if (type == "auto") {
-        //Post_AutoBv();
+        Post_AutoBv();
+        console.log("Post_AutoBv")
     } else if (type == "auto_prv") {
         Post_AutoPrvt();
     }
 
 }
 
-
+//Save manual prv
 function Post_prvt_manual() {
     if (document.getElementById("txtSolenoid").value == "") {
         document.getElementById("txtSolenoid").value = "0";
@@ -65,6 +67,7 @@ function Post_prvt_manual() {
 
 }
 
+//Save auto prv
 function Post_AutoPrvt() {
     var cmdbvhead = [];
     var cmdbvdetail = [];
@@ -103,6 +106,92 @@ function getDatabeforsave_AutoPrvt() {
     
     return cmdprvtdetail;
 }
+
+//Save manual bv
+function Post_Bv_manual() {
+
+    if (document.getElementById("txtvalve").value > 100) {
+        swalAlert('ค่า valve(%) เกิน 100', 'warning')
+        return;
+    }
+
+    let mainData = []
+    mainData.push({
+        valve: document.getElementById("txtvalve").value,
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    CallAPI('/service/api.aspx/AddManualBv',
+       JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+        ).then((data) => {
+            $("#aboutModal_save").modal("hide");
+            swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+            generateHtml_bv(data.dmacode, $('#txtdvtypeid').val()).then(() => {
+
+            })
+        }).catch((error) => {
+            swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+        })
+
+
+}
+
+
+//Save auto bv
+function Post_AutoBv() {
+    var cmdbvhead = [];
+    var cmdbvdetail = [];
+    cmdbvdetail = getDatabeforsave_AutoBv();
+    cmdbvhead[0] = {
+        "failure_mode": document.getElementById("failure_mode").value, "step_control_delay": document.getElementById("step_control_delay").value,
+        "time_loop": document.getElementById("time_loop").value, "limit_min": document.getElementById("limit_min").value,
+        "deadband_pressure": document.getElementById("deadband_pressure").value, "deadband_flow": document.getElementById("deadband_flow").value
+    };
+
+    let mainData = []
+    mainData.push({
+        cmdbvhead: cmdbvhead,
+        cmdbvdetail: cmdbvdetail,
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    CallAPI('/service/api.aspx/AddAutoBv',
+   JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+    ).then((data) => {
+        $("#aboutModal_save").modal("hide");
+        swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+        generateHtml_bv(data.dmacode, $('#txtdvtypeid').val()).then(() => {
+
+        })
+    }).catch((error) => {
+        swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+    })
+
+    console.log(cmdbvdetail);
+    console.log(cmdbvhead);
+}
+
+function getDatabeforsave_AutoBv() {
+    var allRow = document.getElementById("txtRow").value
+    var cmdbvdetail = [];
+    for (var i = 1; i <= allRow; i++) {
+        var selmode = document.getElementById("selmode" + i).value;
+        var txttime = document.getElementById("txttime" + i).value;
+        var txtPressure = document.getElementById("txtPressure" + i).value;
+        var txtFlow = document.getElementById("txtFlow" + i).value;
+        var txtValve = document.getElementById("txtValve" + i).value;
+        cmdbvdetail[i - 1] = {
+            "order_time": i, "failure_mode": document.getElementById("selmode" + i).value,
+            "time_start": document.getElementById("txttime" + i).value, "time_end": document.getElementById("txttime" + i).value,
+            "pressure_value": document.getElementById("txtPressure" + i).value, "flow_value": document.getElementById("txtFlow" + i).value,
+            "valve_value": document.getElementById("txtValve" + i).value
+        };
+    }
+    return cmdbvdetail;
+}
+
 
 $(document).on("click", "#_Automatic_PRV input[type='checkbox']", function () {
     var $box = $(this);

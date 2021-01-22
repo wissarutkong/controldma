@@ -212,6 +212,54 @@ namespace controldma
             return arrTime;
         }
 
+        public Hashtable GetTimBvdetaile(DataTable arrtime)
+        {
+            string t1s = "";
+            string ts = "";
+            string te = "";
+            Hashtable arrTime = new Hashtable();
+            try
+            {
+                object[] Time = new object[2];
+                int index = 0;
+                foreach (DataRow row in arrtime.Rows)
+                {
+                    ts = row["time_start"].ToString();
+                    if (t1s == "")
+                    {
+                        t1s = row["time_start"].ToString();
+                    }
+                    if (ts != "" && te != "")
+                    {
+                        Time = new object[2];
+                        Time[0] = TimeSpan.Parse(te);
+                        Time[1] = TimeSpan.Parse(ts) - TimeSpan.Parse("00:01:00");
+                        arrTime.Add(index, Time);
+                    }
+
+                    te = ts;
+                    index += 1;
+                }
+
+                Time = new object[2];
+                Time[0] = TimeSpan.Parse(te);
+                Time[1] = TimeSpan.Parse(t1s) - TimeSpan.Parse("00:01:00");
+                if (t1s == "00:00")
+                {
+                    Time[1] = TimeSpan.Parse("23:59:00");
+                }
+                arrTime.Add(index, Time);
+
+            }
+            catch
+            {
+                arrTime = new Hashtable();
+            }
+
+
+            return arrTime;
+        }
+
         public String GetBg_Color(string parm,int failure_mode)
         {
             string bgc = "#FFFFFF";

@@ -138,13 +138,17 @@ function showPage_content() {
 }
 
 function hidePage_content_modal() {
-    document.getElementById("loader_content_modal").style.display = "block";
+    $('.loader_content_modal').show();
+    //document.getElementById("loader_content_modal").style.display = "block";
     document.getElementById("tabs_prv").style.display = "none";
+    document.getElementById("tabs_bv").style.display = "none";
 }
 
 function showPage_content_modal() {
-    document.getElementById("loader_content_modal").style.display = "none";
+    $('.loader_content_modal').hide();
+    //document.getElementById("loader_content_modal").style.display = "none";
     document.getElementById("tabs_prv").style.display = "block";
+    document.getElementById("tabs_bv").style.display = "block";
 }
 
 function setCookie(cname, cvalue) {
@@ -201,7 +205,7 @@ function Setvariableapi(mainData) {
         ).then((data) => {
             resolve()
         }).catch((error) => {
-            console.log(error)
+            swalAlert(error, 'error')
             reject()
         })
 }

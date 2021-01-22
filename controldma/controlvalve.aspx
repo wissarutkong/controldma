@@ -341,7 +341,7 @@
                                 </div>
                                 <%--id="div_content_modal_load"--%>
                                 <div class="card-body">
-                                    <%--<div id="loader_content_modal"></div>--%>
+                                    <div class="loader_content_modal"></div>
                                     <div class="tab-content" id="tabs_bv">
                                         <div class="tab-pane fade show active" id="tab1_bv" role="tabpanel" aria-labelledby="tab1_bv">
                                             <div class="row">
@@ -522,7 +522,7 @@
                                 </div>
                                 <%--id="div_content_modal_load"--%>
                                 <div class="card-body">
-                                    <div id="loader_content_modal"></div>
+                                    <div class="loader_content_modal"></div>
                                     <div class="tab-content" id="tabs_prv">
                                         <div class="tab-pane fade show active" id="tab1_prv" role="tabpanel" aria-labelledby="tab1_prv">
                                             <div class="row">

@@ -1058,6 +1058,10 @@ namespace controldma.service
             HttpContext context = HttpContext.Current;
             if (context.Session["USER"] != null)
             {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+
                 var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
                 if (tempMainData.Rows.Count == 0)
                 {
@@ -1075,8 +1079,8 @@ namespace controldma.service
                 try
                 {
                     //newCmdprvhead_id = inl.GetStringbySQL("SELECT ISNULL(max(cmdprvthead_id)+1,1) as NEW_SEQUENT FROM tb_ctr_cmdprvthead", user.UserCons_PortalDB);
+                    #region sql insert tb_ctr_cmdprvthead
                     String strSQL = string.Empty;
-
                     strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
                     strSQL += " ,control_mode ";
                     strSQL += " ,pilot_no ";
@@ -1104,10 +1108,12 @@ namespace controldma.service
                     strSQL += "  null,";
                     strSQL += "  null";
                     strSQL += " ) ";
+                    #endregion
 
                     int cmdprvthead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
                     if (cmdprvthead_id != 0)
                     {
+                        #region sql insert tb_ctr_cmdlog
                         string cmd_desc = "Mode=3," + remote_name + "," + mainData["solenoid"] + ",";
                         strSQL = string.Empty;
                         strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
@@ -1132,6 +1138,7 @@ namespace controldma.service
                         strSQL += " '" + user.UserID + "', ";
                         strSQL += " GETDATE() ";
                         strSQL += " ) ";
+                        #endregion
                         Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
                         if (status)
                         {
@@ -1146,7 +1153,7 @@ namespace controldma.service
                 catch (Exception ex)
                 {
                     context.Response.StatusCode = 500;
-                    return JsonConvert.SerializeObject(new { status = "fail" });
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
                 }
 
 
@@ -1160,6 +1167,9 @@ namespace controldma.service
             HttpContext context = HttpContext.Current;
             if (context.Session["USER"] != null)
             {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
                 var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
                 if (tempMainData.Rows.Count == 0)
                 {
@@ -1230,7 +1240,7 @@ namespace controldma.service
                         arrTime = cs.GetTimPrvtdetaile(dt_arrtime);
                         if (arrTime.Count > 0)
                         {
-                            DateTime create_dtm = DateTime.Now;
+                            //DateTime create_dtm = DateTime.Now;
                             foreach (DataRow row in dt_arrtime.Rows)
                             {
                                 object[] Time = new object[2];
@@ -1345,10 +1355,352 @@ namespace controldma.service
                 catch (Exception ex)
                 {
                     context.Response.StatusCode = 500;
-                    return JsonConvert.SerializeObject(new { status = "fail" });
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
                 }
 
                 return null;
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string AddManualBv(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+                string wwcode = _wwcode.ToString();
+                string dmacode = _dmacode.ToString();
+                string remote_name = _remote_name.ToString();
+                try
+                {
+                    #region sql insert tb_ctr_cmdbvhead
+                    String strSQL = string.Empty;
+                    strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";
+                    strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
+                    strSQL += " last_upd_user,last_upd_dtm ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    //strSQL += "  ";
+                    strSQL += " ) output INSERTED.cmdbvhead_id ";
+                    strSQL += " VALUES ( ";
+                    //strSQL += " '" + newCmdprvhead_id + "', ";
+                    strSQL += " '" + wwcode + "', ";
+                    strSQL += " '" + dmacode + "', ";
+                    strSQL += "  GETDATE(),";
+                    strSQL += " '" + remote_name + "', ";
+                    strSQL += " '0', ";
+                    strSQL += " " + Convert.ToInt32(mainData["valve"]) + ", ";
+                    strSQL += " null, ";
+                    strSQL += " 0, ";
+                    strSQL += " null, ";
+                    strSQL += " 0, ";
+                    strSQL += " 0, ";
+                    strSQL += " 0, ";
+                    strSQL += " '" + mainData["remark"].ToString() + "', ";
+                    strSQL += "  'N', ";
+                    strSQL += " '" + user.UserID + "', ";
+                    strSQL += "  GETDATE(), ";
+                    strSQL += "  null,";
+                    strSQL += "  null";
+                    strSQL += " ) ";
+                    #endregion
+
+                    int cmdbvhead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                    if (cmdbvhead_id != 0)
+                    {
+                        #region sql insert tb_ctr_cmdlog
+                        string cmd_desc = "Mode=0," + remote_name + "," + mainData["valve"].ToString() + ",";
+                        strSQL = string.Empty;
+                        strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                        strSQL += " wwcode, ";
+                        strSQL += " dmacode, ";
+                        strSQL += " cmd_dtm, ";
+                        strSQL += " cmd_dvtypeid, ";
+                        strSQL += " cmd_headid, ";
+                        strSQL += " cmd_desc, ";
+                        strSQL += " record_status, ";
+                        strSQL += " create_user, ";
+                        strSQL += " create_dtm ";
+                        strSQL += " ) VALUES ";
+                        strSQL += " ( ";
+                        strSQL += " '" + wwcode + "', ";
+                        strSQL += " '" + dmacode + "', ";
+                        strSQL += " GETDATE(), ";
+                        strSQL += " " + Convert.ToInt32(mainData["dvtypeid"]) + ", ";
+                        strSQL += " " + cmdbvhead_id + ", ";
+                        strSQL += " '" + cmd_desc + "', ";
+                        strSQL += " 'N', ";
+                        strSQL += " '" + user.UserID + "', ";
+                        strSQL += " GETDATE() ";
+                        strSQL += " ) ";
+                        #endregion
+                        Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
+                        if (status)
+                        {
+                            return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                        }
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "fail" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string AddAutoBv(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+                Cs_Controlcenter cs = new Cs_Controlcenter();
+
+                string error = "";
+                string wwcode = _wwcode.ToString();
+                string dmacode = _dmacode.ToString();
+                string remote_name = _remote_name.ToString();
+
+                try
+                {
+                    DataTable dt_cmdbvhead = (DataTable)mainData["cmdbvhead"];
+                    foreach (DataRow row in dt_cmdbvhead.Rows)
+                    {
+                        #region insert into tb_ctr_cmdbvhead
+                        String strSQL = string.Empty;
+                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";
+                        strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
+                        strSQL += " last_upd_user,last_upd_dtm ";
+                        strSQL += " ) output INSERTED.cmdbvhead_id ";
+                        strSQL += " VALUES ( ";
+                        //strSQL += " '" + newCmdprvhead_id + "', ";
+                        strSQL += " '" + wwcode + "', "; //wwcode
+                        strSQL += " '" + dmacode + "', "; //dmacode
+                        strSQL += "  GETDATE(),"; //cmd_data_dtm
+                        strSQL += " '" + remote_name + "', "; //remote_name
+                        strSQL += " '1', "; //control_mode
+                        strSQL += " null, "; //percent_valve
+                        strSQL += " " + row["failure_mode"] + ", "; //failure_mode
+                        strSQL += " " + row["step_control_delay"] + ", "; //step_control_delay
+                        strSQL += " " + row["time_loop"] + ", "; //time_loop
+                        strSQL += " " + row["limit_min"] + ", "; //limit_min
+                        strSQL += " " + row["deadband_pressure"] + ", "; //deadband_pressure
+                        strSQL += " " + row["deadband_flow"] + ", "; //deadband_flow
+                        strSQL += " '" + mainData["remark"].ToString() + "', "; //remark
+                        strSQL += "  'N', "; //record_status
+                        strSQL += " '" + user.UserID + "', "; //create_user
+                        strSQL += "  GETDATE(), "; //create_dtm
+                        strSQL += "  null,"; //last_upd_user
+                        strSQL += "  null"; //last_upd_dtm
+                        strSQL += " ) ";
+                        #endregion
+                        int cmdbvhead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                        if (cmdbvhead_id != 0)
+                        {
+                            decimal step_control_delay = Convert.ToDecimal(row["step_control_delay"]);
+                            decimal limit_min = Convert.ToDecimal(row["limit_min"]);
+                            decimal deadband_pressure = Convert.ToDecimal(row["deadband_pressure"]);
+                            decimal deadband_flow = Convert.ToDecimal(row["deadband_flow"]);
+                            string cmd_desc = "Sync=1," + remote_name + ","
+                            + "0,"
+                            + row["failure_mode"].ToString() + ","
+                            + step_control_delay.ToString("##0.00") + ","
+                            + "0,"
+                            + "0,"
+                            + row["time_loop"].ToString() + ","
+                            + limit_min.ToString() + ","
+                            + deadband_pressure.ToString("##0.00") + ","
+                            + deadband_flow.ToString("##0.00") + ",";
+
+                            DataTable dt_arrtime = (DataTable)mainData["cmdbvdetail"];
+
+                            int index = 1;
+                            Hashtable arrTime = new Hashtable();
+                            arrTime = cs.GetTimPrvtdetaile(dt_arrtime);
+                            if (arrTime.Count > 0)
+                            {
+                                foreach (DataRow row_detail in dt_arrtime.Rows)
+                                {
+                                    object[] Time = new object[2];
+                                    Time = (object[])arrTime[index];
+                                    TimeSpan time_start = TimeSpan.Parse(Time[0].ToString());
+                                    TimeSpan time_end = TimeSpan.Parse(Time[1].ToString());
+
+                                    decimal pressure_value_tmp = Convert.ToDecimal(row_detail["pressure_value"]);
+                                    decimal flow_value_tmp = Convert.ToDecimal(row_detail["flow_value"]);
+                                    decimal valve_value_tmp = Convert.ToDecimal(row_detail["valve_value"]);
+
+                                    string pressure_value = pressure_value_tmp.ToString("##0.00");
+                                    if (pressure_value == "" || pressure_value == null)
+                                        pressure_value = "0.00";
+                                    string flow_value = flow_value_tmp.ToString("##0.00");
+                                    if (flow_value == "" || flow_value == null)
+                                        flow_value = "0.00";
+                                    string valve_value = valve_value_tmp.ToString();
+                                    if (valve_value == "" || valve_value == null)
+                                        valve_value = "0";
+
+                                    //string extension_pump_tmp = row_detail[""].ToString();
+                                    //string extension_pump = "0";
+                                    //if (objdetail.extension_pump != null)
+                                    //{
+                                    //    extension_pump = objdetail.extension_pump.ToString();
+                                    //}
+
+                                    cmd_desc += row_detail["failure_mode"].ToString() + "/"
+                                                + time_start.ToString(@"hhmm") + "/"
+                                                + time_end.ToString(@"hhmm")
+                                                + "/" + pressure_value + "/"
+                                                + flow_value + "/"
+                                                + valve_value + "/0/,";
+
+                                    #region insert into tb_ctr_cmdbvdetail
+                                    strSQL = string.Empty;
+                                    strSQL += " INSERT INTO tb_ctr_cmdbvdetail ( ";
+                                    strSQL += " cmdbvhead_id, ";
+                                    strSQL += " dmacode, ";
+                                    strSQL += " cmd_data_dtm, ";
+                                    strSQL += " order_time, ";
+                                    strSQL += " failure_mode, ";
+                                    strSQL += " time_start, ";
+                                    strSQL += " time_end, ";
+                                    strSQL += " pressure_value, ";
+                                    strSQL += " flow_value, ";
+                                    strSQL += " valve_value, ";
+                                    strSQL += " record_status, ";
+                                    strSQL += " create_user, ";
+                                    strSQL += " create_dtm, ";
+                                    strSQL += " last_upd_user, ";
+                                    strSQL += " last_upd_dtm, ";
+                                    strSQL += " extension_pump ";
+                                    strSQL += " ) ";
+                                    strSQL += " VALUES ( ";
+                                    strSQL += " '" + cmdbvhead_id + "', "; //cmdbvhead_id
+                                    strSQL += " '" + dmacode + "', "; //dmacode
+                                    strSQL += " GETDATE(), "; //cmd_data_dtm
+                                    strSQL += " " + Convert.ToInt32(row_detail["order_time"]) + ", "; //order_time
+                                    strSQL += " " + Convert.ToInt32(row_detail["failure_mode"]) + ", "; //failure_mode
+                                    strSQL += " '" + time_start + "', "; //time_start
+                                    strSQL += " '" + time_end + "', "; //time_end
+                                    strSQL += " '" + pressure_value_tmp.ToString("##0.00") + "', "; //pressure_value
+                                    strSQL += " '" + flow_value_tmp.ToString("##0.00") + "', "; //flow_value
+                                    strSQL += " '" + valve_value_tmp.ToString() + "', "; //valve_value
+                                    strSQL += " 'N', "; //record_status
+                                    strSQL += " '" + user.UserID + "', "; //create_user
+                                    strSQL += " GETDATE(), "; //create_dtm
+                                    strSQL += " null, "; //last_upd_user
+                                    strSQL += " null, "; //last_upd_dtm
+                                    strSQL += " null "; //extension_pump
+                                    strSQL += " ) ";
+                                    #endregion
+
+                                    error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+
+                                    index += 1;
+                                }
+
+                                if (error == "")
+                                {
+                                    if (arrTime.Count != 6)
+                                    {
+                                        for (int i = 0; i < 6 - arrTime.Count; i++)
+                                        {
+                                            cmd_desc += "0" + "/" + "0000" + "/" + "0000" + "/0/0/0/0/,";
+                                        }
+                                    }
+
+                                    #region tb_ctr_cmdlog
+                                    strSQL = string.Empty;
+                                    strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                                    strSQL += " wwcode, ";
+                                    strSQL += " dmacode, ";
+                                    strSQL += " cmd_dtm, ";
+                                    strSQL += " cmd_dvtypeid, ";
+                                    strSQL += " cmd_headid, ";
+                                    strSQL += " cmd_desc, ";
+                                    strSQL += " record_status, ";
+                                    strSQL += " create_user, ";
+                                    strSQL += " create_dtm ";
+                                    strSQL += " ) VALUES ";
+                                    strSQL += " ( ";
+                                    strSQL += " '" + wwcode + "', ";
+                                    strSQL += " '" + dmacode + "', ";
+                                    strSQL += " GETDATE(), ";
+                                    strSQL += " " + Convert.ToInt32(mainData["dvtypeid"]) + ", ";
+                                    strSQL += " " + cmdbvhead_id + ", ";
+                                    strSQL += " '" + cmd_desc + "', ";
+                                    strSQL += " 'N', ";
+                                    strSQL += " '" + user.UserID + "', ";
+                                    strSQL += " GETDATE() ";
+                                    strSQL += " ) ";
+                                    #endregion
+
+                                    error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+
+                                    return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                                }
+                            }
+                            else {
+                                context.Response.StatusCode = 500;
+                                return JsonConvert.SerializeObject(new { status = "Error:GetTimBvdetaile" });
+                            }
+                        }
+                        else {
+                            context.Response.StatusCode = 500;
+                            return JsonConvert.SerializeObject(new { status = "Error:AddBvhead" });
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }

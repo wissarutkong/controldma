@@ -183,7 +183,7 @@ function generateHtml_prv(dmacode, datatype) {
 
 function generateHtml_bv(dmacode, datatype) {
     return new Promise((resolve, reject) => {
-        //hidePage_content_modal()
+        hidePage_content_modal()
         $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
         getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
             $('#_Manual_Bv').html(data._manual)
@@ -202,7 +202,7 @@ function generateHtml_bv(dmacode, datatype) {
             CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
                 CallApigettable_modal('dt_grid_history_bv', '_History').then(() => {
                     resolve()
-                    //showPage_content_modal();
+                    showPage_content_modal();
                 }).catch((error) => {
                     reject()
                 })
@@ -246,8 +246,6 @@ function GetCommandTimeOut() {
     CallAPI('/service/api.aspx/GetCommandTimeOut',
             ''
     ).then((data) => {
-        //console.log(data)
-
         $.each(data, function (i, item) {
             document.getElementById("counter_s").style.display = "block";
             document.getElementById("button_save").style.display = "none";
@@ -271,7 +269,7 @@ function GetCommandTimeOut() {
         }
 
     }).catch((error) => {
-        //console.log(error)
+        swalAlert(error, 'error')
         reject()
     })
 }

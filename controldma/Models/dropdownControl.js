@@ -12,7 +12,7 @@
             $('#' + Id + '').trigger('change');
             resolve()
         }).catch((error) => {
-            console.log(error)
+            swalAlert(error, 'error')
             reject()
         })
     })
@@ -33,7 +33,7 @@ function AjaxGetddlsite(Id) {
                 //$('#' + Id + '').trigger('change');
                 resolve()
             }).catch((error) => {
-                console.log(error)
+                swalAlert(error, 'error')
                 reject()
             })
     

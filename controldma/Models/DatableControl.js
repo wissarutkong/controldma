@@ -32,7 +32,8 @@ function CallApigetdatatable() {
                          $documentable.clear().rows.add(data).draw(true)
                          resolve()
                      }).catch((error) => {
-                         //CloseLoading()
+                         swalAlert(error, 'error')
+                         reject()
                      })
              } else { resolve() }
          })
@@ -47,11 +48,11 @@ function CallApigettable_modal(Id,type) {
              CallAPI('/service/api.aspx/' + (type == '_Realtime' ? 'GetRealtimeDataCtr002' : 'GetHistoryDataCtr002'),
                            ''
                      ).then((data) => {
-                         //console.log(data)
                          $documentableModal.clear().rows.add(data).draw(true)
                          resolve()
                      }).catch((error) => {
-                         //CloseLoading()
+                         swalAlert(error, 'error')
+                         reject()
                      })
          })
     })

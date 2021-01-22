@@ -32,7 +32,7 @@
   animation: spin 2s linear infinite;
 }
 
-#loader_content_modal {
+.loader_content_modal {
   position: relative;
   left: 50%;
   top: 50%;
