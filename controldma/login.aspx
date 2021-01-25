@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="images/logo_large.png">
     <title>PWA Control</title>
     <!--===============================================================================================-->
 	    <link rel="stylesheet" type="text/css" href="dist/css/adminlte.min.css">

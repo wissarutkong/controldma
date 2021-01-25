@@ -32,7 +32,7 @@ function CallApigetdatatable() {
                          $documentable.clear().rows.add(data).draw(true)
                          resolve()
                      }).catch((error) => {
-                         swalAlert(error, 'error')
+                         //swalAlert(error, 'error')
                          reject()
                      })
              } else { resolve() }
@@ -51,7 +51,7 @@ function CallApigettable_modal(Id,type) {
                          $documentableModal.clear().rows.add(data).draw(true)
                          resolve()
                      }).catch((error) => {
-                         swalAlert(error, 'error')
+                         //swalAlert(error, 'error')
                          reject()
                      })
          })

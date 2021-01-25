@@ -57,7 +57,6 @@
     });
 
 
-
     //var myVar;
     //myVar = setTimeout(showPage, 1500);
 
@@ -103,7 +102,11 @@
         CallApigetdatatable().then(() => { showPage_content() })
     })
 
-    
+    //$('#m_smartlogger').bootstrapToggle({
+    //    size: "large",
+    //    on: 'SmartLogger',
+    //    off: 'No'
+    //});
 
 })
 
@@ -142,6 +145,7 @@ function hidePage_content_modal() {
     //document.getElementById("loader_content_modal").style.display = "block";
     document.getElementById("tabs_prv").style.display = "none";
     document.getElementById("tabs_bv").style.display = "none";
+    document.getElementById("tabs_editvalva").style.display = "none";
 }
 
 function showPage_content_modal() {
@@ -149,6 +153,7 @@ function showPage_content_modal() {
     //document.getElementById("loader_content_modal").style.display = "none";
     document.getElementById("tabs_prv").style.display = "block";
     document.getElementById("tabs_bv").style.display = "block";
+    document.getElementById("tabs_editvalva").style.display = "block";
 }
 
 function setCookie(cname, cvalue) {
@@ -199,13 +204,17 @@ $(document).on("click", "input:checkbox", function () {
     }
 })
 
+//$(document).on("change", "#m_dvtypeddl", function () {
+//    console.log($(this).val())
+//})
+
 function Setvariableapi(mainData) {
     CallAPI('/service/api.aspx/SetDataModal',
                 JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             resolve()
         }).catch((error) => {
-            swalAlert(error, 'error')
+            swalAlert(error.status, 'error')
             reject()
         })
 }

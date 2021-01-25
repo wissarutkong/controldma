@@ -64,11 +64,11 @@
                                             <th>Flow (m³)</th>
                                             <th>Pressure (bar)</th>
                                             <th>Last Update</th>
-                                            <th style="width: 75px;"></th>
-                                            <th style="width: 75px;"></th>
+                                            <th style="width: 90px;"></th>
+                                            <th style="width: 90px;"></th>
                                             <% if (Convert.ToBoolean(user.UserAdmin))
                                                 {  %>
-                                            <th style="width: 75px;"></th>
+                                            <th style="width: 90px;"></th>
                                             <% }  %>
                                         </tr>
                                     </thead>
@@ -202,18 +202,63 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title modal_title_add_valva">xx</h4>
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
+                    <div class="loader_content_modal"></div>
+                    <div class="tab-content" id="tabs_editvalva">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <h6 class="modal-title modal_subtital_add_valva"></h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-12 col-sm-12">
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <label>ประเภทประตูน้ำ :</label>
+                                        <select id="m_dvtypeddl" class="form-control select2bs4" data-dropdown-css-class="select2-info" onchange="onchangeddldvtype(this.value)">
+                                        </select>
+                                    </div>
+                                    <div id="_divtotlepilot" class="form-group col-md-6 col-12 col-sm-12">
+                                        <label for="totlepilot">จำนวน pilot</label>
+                                        <input value="" type="number" id="m_totlepilot" name="m_totlepilot" class="form-control" onkeypress="return isNumberKey(event)">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <label for="m_controltype">ประเภท Control</label>
+                                        <select id="m_controltype" class="form-control select2bs4" data-dropdown-css-class="select2-info">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <label for="m_smartlogger">Smart Logger</label><br />
+                                        <input type="checkbox" id="m_smartlogger" style="min-width: 30px; min-height:30px" >
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <h5 for="deadband_pressure"><i class="fas fa-user-check"></i>ผู้แก้ไข</h5>
+                                        <label id="m_usereditor">ยุทธศักดิ์ แสงจันทร์</label>
+                                    </div>
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <h5 for="deadband_flow"><i class="fas fa-user-clock"></i>วันที่แก้ไข</h5>
+                                        <label id="m_lastupdate">12/03/2561 19:53:45</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button id="save_add_valva" type="button" class="btn btn-primary">บันทึก</button>
+                    <button id="save_add_valva" type="button" class="btn btn-success" onclick="add_valva_modal()">บันทึก(Save)</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
                 </div>
             </div>
@@ -361,7 +406,7 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <button type="button" id="btnAdd_bv" class="btn btn-primary btn-flat col-md-2" onclick="insertRow_bv(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
-                                                            <button type="button" id="btnDelete_bv" class="btn btn-warning btn-flat col-md-2" onclick="delRow_bv(this.id);" ><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                            <button type="button" id="btnDelete_bv" class="btn btn-warning btn-flat col-md-2" onclick="delRow_bv(this.id);"><i class="fas fa-trash-alt"></i>ลบ</button>
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top: 2%;">
@@ -381,7 +426,7 @@
                                                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                                                             <i class="fas fa-minus"></i>
                                                                         </button>
-<%--                                                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                                        <%--                                                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
                                                                             <i class="fas fa-times"></i>
                                                                         </button>--%>
                                                                     </div>
@@ -430,7 +475,7 @@
                                                                 </div>
                                                                 <!-- /.card-body -->
                                                             </div>
-                                                            <!-- /.card -->                                                           
+                                                            <!-- /.card -->
                                                         </div>
                                                         <br />
                                                         <button type="button" class="btn btn-primary btn-flat col-md-2" data-toggle="modal" onclick="Popup(0,'auto')"><i class="fa fa-floppy-o"></i>บันทึก</button>

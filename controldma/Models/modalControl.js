@@ -13,8 +13,16 @@
         getinfovalva(dmacode)
     }, 5000);
 
+    $('#m_smartlogger').change(function () {
+        console.log($(this).prop('checked'))
+    })
 
 })
+
+function onchangeddldvtype(value) {
+    if (value == 3) { $('#_divtotlepilot').show(); }
+    else { $('#_divtotlepilot').hide(); }
+}
 
 $(document).on('show.bs.modal', '.modal', function (event) {
     var zIndex = 1040 + (10 * $('.modal:visible').length);
@@ -71,9 +79,42 @@ $(document).on("click", ".editvalva", function () {
 })
 
 $(document).on("click", ".addvalva", function () {
+    hidePage_content_modal()
     if ($(this).val() != '' && $(this).val() != null && getCookie('_wwcode') != '' && getCookie('_wwcode') != null) {
-        var dmacode = $(this).val();
-        $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : " + dmacode)
+        $('#_divtotlepilot').hide();
+        AjaxGetddl('m_dvtypeddl').then(() => {
+            AjaxGetddl('m_controltype').then(() => {
+                var dmacode = $(this).val();
+                $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : " + dmacode)
+                $('#Modal_add_valva').modal('show');
+                let mainData = []
+                mainData.push({
+                    $_dmacode: dmacode,
+                    $_wwcode: getCookie('_wwcode')
+                })
+                CallAPI('/service/api.aspx/GetCtr003_All',
+                   JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+               ).then((data) => {
+                   let obj = data[0];
+                   console.log(obj)
+                   //console.log(obj.communication)
+                   $('.modal_subtital_add_valva').text(obj.name)
+                   $('#m_dvtypeddl').val(obj.dvtype_id).trigger('change');
+                   $('#m_totlepilot').val(obj.pilot_num)
+                   $('#m_controltype').val(obj.control_type).trigger('change');
+                   if (obj.is_smartlogger) {  $('#m_smartlogger').attr('checked',true); }
+                   else {  $('#m_smartlogger').removeAttr('checked') }
+
+                   $('#m_usereditor').text(obj.fullname)
+                   $('#m_lastupdate').text(obj.last_upd_dtm)
+                   showPage_content_modal();
+               }).catch((error) => {
+                   swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')
+                   //SomethingWrong('เกิดความผิด !', 'เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ')
+               })
+            })
+        })
+
     }
 })
 
@@ -150,6 +191,7 @@ function getHtml(_wwcode, dmacode, datatype) {
             resolve(data)
         }).catch((error) => {
             //console.log(error)
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
             reject()
         })
     })
@@ -172,10 +214,12 @@ function generateHtml_prv(dmacode, datatype) {
                     resolve()
                     showPage_content_modal();
                 }).catch((error) => {
+                    swalAlert(error.status, 'error')
                     reject()
                 })
             })
         }).catch((error) => {
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
             reject()
         })
     })
@@ -204,10 +248,12 @@ function generateHtml_bv(dmacode, datatype) {
                     resolve()
                     showPage_content_modal();
                 }).catch((error) => {
+                    swalAlert(error.status, 'error')
                     reject()
                 })
             })
         }).catch((error) => {
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
             reject()
         })
     })
@@ -269,7 +315,7 @@ function GetCommandTimeOut() {
         }
 
     }).catch((error) => {
-        swalAlert(error, 'error')
+        swalAlert(error.status, 'error')
         reject()
     })
 }
@@ -288,4 +334,17 @@ function display() { //function ใช้ในการ นับถอยห�
     document.getElementById("counter_s").innerHTML = 'กรุณารอสักครู่...<b style="color:red"> ' + seconds + '</b> วินาที';
     //document.getElementById("counter_s").value = seconds; //แสดงเวลาที่เหลือ
     setTimeout("display()", 1000);// สั่งให้ function display() ทำงาน หลังเวลาผ่านไป 1000 milliseconds ( 1000  milliseconds = 1 วินาที )
+}
+
+function add_valva_modal() {
+    console.log($('#m_dvtypeddl').val())
+    let mainData = []
+    mainData.push({
+        m_dvtypeddl: $('#m_dvtypeddl').val(),
+        m_totlepilot: $('#m_totlepilot').val(),
+        m_controltype: $('#m_controltype').val(),
+        m_smartlogger: $('#m_smartlogger').prop('checked')
+    })
+
+    console.log(mainData)
 }

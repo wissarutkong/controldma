@@ -23,8 +23,8 @@ namespace controldma.App_Code
             StringBuilder ConStr = new StringBuilder();
             StringBuilder RtnStr = new StringBuilder();
 
-            string s = "Data Source=164.115.22.222;Initial Catalog=RTU;User ID=sa;Password=fugvH,gv#91753";
-            string sss = EDCryptor.Crypting(s.ToString(), iMode.Encode);
+            //string s = "Data Source=164.115.22.222;Initial Catalog=RTU;User ID=sa;Password=fugvH,gv#91753"; //CharSet=utf8;
+            //string sss = EDCryptor.Crypting(s.ToString(), iMode.Encode);
 
             ConStr.Remove(0, ConStr.Length);
             switch (NAME)

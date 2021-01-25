@@ -26,6 +26,103 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string GetddlTimer()
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+
+                string options = string.Empty;
+
+                DataTable dt_timeList = inl.TimerList();
+
+                foreach (DataRow row in dt_timeList.Rows)
+                {
+                    string code = row[Cs_initaldata.Feild.time_objid.ToString()].ToString();
+                    string name = row[Cs_initaldata.Feild.time_label_long.ToString()].ToString();
+
+                    options += "<option value='" + code + "'>" + name + "</option>";
+                }
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "option", options }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string m_dvtypeddl()
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+
+                string options = string.Empty;
+
+                DataTable dt = inl.GetDatabySQL(" SELECT dvtype_id , dvtype_name FROM tb_ctr_mm_devicetype WHERE dvtype_id<>1 ORDER BY dvtype_id ", user.UserCons_PortalDB);
+
+                options += "<option value=' '>กรุณาประเภท</option>";
+                foreach (DataRow row in dt.Rows)
+                {
+                    string code = row[Cs_initaldata.Feild.dvtype_id.ToString()].ToString();
+                    string name = row[Cs_initaldata.Feild.dvtype_name.ToString()].ToString();
+
+                    options += "<option value='" + code + "'>" + name + "</option>";
+                }
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "option", options }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string m_controltype()
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+
+                string options = string.Empty;
+
+                DataTable dt = inl.GetDatabySQL(" SELECT control_type_id , control_type_name FROM tb_ctr_dmacontroltype ORDER BY control_type_id ", user.UserCons_PortalDB);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string code = row[Cs_initaldata.Feild.control_type_id.ToString()].ToString();
+                    string name = row[Cs_initaldata.Feild.control_type_name.ToString()].ToString();
+
+                    options += "<option value='" + code + "'>" + name + "</option>";
+                }
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "option", options }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string Getddlkhet(String khet)
         {
             HttpContext context = HttpContext.Current;
@@ -162,7 +259,7 @@ namespace controldma.service
                     _temp["Edit"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-danger btn-sm editvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-cog\"></i>ตั้งค่า</span></button>";
                     if (Convert.ToBoolean(user.UserAdmin))
                     {
-                        _temp["Add"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-warning btn-sm addvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\"  data-toggle=\"modal\" data-target=\"#Modal_add_valva\" ><span><i class=\"far fa-edit\"></i> กำหนดประตูน้ำ</span></button>";
+                        _temp["Add"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-warning btn-sm addvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"far fa-edit\"></i> กำหนดประตูน้ำ</span></button>";
                     }
 
                     dt_temp.Rows.Add(_temp);
@@ -1101,7 +1198,7 @@ namespace controldma.service
                     strSQL += " '0', ";
                     strSQL += " " + Convert.ToInt32(mainData["solenoid"]) + ", ";
                     strSQL += " 0, ";
-                    strSQL += " '" + mainData["remark"].ToString() + "', ";
+                    strSQL += " N'" + mainData["remark"].ToString() + "', ";
                     strSQL += "  'N', ";
                     strSQL += " '" + user.UserID + "', ";
                     strSQL += "  GETDATE(), ";
@@ -1209,7 +1306,7 @@ namespace controldma.service
                     strSQL += " '1', ";
                     strSQL += " null, ";
                     strSQL += " 0, ";
-                    strSQL += " '" + mainData["remark"].ToString() + "', ";
+                    strSQL += " N'" + mainData["remark"].ToString() + "', ";
                     strSQL += "  'N', ";
                     strSQL += " '" + user.UserID + "', ";
                     strSQL += "  GETDATE(), ";
@@ -1422,7 +1519,7 @@ namespace controldma.service
                     strSQL += " 0, ";
                     strSQL += " 0, ";
                     strSQL += " 0, ";
-                    strSQL += " '" + mainData["remark"].ToString() + "', ";
+                    strSQL += " N'" + mainData["remark"].ToString() + "', ";
                     strSQL += "  'N', ";
                     strSQL += " '" + user.UserID + "', ";
                     strSQL += "  GETDATE(), ";
@@ -1530,7 +1627,7 @@ namespace controldma.service
                         strSQL += " " + row["limit_min"] + ", "; //limit_min
                         strSQL += " " + row["deadband_pressure"] + ", "; //deadband_pressure
                         strSQL += " " + row["deadband_flow"] + ", "; //deadband_flow
-                        strSQL += " '" + mainData["remark"].ToString() + "', "; //remark
+                        strSQL += " N'" + mainData["remark"].ToString() + "', "; //remark
                         strSQL += "  'N', "; //record_status
                         strSQL += " '" + user.UserID + "', "; //create_user
                         strSQL += "  GETDATE(), "; //create_dtm
@@ -1701,6 +1798,47 @@ namespace controldma.service
                     context.Response.StatusCode = 500;
                     return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
                 }
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetCtr003_All(String mainDataText)
+        {
+            /*
+             * ตรวจสอบว่า User ผ่านการ Login มาหรือยัง
+             */
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+
+                String wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
+                _wwcode = wwcode;
+                _dmacode = mainData["$_dmacode"].ToString();
+
+                String strSQL = @"SELECT
+	                                dvt.wwcode , dvt.dmacode , l.name , dvt.dvtype_id , dvt.pilot_num , dvt.control_type , dvt.is_smartlogger ,us.firstname +' '+us.lastname as fullname , dvt.last_upd_dtm
+                                FROM
+	                                tb_ctr_dmavalvetype dvt
+                                LEFT JOIN LINK_DMA2.dmama2.dbo.loggers l ON dvt.dmacode = l.code
+                                LEFT JOIN LINK_DMA2.dmama2.dbo.users us on us.username = dvt.last_upd_user
+                                WHERE dvt.wwcode = '" + wwcode + "' AND dvt.dmacode = '"+ mainData["$_dmacode"].ToString() + "'";
+                DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                return JsonConvert.SerializeObject(dt);
+
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
