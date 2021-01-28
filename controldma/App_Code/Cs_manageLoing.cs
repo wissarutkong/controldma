@@ -29,7 +29,7 @@ namespace controldma.App_Code
             //var JSONObj = new JavaScriptSerializer().Deserialize<Dictionary<string, string>>(json);
         }
 
-        public Boolean ManageLoginC(String sUsername, String sPassword, String sCon)
+        public Boolean ManageLoginC(String sUsername, String sPassword, String sCon , bool flaglogin)
         {
             Boolean bLogin = false;
             SqlConnection cons = new SqlConnection(sCon);
@@ -39,7 +39,7 @@ namespace controldma.App_Code
                 DataTable dtUser = ChkuserData(sUsername, cons);
                 if (dtUser.Rows.Count > 0)
                 {
-                    if (DoesPasswordMatch(dtUser.Rows[0]["password"].ToString(), sPassword.ToString()))
+                    if (DoesPasswordMatch(dtUser.Rows[0]["password"].ToString(), sPassword.ToString(), flaglogin))
                     {
                         if ((bool)dtUser.Rows[0]["is_controllable"])
                         {
@@ -78,9 +78,11 @@ namespace controldma.App_Code
             return bLogin;
         }
 
-        private bool DoesPasswordMatch(string hashedPwdFromDatabase, string userEnteredPassword)
+        private bool DoesPasswordMatch(string hashedPwdFromDatabase, string userEnteredPassword,bool flaglogin)
         {
-            return BCrypt.Net.BCrypt.Verify(userEnteredPassword, hashedPwdFromDatabase);
+            if (flaglogin) { return string.Equals(hashedPwdFromDatabase.Trim(), userEnteredPassword.Trim()); }
+            else { return BCrypt.Net.BCrypt.Verify(userEnteredPassword, hashedPwdFromDatabase); }
+            
         }
 
         public string GetLoginPage()

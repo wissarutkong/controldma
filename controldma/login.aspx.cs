@@ -21,8 +21,20 @@ namespace controldma
         protected void Page_Load(object sender, EventArgs e)
         {
             litMsg.Text = "";
-            cls.GetIPAddress();
+            //cls.GetIPAddress();
             Context.ApplicationInstance.CompleteRequest();
+            if (!this.IsPostBack)
+            {
+                if (this.UserName != null)
+                {
+                    l_username.Value = this.UserName;
+                    l_pass.Value = this.Password;
+                    flaglogin = true;
+                    btn_Login_Click(null, null);
+                }
+                else { flaglogin = false; }
+                
+            }
         }
 
         protected void btn_Login_Click(object sender, EventArgs e)
@@ -37,7 +49,7 @@ namespace controldma
             {
                 String sCon = clo.GetConnectionString(Cs_cons.Database.dma2);
                 String sCon_portaldb = clo.GetConnectionString(Cs_cons.Database.PortalDB);
-                Boolean slogin = Mgs.ManageLoginC(txtUsername, txtPassword, sCon);
+                Boolean slogin = Mgs.ManageLoginC(txtUsername, txtPassword, sCon , flaglogin);
                 if (slogin)
                 {
                     HttpCookie cookie_khet = new HttpCookie("_zone", Mgs._zone);
@@ -102,6 +114,40 @@ namespace controldma
             }
 
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        protected bool flaglogin { get; set; }
+
+        protected string UserName
+        {
+            get
+            {
+                return (Request.QueryString["username"]);
+            }
+        }
+
+        protected string Password
+        {
+            get
+            {
+                return (Request.QueryString["pass"]);
+            }
+        }
+
+        protected string wwcode
+        {
+            get
+            {
+                return (Request.QueryString["dmawwcode"]);
+            }
+        }
+
+        protected string dmacode
+        {
+            get
+            {
+                return (Request.QueryString["devicecode"]);
+            }
         }
     }
 }

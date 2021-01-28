@@ -20,8 +20,27 @@ namespace controldma
             {
                 Hashtable userDetail = new Hashtable(); userDetail = (Hashtable)Session["USER"]; user = new WebManageUserData(userDetail);
                 Cs_Controlcenter cs = new Cs_Controlcenter(); unit_percent = cs.unit_percent();
+                if (this.dmacode != null) {
+                    litMsg.Value = dmacode;
+                }             
             }
             else { Response.Redirect(new Cs_manageLoing().GetLoginPage()); }
+        }
+
+        protected string wwcode
+        {
+            get
+            {
+                return (Request.QueryString["wwcode"]);
+            }
+        }
+
+        protected string dmacode
+        {
+            get
+            {
+                return (Request.QueryString["dmacode"]);
+            }
         }
     }
 }
