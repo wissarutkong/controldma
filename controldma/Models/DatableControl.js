@@ -101,7 +101,7 @@ function GenerateTablePage20(Id) {
         "searching": false,
         "info": true,
         "ordering": true,
-        "paging": true,
+        "paging": true
     });
 
     return Promise.resolve($table)

@@ -51,9 +51,9 @@ namespace controldma.App_Code
                                 Userposition = dtUser.Rows[0]["position"].ToString();
                                 UserAccess_level = dtRole.Rows[0]["access_level_id"].ToString();
                                 User_Admin = dtRole.Rows[0]["is_admin"].ToString();
-                                _region = dtUser.Rows[0]["sector_id"].ToString();
-                                _zone = dtUser.Rows[0]["district_id"].ToString();
-                                _wwcode = dtUser.Rows[0]["branch_id"].ToString();
+                                _region = dtUser.Rows[0]["sector_id"].ToString() != "" ? dtUser.Rows[0]["sector_id"].ToString() : "";
+                                _zone = dtUser.Rows[0]["district_id"].ToString() != "" ? dtUser.Rows[0]["district_id"].ToString() : "";
+                                _wwcode = dtUser.Rows[0]["branch_id"].ToString() != "" ? dtUser.Rows[0]["branch_id"].ToString() : "";
                             }                          
                         }
                         else {

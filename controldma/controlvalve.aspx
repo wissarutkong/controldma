@@ -43,7 +43,6 @@
                             </div>
                             <div class="col-6">
                                 <button type="button" id="refresh_table" class="btn btn-block btn-success col-md-2" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
-
                             </div>
                         </div>
 
@@ -219,7 +218,6 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 col-12 col-sm-12">
-
                                 <div class="form-row">
                                     <div class="form-group col-md-6 col-12 col-sm-12">
                                         <label>ประเภทประตูน้ำ :</label>
@@ -228,9 +226,34 @@
                                     </div>
                                     <div id="_divtotlepilot" class="form-group col-md-6 col-12 col-sm-12">
                                         <label for="totlepilot">จำนวน pilot</label>
-                                        <input value="" type="number" id="m_totlepilot" name="m_totlepilot" class="form-control" onkeypress="return isNumberKey(event)">
+                                        <select id="m_totlepilot" class="form-control select2bs4" data-dropdown-css-class="select2-info" onchange="onChangepilotnum(this.value)">
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
+
+                                        <%--<input value="" type="number" id="m_totlepilot" name="m_totlepilot" class="form-control" onkeypress="return isNumberKey(event)">--%>
                                     </div>
+
                                 </div>
+                                <div class="form-row" id="div_pilot_num">
+                                    <hr />
+                                    <div class="form-group col-md-3">
+                                        <input value="" type="number" id="pilot_pressure1" name="pilot_pressure1" min="0.00" class="form-control" onkeypress="return isNumberKey(event)" placeholder="0.00">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input value="" type="number" id="pilot_pressure2" name="pilot_pressure2" min="0.00" class="form-control" onkeypress="return isNumberKey(event)" placeholder="0.00">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input value="" type="number" id="pilot_pressure3" name="pilot_pressure3" min="0.00" class="form-control" onkeypress="return isNumberKey(event)" placeholder="0.00">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input value="" type="number" id="pilot_pressure4" name="pilot_pressure4" min="0.00" class="form-control" onkeypress="return isNumberKey(event)" placeholder="0.00">
+                                    </div>
+                                    <hr />
+                                </div>
+
                                 <div class="form-row">
                                     <div class="form-group col-md-6 col-12 col-sm-12">
                                         <label for="m_controltype">ประเภท Control</label>
@@ -239,18 +262,22 @@
                                     </div>
                                     <div class="form-group col-md-6 col-12 col-sm-12">
                                         <label for="m_smartlogger">Smart Logger</label><br />
-                                        <input type="checkbox" id="m_smartlogger" style="min-width: 30px; min-height:30px" >
+                                        <%--<input type="checkbox" id="m_smartlogger" style="min-width: 30px; min-height: 30px">--%>
+                                        <label class="switch">
+                                            <input type="checkbox" id="m_smartlogger">
+                                            <span class="slider round"></span>
+                                        </label>
                                     </div>
                                 </div>
                                 <hr />
                                 <div class="form-row">
                                     <div class="form-group col-md-6 col-12 col-sm-12">
                                         <h5 for="deadband_pressure"><i class="fas fa-user-check"></i>ผู้แก้ไข</h5>
-                                        <label id="m_usereditor">ยุทธศักดิ์ แสงจันทร์</label>
+                                        <label id="m_usereditor">xxx</label>
                                     </div>
                                     <div class="form-group col-md-6 col-12 col-sm-12">
                                         <h5 for="deadband_flow"><i class="fas fa-user-clock"></i>วันที่แก้ไข</h5>
-                                        <label id="m_lastupdate">12/03/2561 19:53:45</label>
+                                        <label id="m_lastupdate">xxx</label>
                                     </div>
                                 </div>
                             </div>
@@ -653,7 +680,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">bv</h4>
+                    <h4 class="modal-title"></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -661,7 +688,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <span>ไม่พยข้อมูลประเภทการ Control</span>
+                            <span>ไม่พบข้อมูลจุดติดตั้ง</span>
                         </div>
                     </div>
                 </div>
@@ -772,17 +799,6 @@
     <script src="Models/DatableControl.js"></script>
     <script src="Models/saveControl.js"></script>
     <script type="text/javascript">
-        <%--        console.log('<%= user.UserNAME.ToString() %>')--%>
-        //$(document).ready(function () {
-        //    $('#dt_controlvalve').DataTable({
-        //        "paging": true,
-        //        "lengthChange": false,
-        //        "searching": false,
-        //        "ordering": true,
-        //        "info": true,
-        //        "autoWidth": false,
-        //        "responsive": true,
-        //    });
-        //})
+
     </script>
 </asp:Content>

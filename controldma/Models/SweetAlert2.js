@@ -40,6 +40,13 @@
 })
 
 function swalAlert(title, type) {
+    if (type == "success") { toastr.success(title) }
+    else if (type == "info") { toastr.info(title) }
+    else if (type == "error") { toastr.error(title) }
+    else if (type == "warning") { toastr.warning(title) } 
+}
+
+function swalAlert2(title, type) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',

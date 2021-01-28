@@ -26,13 +26,11 @@ function Modal_save() {
     if (type == "manual") {
         if (document.getElementById("txtdvtypeid").value == "2") {
             Post_Bv_manual();
-            console.log("Post_Bv_manual")
         } else if (document.getElementById("txtdvtypeid").value == "3") {
             Post_prvt_manual();
         }
     } else if (type == "auto") {
         Post_AutoBv();
-        console.log("Post_AutoBv")
     } else if (type == "auto_prv") {
         Post_AutoPrvt();
     }
@@ -54,11 +52,11 @@ function Post_prvt_manual() {
 
     CallAPI('/service/api.aspx/AddManualPrvt',
        JSON.stringify({ mainDataText: JSON.stringify(mainData) })
-        ).then((data) => {     
+        ).then((data) => {
             $("#aboutModal_save").modal("hide");
             swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
             generateHtml_prv(data.dmacode, $('#txtdvtypeid').val()).then(() => {
-                
+
             })
         }).catch((error) => {
             swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
@@ -103,7 +101,7 @@ function getDatabeforsave_AutoPrvt() {
             "pilot_no": document.getElementById("pilot_" + i).value.substring(1, 2)
         };
     }
-    
+
     return cmdprvtdetail;
 }
 
@@ -168,9 +166,6 @@ function Post_AutoBv() {
     }).catch((error) => {
         swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
     })
-
-    console.log(cmdbvdetail);
-    console.log(cmdbvhead);
 }
 
 function getDatabeforsave_AutoBv() {
@@ -195,7 +190,6 @@ function getDatabeforsave_AutoBv() {
 
 $(document).on("click", "#_Automatic_PRV input[type='checkbox']", function () {
     var $box = $(this);
-    console.log($box)
     document.getElementById($box.attr("id").substring(0, 7)).value = "";
     if ($box.is(":checked")) {
 
@@ -219,8 +213,6 @@ function delRow(r) {
         document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) - 1;
         document.getElementById("btnAdd_prv").disabled = false;
     }
-
-
 }
 
 

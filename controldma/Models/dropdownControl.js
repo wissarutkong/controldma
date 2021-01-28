@@ -12,7 +12,7 @@
             $('#' + Id + '').trigger('change');
             resolve()
         }).catch((error) => {
-            swalAlert(error, 'error')
+            swalAlert(error.status, 'error')
             reject()
         })
     })
@@ -33,7 +33,7 @@ function AjaxGetddlsite(Id) {
             //$('#' + Id + '').trigger('change');
             resolve()
         }).catch((error) => {
-            swalAlert(error, 'error')
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้', 'error')
             reject()
         })
 

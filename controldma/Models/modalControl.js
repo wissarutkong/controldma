@@ -13,15 +13,51 @@
         getinfovalva(dmacode)
     }, 5000);
 
-    $('#m_smartlogger').change(function () {
-        console.log($(this).prop('checked'))
-    })
+    //$('#m_smartlogger').change(function () {
+    //    console.log($(this).prop('checked'))
+    //})
 
 })
 
 function onchangeddldvtype(value) {
-    if (value == 3) { $('#_divtotlepilot').show(); }
-    else { $('#_divtotlepilot').hide(); }
+    if (value == 3) { $('#_divtotlepilot').show(); $('#div_pilot_num').show(); }
+    else {
+        $('#_divtotlepilot').hide(); $('#div_pilot_num').hide();
+        $('#pilot_pressure1').val('')
+        $('#pilot_pressure2').val('')
+        $('#pilot_pressure3').val('')
+        $('#pilot_pressure4').val('')
+    }
+}
+
+function onChangepilotnum(value) {
+    var x = value
+    switch (x) {
+        case '1':
+            $('#pilot_pressure1').prop("disabled", false)
+            $('#pilot_pressure2').prop("disabled", true)
+            $('#pilot_pressure3').prop("disabled", true)
+            $('#pilot_pressure4').prop("disabled", true)
+            break;
+        case '2':
+            $('#pilot_pressure1').prop("disabled", false)
+            $('#pilot_pressure2').prop("disabled", false)
+            $('#pilot_pressure3').prop("disabled", true)
+            $('#pilot_pressure4').prop("disabled", true)
+            break;
+        case '3':
+            $('#pilot_pressure1').prop("disabled", false)
+            $('#pilot_pressure2').prop("disabled", false)
+            $('#pilot_pressure3').prop("disabled", false)
+            $('#pilot_pressure4').prop("disabled", true)
+            break;
+        case '4':
+            $('#pilot_pressure1').prop("disabled", false)
+            $('#pilot_pressure2').prop("disabled", false)
+            $('#pilot_pressure3').prop("disabled", false)
+            $('#pilot_pressure4').prop("disabled", false)
+            break;
+    }
 }
 
 $(document).on('show.bs.modal', '.modal', function (event) {
@@ -40,7 +76,7 @@ $(document).on("click", ".infovalva", function () {
 
 $(document).on("click", ".editvalva", function () {
     var datatype = $(this).attr("data-type")
-    
+
     $('#txtdvtypeid').val(datatype)
     document.getElementById('typepopup').value = "";
     let element = document.getElementById('overlay_modal');
@@ -70,8 +106,9 @@ $(document).on("click", ".editvalva", function () {
             //element.style.visibility = "collapse";
         }
         else {
-            $('#Modal_warning').modal('show');
-            $('.modal_title_setting').text("ไม่สามารถ Control จุดติดตั้ง : " + dmacode)
+            swalAlert('ไม่พบประเภทของจุดติดตั้ง : ' + dmacode, 'warning')
+            //$('#Modal_warning').modal('show');
+            //$('.modal_title_setting').text("ไม่สามารถ Control จุดติดตั้ง : " + dmacode)
         }
         //element.parentNode.removeChild(element);
         //element.style.display = "none";
@@ -95,15 +132,21 @@ $(document).on("click", ".addvalva", function () {
                 CallAPI('/service/api.aspx/GetCtr003_All',
                    JSON.stringify({ mainDataText: JSON.stringify(mainData) })
                ).then((data) => {
+                   //console.log(data)
                    let obj = data[0];
-                   console.log(obj)
-                   //console.log(obj.communication)
+                   //console.log(obj)
                    $('.modal_subtital_add_valva').text(obj.name)
                    $('#m_dvtypeddl').val(obj.dvtype_id).trigger('change');
-                   $('#m_totlepilot').val(obj.pilot_num)
+                   $('#m_totlepilot').val(obj.pilot_num).trigger('change');
+                   for (var i = 1; i <= obj.pilot_num; i++) {
+                       var objpilotnum = obj.pilot_pressure + i;
+                       $('#pilot_pressure' + i + '').val(obj['pilot_pressure' + i])
+                       //console.log(obj['pilot_pressure' + i])
+                   }
                    $('#m_controltype').val(obj.control_type).trigger('change');
-                   if (obj.is_smartlogger) {  $('#m_smartlogger').attr('checked',true); }
-                   else {  $('#m_smartlogger').removeAttr('checked') }
+
+                   if (obj.is_smartlogger) { $('#m_smartlogger').attr('checked', true); }
+                   else { $('#m_smartlogger').removeAttr('checked') }
 
                    $('#m_usereditor').text(obj.fullname)
                    $('#m_lastupdate').text(obj.last_upd_dtm)
@@ -187,7 +230,6 @@ function getHtml(_wwcode, dmacode, datatype) {
         CallAPI('/service/api.aspx/' + (datatype == 3 ? 'Getdata_prv' : 'Getdata_bv'),
                 JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
-            //$('#_Manual_PRV').html(data.html)
             resolve(data)
         }).catch((error) => {
             //console.log(error)
@@ -207,10 +249,10 @@ function generateHtml_prv(dmacode, datatype) {
             $('#_Realtime_PRV').html(data._Realtime)
             $('#_History_PRV').html(data._History)
             $('#txtRow').val(data._txtRow)
-            GeneratePRV('tblPrvAutomatic')
         }).then(() => {
             CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
                 CallApigettable_modal('dt_grid_history', '_History').then(() => {
+                    GeneratePRV('tblPrvAutomatic')
                     resolve()
                     showPage_content_modal();
                 }).catch((error) => {
@@ -337,14 +379,42 @@ function display() { //function ใช้ในการ นับถอยห�
 }
 
 function add_valva_modal() {
-    console.log($('#m_dvtypeddl').val())
+    if ($('#m_dvtypeddl').val() == '3') {
+        var dmaconfigpressure = [];
+        dmaconfigpressure = getDatabeforsave_getPressure();
+    } else {
+        var dmaconfigpressure = ''
+    }
+
     let mainData = []
     mainData.push({
         m_dvtypeddl: $('#m_dvtypeddl').val(),
         m_totlepilot: $('#m_totlepilot').val(),
         m_controltype: $('#m_controltype').val(),
-        m_smartlogger: $('#m_smartlogger').prop('checked')
+        m_smartlogger: $('#m_smartlogger').prop('checked'),
+        dmaconfigpressure: dmaconfigpressure
     })
 
-    console.log(mainData)
+    CallAPI('/service/api.aspx/UpdateDmavalvatype',
+                JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+        ).then((data) => {
+            $("#Modal_add_valva").modal("hide");
+            swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+            $('#refresh_table').click()
+        }).catch((error) => {
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
+        })
+}
+
+function getDatabeforsave_getPressure() {
+    var allRow = document.getElementById("m_totlepilot").value
+    var dmaconfigpressure = [];
+    for (var i = 1; i <= allRow; i++) {
+
+        dmaconfigpressure[i - 1] = {
+            "pilot_num_ord": i,
+            "pilot_pressure": document.getElementById("pilot_pressure" + i).value
+        };
+    }
+    return dmaconfigpressure;
 }

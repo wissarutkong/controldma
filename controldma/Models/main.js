@@ -4,7 +4,7 @@
     var element = document.getElementById('text');
     if (!isMobile) {
         $('a[data-widget="pushmenu"]').click()
-    } 
+    }
 
     $('#btn-LogOut').click(() => {
         Swal.fire({
@@ -62,7 +62,7 @@
 
     var path = window.location.pathname;
     var page = path.split("/").pop();
-    
+
 
     initalselect_info().then(() => {
         if (page.indexOf('controlvalve.aspx') == 0) {
@@ -70,7 +70,7 @@
         } else {
             showPage();
         }
-       
+
     })
 
 
@@ -80,10 +80,11 @@
         if ($(this).val() != getCookie('_zone')) {
             setCookie("_zone", $(this).val())
             setCookie("_wwcode", '')
-            AjaxGetddlsite('_wwcode')
-            //console.log(getCookie('_zone'))
-            //console.log('_wwcode=' + getCookie('_wwcode'))
-        }      
+            if (getCookie('_zone') != '' && getCookie('_zone') != 'null') {
+                AjaxGetddlsite('_wwcode')
+                $('#lidivhidewwcode').show();
+            }
+        }
     })
 
     $('#_wwcode').change(function () {
@@ -102,23 +103,24 @@
         CallApigetdatatable().then(() => { showPage_content() })
     })
 
-    //$('#m_smartlogger').bootstrapToggle({
-    //    size: "large",
-    //    on: 'SmartLogger',
-    //    off: 'No'
-    //});
-
 })
 
 
 function initalselect_info() {
     return new Promise((resolve, reject) => {
         AjaxGetddlkhet('_khet').then(() => {
-            AjaxGetddlsite('_wwcode')
-            if (getCookie('_level') == 15) {
-                $('#_khet').prop("disabled", true)
-                $('#_wwcode').prop("disabled", true)
-            } else if (getCookie('_level') == 10) { $('#_khet').prop("disabled", true) }
+            if (getCookie('_level') == 1) {
+                $('#_khet').prop('selectedIndex', 0).trigger('change');
+                $('#lidivhidewwcode').hide();
+            } else {
+                AjaxGetddlsite('_wwcode').then(() => {
+                    if (getCookie('_level') == 15) {
+                        $('#_khet').prop("disabled", true)
+                        $('#_wwcode').prop("disabled", true)
+                    } else if (getCookie('_level') == 10) { $('#_khet').prop("disabled", true) }
+                })
+            }
+
             resolve()
         })
     })
@@ -203,10 +205,6 @@ $(document).on("click", "input:checkbox", function () {
         $box.prop("checked", false);
     }
 })
-
-//$(document).on("change", "#m_dvtypeddl", function () {
-//    console.log($(this).val())
-//})
 
 function Setvariableapi(mainData) {
     CallAPI('/service/api.aspx/SetDataModal',

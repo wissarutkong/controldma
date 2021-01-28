@@ -398,7 +398,7 @@ namespace controldma.service
                 String Html = string.Empty; String ischecked = string.Empty; int count = 1; String id = string.Empty;
                 foreach (DataRow row in dt_Solenoid.Rows)
                 {
-                    if (row["pilot_no"] != null && row["pilot_no"] != "")
+                    if (row["pilot_no"].ToString() != null && row["pilot_no"].ToString() != "")
                     {
                         if (Convert.ToInt32(row["pilot_no"]) == count) { ischecked = "checked=\"checked\""; }
                     }
@@ -692,7 +692,7 @@ namespace controldma.service
 
                 String Html_4 = string.Empty;
 
-                Html_4 += "<div style=\"width: 100%;\">";
+                //Html_4 += "<div style=\"width: 100%;\">";
                 Html_4 += "     <div class=\"table-responsive\">";
                 Html_4 += "         <table id=\"dt_grid_history\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
                 Html_4 += "             <thead>";
@@ -708,7 +708,7 @@ namespace controldma.service
                 Html_4 += "             </thead>";
                 Html_4 += "         </table>";
                 Html_4 += "     </div>";
-                Html_4 += "</div>";
+                //Html_4 += "</div>";
 
                 #endregion
 
@@ -1834,14 +1834,132 @@ namespace controldma.service
 	                                tb_ctr_dmavalvetype dvt
                                 LEFT JOIN LINK_DMA2.dmama2.dbo.loggers l ON dvt.dmacode = l.code
                                 LEFT JOIN LINK_DMA2.dmama2.dbo.users us on us.username = dvt.last_upd_user
-                                WHERE dvt.wwcode = '" + wwcode + "' AND dvt.dmacode = '"+ mainData["$_dmacode"].ToString() + "'";
+                                WHERE dvt.wwcode = '" + wwcode + "' AND dvt.dmacode = '" + mainData["$_dmacode"].ToString() + "'";
+
+
                 DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                strSQL = @"SELECT vt.wwcode, vt.dmacode,cf.pilot_num_ord,vt.remote_name,vt.dvtype_id,vt.pilot_num,convert(varchar,hprvt.pilot_no) as pilot_no,cf.pilot_pressure
+                        FROM tb_ctr_dmavalvetype vt left join (select top 1 * from tb_ctr_cmdprvthead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "' and control_mode = '0' order by cmdprvthead_id desc) hprvt on vt.dmacode = hprvt.dmacode right join tb_ctr_dmaconfigpressure cf on cf.wwcode = vt.wwcode And cf.dmacode = vt.dmacode where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ORDER BY cf.pilot_num_ord asc";
+
+                DataTable dt_Solenoid = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                foreach (DataRow row in dt_Solenoid.Rows)
+                {
+                    int index = dt_Solenoid.Rows.IndexOf(row);
+                    index++;
+                    dt.Columns.Add("pilot_pressure" + index, typeof(double));
+                    dt.Rows[0]["pilot_pressure" + index] = row["pilot_pressure"];
+                }
+
 
                 return JsonConvert.SerializeObject(dt);
 
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
+
+        [System.Web.Services.WebMethod]
+        public static string UpdateDmavalvatype(String mainDataText)
+        {
+            /*
+             * ตรวจสอบว่า User ผ่านการ Login มาหรือยัง
+             */
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                string error = "";
+                try
+                {
+                    if (_wwcode != "" && _dmacode != "")
+                    {
+                        String strSQL = string.Empty;
+                        strSQL += "UPDATE tb_ctr_dmavalvetype SET dvtype_id = " + Convert.ToInt32(mainData["m_dvtypeddl"]) + " , control_type = " + Convert.ToInt32(mainData["m_controltype"]) + " , is_smartlogger = '" + mainData["m_smartlogger"] + "' ";
+                        if (Convert.ToInt32(mainData["m_dvtypeddl"]) == 3)
+                        {
+                            strSQL += " , pilot_num = " + Convert.ToInt32(mainData["m_totlepilot"]) + " ";
+                        }
+                        else {
+                            strSQL += " , pilot_num = null ";
+                        }
+                        strSQL += " , last_upd_user = '" + user.UserID.ToString() + "' , last_upd_dtm = GETDATE() ";
+                        strSQL += " WHERE wwcode = '" + _wwcode + "' AND dmacode = '" + _dmacode + "' ";
+
+                        error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+                        if (error == "")
+                        {
+                            if (Convert.ToInt32(mainData["m_dvtypeddl"]) == 3)
+                            {
+                                DataTable dt_Pressure = (DataTable)mainData["dmaconfigpressure"];
+                                strSQL = string.Empty;
+                                strSQL = "select * from tb_ctr_dmaconfigpressure where wwcode = '" + _wwcode + "' and dmacode = '" + _dmacode + "'";
+                                DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                                if (dt.Rows.Count > 0)
+                                {
+                                    strSQL = string.Empty;
+                                    strSQL += "DELETE FROM tb_ctr_dmaconfigpressure WHERE wwcode = '" + _wwcode + "' AND dmacode = '" + _dmacode + "'";
+                                    error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+                                }
+
+                                foreach (DataRow row in dt_Pressure.Rows)
+                                {
+                                    #region Sql insert tb_ctr_dmaconfigpressure
+                                    strSQL = string.Empty;
+                                    strSQL += " INSERT INTO tb_ctr_dmaconfigpressure (wwcode, ";
+                                    strSQL += " dmacode, ";
+                                    strSQL += " pilot_num_ord, ";
+                                    strSQL += " pilot_pressure, ";
+                                    strSQL += " record_status, ";
+                                    strSQL += " create_user, ";
+                                    strSQL += " create_dtm, ";
+                                    strSQL += " last_upd_user, ";
+                                    strSQL += " last_upd_dtm ";
+                                    strSQL += " ) VALUES  ";
+                                    strSQL += " ( ";
+                                    strSQL += " '" + _wwcode + "',";
+                                    strSQL += " '" + _dmacode + "',";
+                                    strSQL += " " + row["pilot_num_ord"] + ",";
+                                    strSQL += " " + row["pilot_pressure"] + ",";
+                                    strSQL += " 'N',";
+                                    strSQL += " '" + user.UserID + "', ";
+                                    strSQL += " GETDATE(), ";
+                                    strSQL += " null, ";
+                                    strSQL += " null ";
+                                    strSQL += " ) ";
+                                    #endregion
+                                    error = inl.executeSQLreturnerror(strSQL, user.UserCons_PortalDB);
+                                }
+
+                            }
+                            return JsonConvert.SerializeObject(new { wwcode = _wwcode });
+                        }
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "ไม่พบรหัสสาขาหรือรหัสอุปกรณ์" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
 
     }
 }
