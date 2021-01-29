@@ -86,7 +86,8 @@
     <input type="hidden" id="txtdvtypeid" value="" />
     <input type="hidden" id="typepopup" value="" />
     <input type="hidden" id="txtRow" name="txtRow" value="" />
-    <input type="hidden" id="litMsg" runat="server" />
+    <input type="hidden" id="auto_wwcode" value="<%=this.wwcode %>" />
+    <input type="hidden" id="auto_dmacode" value="<%=this.dmacode %>" />
 
     <div class="modal fade" id="Modal_info_valva">
         <div class="modal-dialog modal-lg">

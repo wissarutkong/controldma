@@ -58,6 +58,38 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string Getid_khetfromwwcodeid(String wwcode_id)
+        {
+            /*
+             * ตรวจสอบว่า User ผ่านการ Login มาหรือยัง
+             */
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+
+                if (string.IsNullOrEmpty(wwcode_id))
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+
+                String districts_id = inl.GetStringbySQL("SELECT d.id FROM branches b INNER JOIN districts d on b.district_id = d.id WHERE b.id = '"+wwcode_id+"'", user.UserCons);
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "id", districts_id }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string m_dvtypeddl()
         {
             HttpContext context = HttpContext.Current;
@@ -255,7 +287,7 @@ namespace controldma.service
                     _temp["Flow"] = row["Flow"];
                     _temp["Pressure"] = row["Pressure"];
                     _temp["LastUpdate"] = row["LastUpdate"];
-                    _temp["Detail"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-info btn-sm infovalva\" value=\"" + row["description"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
+                    _temp["Detail"] = "<button type=\"button\" id=\"info_" + row["description"] + "\" class=\"btn btn-block btn-info btn-sm infovalva\" value=\"" + row["description"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
                     _temp["Edit"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-danger btn-sm editvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-cog\"></i>ตั้งค่า</span></button>";
                     if (Convert.ToBoolean(user.UserAdmin))
                     {
@@ -1488,22 +1520,6 @@ namespace controldma.service
                     strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";
                     strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
                     strSQL += " last_upd_user,last_upd_dtm ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
-                    //strSQL += "  ";
                     strSQL += " ) output INSERTED.cmdbvhead_id ";
                     strSQL += " VALUES ( ";
                     //strSQL += " '" + newCmdprvhead_id + "', ";
@@ -1607,6 +1623,17 @@ namespace controldma.service
                     DataTable dt_cmdbvhead = (DataTable)mainData["cmdbvhead"];
                     foreach (DataRow row in dt_cmdbvhead.Rows)
                     {
+                        if (row.IsNull("step_control_delay") || row["step_control_delay"] == "")
+                            row["step_control_delay"] = 0;
+                        if (row.IsNull("time_loop") || row["time_loop"] == "")
+                            row["time_loop"] = 0;
+                        if (row.IsNull("limit_min") || row["limit_min"] == "")
+                            row["limit_min"] = 0;
+                        if (row.IsNull("deadband_pressure") || row["deadband_pressure"] == "")
+                            row["deadband_pressure"] = 0;
+                        if (row.IsNull("deadband_flow") || row["deadband_flow"] == "")
+                            row["deadband_flow"] = 0;
+
                         #region insert into tb_ctr_cmdbvhead
                         String strSQL = string.Empty;
                         strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";

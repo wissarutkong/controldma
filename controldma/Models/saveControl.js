@@ -10,7 +10,7 @@
 
 })
 
-
+//Check type of dvtype 
 function Modal_save() {
 
     if (document.getElementById("save_remark").value == '') {

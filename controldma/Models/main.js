@@ -66,34 +66,63 @@
 
     initalselect_info().then(() => {
         if (page.indexOf('controlvalve.aspx') == 0) {
-            CallApigetdatatable().then(() => { showPage(); showPage_content(); })
+            if ($('#auto_wwcode').val() != null && $('#auto_wwcode').val() != "") {
+                if (getCookie('_level') == 1) {
+                    _selectedautokhet($('#auto_wwcode').val()).then((data) => {
+                        _selectedwwcode(data).then(() => {
+                            showPage();
+                            showPage_content();
+                        })
+                    })
+                }
+                else if (getCookie('_level') == 10) {
+                    _selectedwwcode($('#auto_wwcode').val()).then(() => {
+                        showPage();
+                        showPage_content();
+                    })
+                } else {
+                    CallApigetdatatable().then(() => {
+                        showPage();
+                        showPage_content();
+                        findbuttonandclick();
+                    })
+                }
+            } else {
+                CallApigetdatatable().then(() => {
+                    showPage();
+                    showPage_content();
+                })
+            }
         } else {
             showPage();
         }
 
     })
 
-
-
-
     $('#_khet').change(function () {
         if ($(this).val() != getCookie('_zone')) {
             setCookie("_zone", $(this).val())
             setCookie("_wwcode", '')
             if (getCookie('_zone') != '' && getCookie('_zone') != 'null') {
-                AjaxGetddlsite('_wwcode')
-                $('#lidivhidewwcode').show();
+                AjaxGetddlsite('_wwcode').then(() => { $('#lidivhidewwcode').show(); })
             }
         }
     })
 
     $('#_wwcode').change(function () {
-        setCookie("_wwcode", $(this).val().trim())
         if ($(this).val().trim('') != '' && $(this).val().trim('') != null) {
+            setCookie("_wwcode", $(this).val().trim())
             // do something
             $('dt_controlvalve').DataTable().clear();
             hidePage_content()
-            CallApigetdatatable().then(() => { showPage_content() })
+            CallApigetdatatable().then(() => { showPage_content(); findbuttonandclick(); })
+        } else {
+            if ($('#auto_dmacode').val() != null || $('#auto_dmacode').val() != "") {
+                setCookie("_wwcode", $('#auto_dmacode').val().trim())
+                $('dt_controlvalve').DataTable().clear();
+                hidePage_content()
+                CallApigetdatatable().then(() => { showPage_content(); findbuttonandclick(); })
+            }
         }
     })
 
@@ -103,7 +132,41 @@
         CallApigetdatatable().then(() => { showPage_content() })
     })
 
+
 })
+
+function _selectedautokhet(wwcode) {
+    return new Promise((resolve, reject) => {
+        CallAPI('/service/api.aspx/Getid_khetfromwwcodeid',
+                JSON.stringify({ wwcode_id: wwcode })
+        ).then((data) => {
+            $('#_khet').val(data.id).trigger('change');
+            resolve(wwcode)
+        }).catch((error) => {
+            swalAlert(error.status, 'error')
+            reject()
+        })
+    })
+}
+
+function _selectedwwcode(wwcode) {
+    return new Promise((resolve, reject) => {
+        if ($('#_wwcode').find("option[value='" + wwcode + "']").length) {
+            $('#_wwcode').val(wwcode).trigger('change');
+            resolve()
+        } else {
+            var newOption = new Option('', wwcode, true, true);
+            $('#_wwcode').append(newOption).trigger('change');
+            resolve()
+        }
+    })
+}
+
+function findbuttonandclick() {
+    return new Promise((resolve, reject) => {
+        document.getElementById($('#auto_dmacode').val()).click();
+    })
+}
 
 
 function initalselect_info() {
@@ -120,7 +183,6 @@ function initalselect_info() {
                     } else if (getCookie('_level') == 10) { $('#_khet').prop("disabled", true) }
                 })
             }
-
             resolve()
         })
     })

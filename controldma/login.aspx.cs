@@ -84,7 +84,18 @@ namespace controldma
                     Session["USER"] = htbUser;
 
                     //Server.Transfer("index.aspx");
-                    Response.Redirect("controlvalve.aspx", false);
+                    if (string.IsNullOrEmpty(this.wwcode) && string.IsNullOrEmpty(this.dmacode))
+                    {
+                        Response.Redirect("controlvalve.aspx", false);
+                    }
+                    else if (!string.IsNullOrEmpty(this.dmacode))
+                    {
+                        Response.Redirect("controlvalve.aspx?wwcode=" + this.wwcode + "&dmacode=" + this.dmacode, false);
+                    }
+                    else {
+                        Response.Redirect("controlvalve.aspx?wwcode=" + this.wwcode , false);
+                    }
+                   
                     Context.ApplicationInstance.CompleteRequest();
                 }
                 else { Alert(Mgs.txtAlert, Mgs.AlertType); }
