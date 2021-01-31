@@ -164,7 +164,9 @@ function _selectedwwcode(wwcode) {
 
 function findbuttonandclick() {
     return new Promise((resolve, reject) => {
-        document.getElementById($('#auto_dmacode').val()).click();
+        if ($('#auto_dmacode').val() != null && $('#auto_dmacode').val() != "") {
+            document.getElementById($('#auto_dmacode').val()).click();
+        }
     })
 }
 

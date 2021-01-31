@@ -77,7 +77,7 @@ namespace controldma.service
                     return JsonConvert.SerializeObject(new { status = "fail" });
                 }
 
-                String districts_id = inl.GetStringbySQL("SELECT d.id FROM branches b INNER JOIN districts d on b.district_id = d.id WHERE b.id = '"+wwcode_id+"'", user.UserCons);
+                String districts_id = inl.GetStringbySQL("SELECT d.id FROM branches b INNER JOIN districts d on b.district_id = d.id WHERE b.id = '" + wwcode_id + "'", user.UserCons);
 
                 var keyValues = new Dictionary<string, string>
                {
@@ -346,7 +346,7 @@ namespace controldma.service
                 if (_wwcode != null && _dvtype_id != null)
                 {
                     String strSQL = string.Empty;
-                    if (_dvtype_id == "2")
+                    if (_dvtype_id == "2" || _dvtype_id == "4")
                     {
                         strSQL = "EXEC sp_ctrl_get_bvcmdlog_dmama2 @wwcode = '" + _wwcode + "',@dmacode= '" + _dmacode + "';";
                     }
@@ -1090,6 +1090,345 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string Getdata_PrvStepping(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                Cs_Controlcenter cs = new Cs_Controlcenter();
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                String wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
+                //set global variable _dvtype_id type of bv / prv 
+                _dvtype_id = mainData["$_datatype"].ToString();
+                String unit_percent = cs.unit_percent();
+                #region _manual
+                int percent_valve = 0;
+                DataTable dt_percent_valva = new DataTable();
+                string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.percent_valve,0) percent_valve
+                        FROM tb_ctr_dmavalvetype vt
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                if (dt_ctr_bvmanual.Rows.Count > 0)
+                {
+                    percent_valve = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["percent_valve"]);
+                }
+                else {
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
+                    dt_percent_valva = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                    if (dt_percent_valva.Rows.Count > 0) percent_valve = Convert.ToInt32(dt_percent_valva.Rows[0]["percent_valve"]);
+                }
+                String Html = string.Empty;
+                Html += "<div class=\"list-group-item\"> ";
+                Html += "   <div class=\"row\">";
+                Html += "       <div class=\"col-lg-1\" style=\"margin-top:10px\">";
+                Html += "            Valve " + unit_percent + ": ";
+                Html += "       </div>";
+                Html += "       <div class=\"col-lg-10\" style=\"margin-top:10px\">";
+                Html += "       <input id=\"txtvalve\" type=\"text\" value=\"" + percent_valve + "\"  class=\"form-control\" style=\"width: 100px\" onkeypress=\"return isNumberKey_Valve(event)\" maxlength=\"3\"> ";
+                Html += "       </div> ";
+                Html += "   </div> ";
+                Html += "</div> ";
+                Html += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(2,'manual')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
+                #endregion
+
+                #region _Automatic
+                DataTable dt_cmdbvhead = new DataTable(); DataTable dt_cmdbvdetail = new DataTable();
+                try
+                {
+                    strSQL = string.Empty;
+                    strSQL = @"select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '1' order by cmdbvhead_id desc";
+                    dt_cmdbvhead = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                    strSQL = string.Empty;
+                    strSQL = @" select * from tb_ctr_cmdbvdetail where cmdbvhead_id 
+                                in(select top 1 cmdbvhead_id from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '1' order by cmdbvhead_id desc) order by order_time asc";
+                    dt_cmdbvdetail = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+
+                int total = 1;
+
+                total = dt_cmdbvdetail.Rows.Count;
+                if (total == 0) { total = 1; }
+
+                String Html_2 = string.Empty;
+                var selected_dv_0 = "";
+                var selected_dv_1 = "";
+                var selected_dv_2 = "";
+                var selected_dv_3 = "";
+                var disablePressure = "";
+                var disableFlow = "";
+                var disableValve = "";
+                var IndexNo = 0;
+                var isDevice = true;
+                var isdisabled = "";
+                var tblAutomatic = "tblAutomatic";
+                string timevalue = "";
+                string cmdbvheadfailure_mode = string.Empty;
+                string cmdbvheadstep_control_delay = string.Empty;
+                string cmdbvheadtime_loop = string.Empty;
+                string cmdbvheadlimit_min = string.Empty;
+                string cmdbvheaddeadband_pressure = string.Empty;
+                string cmdbvheaddeadband_flow = string.Empty;
+                DataTable dt_timeList = inl.TimerList();
+
+                if (dt_cmdbvhead.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dt_cmdbvhead.Rows)
+                    {
+                        cmdbvheadfailure_mode = row["failure_mode"].ToString();
+                        cmdbvheadstep_control_delay = row["step_control_delay"].ToString();
+                        cmdbvheadtime_loop = row["time_loop"].ToString();
+                        cmdbvheadlimit_min = row["limit_min"].ToString();
+                        cmdbvheaddeadband_pressure = row["deadband_pressure"].ToString();
+                        cmdbvheaddeadband_flow = row["deadband_flow"].ToString();
+                    }
+                }
+
+                Html_2 += "<table class=\"table table-bordered table-striped table-hover table-condensed\" id=\"tblSteppingAutomatic\" name=\"tblSteppingAutomatic\">";
+                Html_2 += "     <thead>";
+                Html_2 += "         <tr>";
+                Html_2 += "             <th>No.</th>";
+                Html_2 += "             <th>Device Mode</th>";
+                Html_2 += "             <th>Time</th>";
+                Html_2 += "             <th>Pressure</th>";
+                Html_2 += "             <th>Flow</th>";
+                //Html_2 += "             <th>Valve</th>";
+                Html_2 += "         </tr>";
+                Html_2 += "     </thead>";
+                Html_2 += "     <tbody>";
+                if (dt_cmdbvdetail.Rows.Count > 0)
+                {
+
+                    IndexNo = 0;
+                    foreach (DataRow row in dt_cmdbvdetail.Rows)
+                    {
+                        IndexNo += 1;
+                        isdisabled = "";
+                        var selmode = "selmode" + @IndexNo;
+                        var txttime = "txttime" + @IndexNo;
+                        var txtPressure = "txtPressure" + @IndexNo;
+                        var txtFlow = "txtFlow" + @IndexNo;
+                        //var txtValve = "txtValve" + @IndexNo;
+                        int failure_mode = Convert.ToInt32(row["failure_mode"]);
+
+                        isDevice = false;
+                        if (IndexNo == 1) { isDevice = true; isdisabled = "disabled"; }
+
+
+                        string txtPressure_bgc = cs.GetBg_Color("p", failure_mode);
+                        string txtFlow_bgc = cs.GetBg_Color("f", failure_mode);
+                        //string txtValve_bgc = cs.GetBg_Color("v", failure_mode);
+
+                        selected_dv_0 = "";
+                        selected_dv_1 = "";
+                        selected_dv_2 = "";
+                        selected_dv_3 = "";
+
+                        if (failure_mode == 0)
+                            selected_dv_0 = "selected";
+
+
+                        if (failure_mode == 1)
+                            selected_dv_1 = "selected";
+
+                        if (failure_mode == 2)
+                            selected_dv_2 = "selected";
+
+                        if (failure_mode == 3)
+                            selected_dv_3 = "selected";
+
+                        disablePressure = "disabled";
+                        disableFlow = "disabled";
+                        disableValve = "disabled";
+
+                        if (failure_mode == 1)
+                            disablePressure = "";
+                        if (failure_mode == 2)
+                            disableFlow = "";
+                        if (failure_mode == 3)
+                            disableValve = "";
+
+
+
+                        Html_2 += "<tr>";
+                        Html_2 += "      <td align=\"center\">" + @IndexNo + "</td>";
+                        Html_2 += "      <td>";
+                        Html_2 += "         <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
+                        Html_2 += "             <option value=\"0\"  " + selected_dv_0 + " " + isdisabled + ">Disable</option>";
+                        Html_2 += "             <option value=\"1\" " + selected_dv_1 + ">Pressure</option>";
+                        Html_2 += "             <option value=\"2\"  " + selected_dv_2 + ">Flow</option>";
+                        //Html_2 += "             <option value=\"3\"  " + selected_dv_3 + ">Valve</option>";
+                        Html_2 += "         </select>";
+                        Html_2 += "      </td>";
+                        Html_2 += "      <td>";
+                        Html_2 += "         <select id=\"" + txttime + "\" name=\"" + txttime + "\" class=\"form-control\" " + isdisabled + ">";
+
+                        foreach (DataRow time in dt_timeList.Rows)
+                        {
+                            string time_start = row["time_start"].ToString();
+                            TimeSpan ts = TimeSpan.Parse(time_start);
+                            if (time["time_objid"].ToString() == ts.ToString(@"hh\:mm"))
+                            {
+                                Html_2 += "<option value=\"" + time["time_objid"] + "\" selected>" + time["time_label_long"] + "</option>";
+                            }
+                            else {
+                                Html_2 += "<option value=\"" + time["time_objid"] + "\">" + time["time_label_long"] + "</option>";
+                            }
+                        }
+
+                        Html_2 += "         </select>";
+                        Html_2 += "     </td>";
+
+                        Html_2 += " <td> <input  value=\"" + row["pressure_value"] + "\" class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtPressure + "\" name=\"" + txtPressure + "\" style=\"width:90%; background-color:" + txtPressure_bgc + "\" maxlength=\"8\"> </td>";
+                        Html_2 += " <td> <input  value=\"" + row["flow_value"] + "\" class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtFlow + "\" name=\"" + txtFlow + "\" style=\"width:90%; background-color:" + txtFlow_bgc + "\" maxlength=\"8\" ></td>";
+                        //Html_2 += " <td> <input  value=\"" + row["valve_value"] + "\" class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtValve + "\" name=\"" + txtValve + "\" style=\"width:90%; background-color:" + txtValve_bgc + "\" maxlength=\"8\" > </td>";
+                        Html_2 += "</tr>";
+                    }
+                }
+                else {
+                    isdisabled = "disabled";
+                    for (int i = 0; i < 6; i++)
+                    {
+                        IndexNo += 1;
+                        if (IndexNo == 2)
+                        {
+                            break;
+                        }
+
+                        var delete = "btnDelete" + @IndexNo;
+                        var add = "btnAdd" + @IndexNo;
+                        var selmode = "selmode" + @IndexNo;
+                        var txttime = "txttime" + @IndexNo;
+                        var txtPressure = "txtPressure" + @IndexNo;
+                        var txtFlow = "txtFlow" + @IndexNo;
+                        //var txtValve = "txtValve" + @IndexNo;
+                        if (IndexNo == 2) { isDevice = false; isdisabled = ""; }
+
+
+                        Html_2 += "<tr>";
+                        Html_2 += "     <td align=\"center\">" + IndexNo + "</td>";
+                        Html_2 += "     <td>";
+                        Html_2 += "     <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
+                        Html_2 += "         <option value=\"0\" " + isdisabled + ">Disable</option>";
+                        Html_2 += "         <option value=\"1\">Pressure</option>";
+                        Html_2 += "         <option value=\"2\">Flow</option>";
+                        //Html_2 += "         <option value=\"3\">Valve</option>";
+                        Html_2 += "     </select>";
+                        Html_2 += "     </td>";
+                        Html_2 += "     <td>";
+                        Html_2 += "   <select id=\"" + txttime + "\" name=\"" + txttime + "\" class=\"form-control\" disabled=\"true\">";
+                        foreach (DataRow time in dt_timeList.Rows)
+                        {
+                            string time_start = "00:00:00";
+                            TimeSpan ts = TimeSpan.Parse(time_start);
+                            if (time["time_objid"].ToString() == ts.ToString(@"hh\:mm"))
+                            {
+                                Html_2 += "<option value=\"" + time["time_objid"] + "\" selected>" + time["time_label_long"] + "</option>";
+                            }
+                            else {
+                                Html_2 += "<option value=\"" + time["time_objid"] + "\">" + time["time_label_long"] + "</option>";
+                            }
+                        }
+                        Html_2 += "         </select>";
+                        Html_2 += "     </td>";
+
+                        Html_2 += "<td> <input class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtPressure + "\" name=\"" + txtPressure + "\" style=\"width:90%;\" maxlength=\"8\" value=\"\"></td>";
+                        Html_2 += "<td> <input class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtFlow + "\" name=\"" + txtFlow + "\" style=\"width:90%; background-color:#CCCCCC\" maxlength=\"8\" ></td>";
+                        //Html_2 += "<td> <input class=\"form-control\" onkeypress=\"return isNumberKey(event)\" type=\"text\" id=\"" + txtValve + "\" name=\"" + txtValve + "\" style=\"width:90%; background-color:#CCCCCC\" maxlength=\"8\" ></td>";
+                        Html_2 += "</tr>";
+                    }
+
+                }
+
+                Html_2 += "         </tbody>";
+                Html_2 += "     </table>";
+                //Html_2 += " <input type=\"hidden\" id=\"txtRow\" name=\"txtRow\" value=\"" + total + "\" /> ";
+                Html_2 += "";
+
+                #endregion
+
+                #region _Realtime
+                String Html_3 = string.Empty;
+
+                //Html_3 += "<div style=\"width: 100%;\">";
+                Html_3 += "     <div class=\"table-responsive\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_3 += "             <thead>";
+                Html_3 += "                    <tr>";
+                Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
+                Html_3 += "                         <th>Remote Name</th>";
+                Html_3 += "                         <th>วันเวลา</th>";
+                Html_3 += "                         <th>แรงดัน (ออก)(บาร์)</th>";
+                Html_3 += "                         <th>แรงดัน (เข้า)(บาร์)</th>";
+                Html_3 += "                         <th>Valve (%)</th>";
+                Html_3 += "                         <th>อัตราการไหล (ลบ.ม.)</th>";
+                Html_3 += "                     </tr>";
+                Html_3 += "             </thead>";
+                Html_3 += "         </table>";
+                Html_3 += "     </div>";
+                //Html_3 += "</div>";
+
+                #endregion
+
+                #region _History
+                String Html_4 = string.Empty;
+
+                Html_4 += "<div style=\"width: 100%;\">";
+                Html_4 += "     <div class=\"table-responsive\">";
+                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_4 += "             <thead>";
+                Html_4 += "                    <tr>";
+                Html_4 += "                         <th>ลำดับ</th>";
+                Html_4 += "                         <th>พื้นที่เฝ้าระวัง</th>";
+                Html_4 += "                         <th>วันที่ตั้งค่า</th>";
+                Html_4 += "                         <th>รายละเอียด</th>";
+                Html_4 += "                         <th>สั่งโดย</th>";
+                //Html_4 += "                         <th>ไฟล์</th>";
+                Html_4 += "                         <th>หมายเหตุ</th>";
+                Html_4 += "                     </tr>";
+                Html_4 += "             </thead>";
+                Html_4 += "         </table>";
+                Html_4 += "     </div>";
+                Html_4 += "</div>";
+
+                #endregion
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "_manual", Html },
+                   { "_Automatic", Html_2 },
+                   { "_Realtime", Html_3 },
+                   { "_History", Html_4 },
+                   { "_txtRow" , total.ToString()},
+                   { "_failure_mode" , cmdbvheadfailure_mode },
+                   { "_step_control_delay" , cmdbvheadstep_control_delay },
+                   { "_time_loop" , cmdbvheadtime_loop },
+                   { "_limit_min" , cmdbvheadlimit_min },
+                   { "_deadband_pressure" , cmdbvheaddeadband_pressure },
+                   { "_deadband_flow" , cmdbvheaddeadband_flow }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string Get_Automatic_prv(String mainDataText)
         {
             HttpContext context = HttpContext.Current;
@@ -1623,6 +1962,8 @@ namespace controldma.service
                     DataTable dt_cmdbvhead = (DataTable)mainData["cmdbvhead"];
                     foreach (DataRow row in dt_cmdbvhead.Rows)
                     {
+                        if (row.IsNull("failure_mode") || row["failure_mode"] == "")
+                            row["failure_mode"] = 0;
                         if (row.IsNull("step_control_delay") || row["step_control_delay"] == "")
                             row["step_control_delay"] = 0;
                         if (row.IsNull("time_loop") || row["time_loop"] == "")
@@ -1694,19 +2035,20 @@ namespace controldma.service
                                     TimeSpan time_start = TimeSpan.Parse(Time[0].ToString());
                                     TimeSpan time_end = TimeSpan.Parse(Time[1].ToString());
 
+                                    if (row_detail.IsNull("pressure_value") || row_detail["pressure_value"] == "")
+                                        row_detail["pressure_value"] = 0;
+                                    if (row_detail.IsNull("flow_value") || row_detail["flow_value"] == "")
+                                        row_detail["flow_value"] = 0;
+                                    if (row_detail.IsNull("valve_value") || row_detail["valve_value"] == "")
+                                        row_detail["valve_value"] = 0;
+
                                     decimal pressure_value_tmp = Convert.ToDecimal(row_detail["pressure_value"]);
                                     decimal flow_value_tmp = Convert.ToDecimal(row_detail["flow_value"]);
                                     decimal valve_value_tmp = Convert.ToDecimal(row_detail["valve_value"]);
 
                                     string pressure_value = pressure_value_tmp.ToString("##0.00");
-                                    if (pressure_value == "" || pressure_value == null)
-                                        pressure_value = "0.00";
                                     string flow_value = flow_value_tmp.ToString("##0.00");
-                                    if (flow_value == "" || flow_value == null)
-                                        flow_value = "0.00";
-                                    string valve_value = valve_value_tmp.ToString();
-                                    if (valve_value == "" || valve_value == null)
-                                        valve_value = "0";
+                                    string valve_value = valve_value_tmp.ToString("##0.00");
 
                                     //string extension_pump_tmp = row_detail[""].ToString();
                                     //string extension_pump = "0";
@@ -1752,7 +2094,7 @@ namespace controldma.service
                                     strSQL += " '" + time_end + "', "; //time_end
                                     strSQL += " '" + pressure_value_tmp.ToString("##0.00") + "', "; //pressure_value
                                     strSQL += " '" + flow_value_tmp.ToString("##0.00") + "', "; //flow_value
-                                    strSQL += " '" + valve_value_tmp.ToString() + "', "; //valve_value
+                                    strSQL += " '" + valve_value_tmp.ToString("##0.00") + "', "; //valve_value
                                     strSQL += " 'N', "; //record_status
                                     strSQL += " '" + user.UserID + "', "; //create_user
                                     strSQL += " GETDATE(), "; //create_dtm
@@ -1942,6 +2284,9 @@ namespace controldma.service
 
                                 foreach (DataRow row in dt_Pressure.Rows)
                                 {
+                                    if (row.IsNull("pilot_pressure") || row["pilot_pressure"] == "")
+                                        row["pilot_pressure"] = 0;
+
                                     #region Sql insert tb_ctr_dmaconfigpressure
                                     strSQL = string.Empty;
                                     strSQL += " INSERT INTO tb_ctr_dmaconfigpressure (wwcode, ";

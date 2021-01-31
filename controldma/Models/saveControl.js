@@ -24,7 +24,7 @@ function Modal_save() {
 
     var type = document.getElementById('typepopup').value;
     if (type == "manual") {
-        if (document.getElementById("txtdvtypeid").value == "2") {
+        if (document.getElementById("txtdvtypeid").value == "2" || document.getElementById("txtdvtypeid").value == "4") {
             Post_Bv_manual();
         } else if (document.getElementById("txtdvtypeid").value == "3") {
             Post_prvt_manual();
@@ -140,7 +140,9 @@ function Post_Bv_manual() {
 function Post_AutoBv() {
     var cmdbvhead = [];
     var cmdbvdetail = [];
-    cmdbvdetail = getDatabeforsave_AutoBv();
+    if (document.getElementById("txtdvtypeid").value == "2") {
+        cmdbvdetail = getDatabeforsave_AutoBv();
+    } else { cmdbvdetail = getDatabeforsave_AutoStepping(); }
     cmdbvhead[0] = {
         "failure_mode": document.getElementById("failure_mode").value, "step_control_delay": document.getElementById("step_control_delay").value,
         "time_loop": document.getElementById("time_loop").value, "limit_min": document.getElementById("limit_min").value,
@@ -182,6 +184,25 @@ function getDatabeforsave_AutoBv() {
             "time_start": document.getElementById("txttime" + i).value, "time_end": document.getElementById("txttime" + i).value,
             "pressure_value": document.getElementById("txtPressure" + i).value, "flow_value": document.getElementById("txtFlow" + i).value,
             "valve_value": document.getElementById("txtValve" + i).value
+        };
+    }
+    return cmdbvdetail;
+}
+
+function getDatabeforsave_AutoStepping() {
+    var allRow = document.getElementById("txtRow").value
+    var cmdbvdetail = [];
+    for (var i = 1; i <= allRow; i++) {
+        var selmode = document.getElementById("selmode" + i).value;
+        var txttime = document.getElementById("txttime" + i).value;
+        var txtPressure = document.getElementById("txtPressure" + i).value;
+        var txtFlow = document.getElementById("txtFlow" + i).value;
+        var txtValve = "";
+        cmdbvdetail[i - 1] = {
+            "order_time": i, "failure_mode": document.getElementById("selmode" + i).value,
+            "time_start": document.getElementById("txttime" + i).value, "time_end": document.getElementById("txttime" + i).value,
+            "pressure_value": document.getElementById("txtPressure" + i).value, "flow_value": document.getElementById("txtFlow" + i).value,
+            "valve_value": ""
         };
     }
     return cmdbvdetail;
@@ -264,7 +285,10 @@ function insertRow(r) {
 // ทำการ delete แถว bv
 function delRow_bv(r) {
     if (parseInt(document.getElementById("txtRow").value) > 1) {
-        document.getElementById("tblBvAutomatic").deleteRow(parseInt(document.getElementById("txtRow").value));
+        if ($('#txtdvtypeid').val() != 4) { document.getElementById("tblBvAutomatic").deleteRow(parseInt(document.getElementById("txtRow").value)); }
+        else { document.getElementById("tblSteppingAutomatic").deleteRow(parseInt(document.getElementById("txtRow").value)); }
+
+
         document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) - 1;
         document.getElementById("btnAdd_bv").disabled = false;
     }
@@ -278,34 +302,64 @@ function insertRow_bv(r) {
         //document.getElementById("btnAdd").style.backgroundColor = "red";
         return;
     }
+    if ($('#txtdvtypeid').val() != 4) {
 
-    var searchStr = "btnAdd";
-    var replaceStr = "";
-    var re = new RegExp(searchStr, "g");
-    var result = document.getElementById("txtRow").value;
+        var searchStr = "btnAdd";
+        var replaceStr = "";
+        var re = new RegExp(searchStr, "g");
+        var result = document.getElementById("txtRow").value;
 
-    document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) + 1;
-    var allRow = document.getElementById("txtRow").value;
-    r = parseInt(result) + 1;
+        document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) + 1;
+        var allRow = document.getElementById("txtRow").value;
+        r = parseInt(result) + 1;
 
-    var row = document.getElementById("tblBvAutomatic").insertRow(r);
+        var row = document.getElementById("tblBvAutomatic").insertRow(r);
 
-    var c1 = row.insertCell(0);
-    var c2 = row.insertCell(1);
-    var c3 = row.insertCell(2);
-    var c4 = row.insertCell(3);
-    var c5 = row.insertCell(4);
-    var c6 = row.insertCell(5);
+        var c1 = row.insertCell(0);
+        var c2 = row.insertCell(1);
+        var c3 = row.insertCell(2);
+        var c4 = row.insertCell(3);
+        var c5 = row.insertCell(4);
+        var c6 = row.insertCell(5);
 
-    c1.innerHTML = '<div style="align:center"  id = "txtRef' + r + '">' + r + '</div>';
-    c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="1">Pressure</option><option value="2">Flow</option><option value="3">Valve</option><option value="0">Disable</option></select>';
-    c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
+        c1.innerHTML = '<div style="align:center"  id = "txtRef' + r + '">' + r + '</div>';
+        c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="1">Pressure</option><option value="2">Flow</option><option value="3">Valve</option><option value="0">Disable</option></select>';
+        c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
 
-    c4.innerHTML = '<input type="text" onkeypress="return isNumberKey(event)"  class="form-control"  id="txtPressure' + r + '" style="width:90%" maxlength="8" value="" onkeypress="EnterEvent(event,7777' + r + ')">';
-    c5.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtFlow' + r + '" style="width:90%" maxlength="8" onblur="fnLatLong(this);" onkeypress="EnterEvent(event,8888' + r + ')">';
-    c6.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtValve' + r + '" style="width:90%" maxlength="8" onblur="fnMeasureCheck(this);" onkeypress="EnterEvent(event,9999' + r + ')">'
+        c4.innerHTML = '<input type="text" onkeypress="return isNumberKey(event)"  class="form-control"  id="txtPressure' + r + '" style="width:90%" maxlength="8" value="" onkeypress="EnterEvent(event,7777' + r + ')">';
+        c5.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtFlow' + r + '" style="width:90%" maxlength="8" onkeypress="EnterEvent(event,8888' + r + ')">';
+        c6.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtValve' + r + '" style="width:90%" maxlength="8" onblur="fnMeasureCheck(this);" onkeypress="EnterEvent(event,9999' + r + ')">'
 
-    ChangeMode("selmode" + r);
+        ChangeMode("selmode" + r);
+    } else {
+        var searchStr = "btnAdd";
+        var replaceStr = "";
+        var re = new RegExp(searchStr, "g");
+        var result = document.getElementById("txtRow").value;
+
+        document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) + 1;
+        var allRow = document.getElementById("txtRow").value;
+        r = parseInt(result) + 1;
+
+        var row = document.getElementById("tblSteppingAutomatic").insertRow(r);
+
+        var c1 = row.insertCell(0);
+        var c2 = row.insertCell(1);
+        var c3 = row.insertCell(2);
+        var c4 = row.insertCell(3);
+        var c5 = row.insertCell(4);
+        //var c6 = row.insertCell(5);
+
+        c1.innerHTML = '<div style="align:center"  id = "txtRef' + r + '">' + r + '</div>';
+        c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="0">Disable</option><option value="1">Pressure</option><option value="2">Flow</option></select>';
+        c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
+
+        c4.innerHTML = '<input type="text" onkeypress="return isNumberKey(event)"  class="form-control"  id="txtPressure' + r + '" style="width:90%" maxlength="8" value="" onkeypress="EnterEvent(event,7777' + r + ')">';
+        c5.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtFlow' + r + '" style="width:90%" maxlength="8" onkeypress="EnterEvent(event,8888' + r + ')">';
+        //c6.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtValve' + r + '" style="width:90%" maxlength="8" onblur="fnMeasureCheck(this);" onkeypress="EnterEvent(event,9999' + r + ')">'
+
+        ChangeMode("selmode" + r);
+    }
 }
 
 //จัดเรียงแถวใหม่ก่อนทำการ insert แถว
@@ -331,8 +385,7 @@ function sortNewBeforeAdd(r) {
 }
 
 function ChangeMode(id) {
-    if ($('#txtdvtypeid').val() != 2) { return; }
-    else {
+    if ($('#txtdvtypeid').val() == 2) {
         var i = id.replace("selmode", "");
         var txtPressure = document.getElementById("txtPressure" + i);
         var txtFlow = document.getElementById("txtFlow" + i);
@@ -365,6 +418,30 @@ function ChangeMode(id) {
                 txtValve.focus();
                 break;
         }
+    }
+    else if ($('#txtdvtypeid').val() == 4) {
+        var i = id.replace("selmode", "");
+        var txtPressure = document.getElementById("txtPressure" + i);
+        var txtFlow = document.getElementById("txtFlow" + i);
+        txtPressure.style.backgroundColor = "#FFFFFF";
+        txtFlow.style.backgroundColor = "#FFFFFF";
+        switch (document.getElementById(id).value) {
+            case "0":
+                txtPressure.style.backgroundColor = "#CCCCCC";
+                txtFlow.style.backgroundColor = "#CCCCCC";
+                break;
+            case "1":
+                txtFlow.style.backgroundColor = "#CCCCCC";
+                txtPressure.focus();
+                break;
+            case "2":
+                txtPressure.style.backgroundColor = "#CCCCCC";
+                txtFlow.focus();
+                break;
+        }
+    }
+    else {
+        return;
     }
 }
 

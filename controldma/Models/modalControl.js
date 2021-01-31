@@ -105,6 +105,12 @@ $(document).on("click", ".editvalva", function () {
             })
             //element.style.visibility = "collapse";
         }
+        else if(datatype == 4){
+            $('#Modal_edit_bv').modal('show');
+            generateHtml_prvstepping(dmacode, $('#txtdvtypeid').val()).then(() => {
+
+            })
+        }
         else {
             swalAlert('ไม่พบประเภทของจุดติดตั้ง : ' + dmacode, 'warning')
             //$('#Modal_warning').modal('show');
@@ -227,7 +233,7 @@ function getHtml(_wwcode, dmacode, datatype) {
             $_dmacode: dmacode,
             $_datatype: datatype
         })
-        CallAPI('/service/api.aspx/' + (datatype == 3 ? 'Getdata_prv' : 'Getdata_bv'),
+        CallAPI('/service/api.aspx/' + getJsontp(datatype),
                 JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             resolve(data)
@@ -237,6 +243,27 @@ function getHtml(_wwcode, dmacode, datatype) {
             reject()
         })
     })
+}
+
+function getJsontp(dvtype_service) {
+    var clstp = '';
+    switch (dvtype_service) {
+        case '2':
+            clstp = 'Getdata_bv';
+            break;
+        case '3':
+            clstp = 'Getdata_prv';
+            break;
+        case '4':
+            clstp = 'Getdata_PrvStepping';
+            break;
+        case '5':
+            clstp = '';
+            break;      
+        default:
+            // code block
+    }
+    return clstp;
 }
 
 function generateHtml_prv(dmacode, datatype) {
@@ -284,6 +311,40 @@ function generateHtml_bv(dmacode, datatype) {
             $("#deadband_pressure").val(data._deadband_pressure);
             $("#deadband_flow").val(data._deadband_flow);
             GeneratePRV('tblBvAutomatic')
+        }).then(() => {
+            CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
+                CallApigettable_modal('dt_grid_history_bv', '_History').then(() => {
+                    resolve()
+                    showPage_content_modal();
+                }).catch((error) => {
+                    swalAlert(error.status, 'error')
+                    reject()
+                })
+            })
+        }).catch((error) => {
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
+            reject()
+        })
+    })
+}
+
+function generateHtml_prvstepping(dmacode, datatype) {
+    return new Promise((resolve, reject) => {
+        hidePage_content_modal()
+        $('.modal_title_setting').text("PRV Stepping - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
+        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+            $('#_Manual_Bv').html(data._manual)
+            $('#_Automatic_Bv').html(data._Automatic)
+            $('#_Realtime_Bv').html(data._Realtime)
+            $('#_History_bv').html(data._History)
+            $('#txtRow').val(data._txtRow)
+            $("#failure_mode").val(data._failure_mode);
+            $("#step_control_delay").val(data._step_control_delay);
+            $("#time_loop").val(data._time_loop);
+            $("#limit_min").val(data._limit_min);
+            $("#deadband_pressure").val(data._deadband_pressure);
+            $("#deadband_flow").val(data._deadband_flow);
+            GeneratePRV('tblSteppingAutomatic')
         }).then(() => {
             CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
                 CallApigettable_modal('dt_grid_history_bv', '_History').then(() => {
