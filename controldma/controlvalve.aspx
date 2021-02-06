@@ -516,13 +516,20 @@
                                             <div class="row">
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>Real Time Data</h5>
-                                                    <div class="row" style="margin-top: 2%;">
-                                                        <div class="col-md-12 col-12">
-                                                            <%--<div style="width: 100%;">--%>
-                                                            <div id="_Realtime_Bv">
-                                                            </div>
-                                                            <%--</div>--%>
+                                                    <div class="row justify-content-between">
+                                                        <div class="col-4">
                                                         </div>
+                                                        <div class="col-3">
+                                                           <button type="button" id="realtime_bvrefresh" class="btn btn-block btn-success" data-button-spinner="Processing" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <%-- <div class="col-md-12 col-12">--%>
+                                                        <%--<div style="width: 100%;">--%>
+                                                        <div id="_Realtime_Bv">
+                                                        </div>
+                                                        <%--</div>--%>
+                                                        <%--    </div>--%>
                                                     </div>
                                                 </div>
                                             </div>
@@ -532,12 +539,12 @@
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>History Command</h5>
                                                     <div class="row" style="margin-top: 2%;">
-                                                        <div class="col-md-12">
+                                                        <%--<div class="col-md-12">--%>
                                                             <div style="width: 100%;">
                                                                 <div id="_History_bv">
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        <%--</div>--%>
                                                     </div>
                                                 </div>
                                             </div>
@@ -634,6 +641,13 @@
                                             <div class="row">
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>Real Time Data</h5>
+                                                    <div class="row justify-content-between">
+                                                        <div class="col-4">
+                                                        </div>
+                                                        <div class="col-3">
+                                                           <button type="button" id="realtime_prvrefresh" class="btn btn-block btn-success" data-button-spinner="Processing" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                                        </div>
+                                                    </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <div class="col-md-12 col-12">
                                                             <%--<div style="width: 100%;">--%>

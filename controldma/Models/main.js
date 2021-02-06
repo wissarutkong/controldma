@@ -281,4 +281,15 @@ function Setvariableapi(mainData) {
         })
 }
 
+function SetSessionstorage_(wwcode,dmacode,remotename,dvtypeid) {
+    sessionStorage.setItem('cachewwcode', wwcode);
+    sessionStorage.setItem('cachedmacode', dmacode);
+    sessionStorage.setItem('cacheremotename', remotename);
+    sessionStorage.setItem('cachedvtype', dvtypeid);
+}
+
+function ClearSessionstorage() {
+    sessionStorage.clear();
+}
+
 

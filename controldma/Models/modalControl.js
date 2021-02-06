@@ -17,6 +17,22 @@
     //    console.log($(this).prop('checked'))
     //})
 
+    $('#realtime_prvrefresh').click(() => {
+        $(this).prop("disabled", true)
+        $('dt_grid_realtime').DataTable().clear();
+        CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
+            $(this).prop("disabled", false)
+        })
+    })
+
+    $('#realtime_bvrefresh').click(() => {
+        $(this).prop("disabled", true);
+        $('dt_grid_realtime_bv').DataTable().clear();
+        CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
+            $(this).prop("disabled", false)
+        })
+    })
+
 })
 
 function onchangeddldvtype(value) {
@@ -83,13 +99,15 @@ $(document).on("click", ".editvalva", function () {
     //element.style.visibility = null;
     if ($(this).val() != '' && $(this).val() != null && getCookie('_wwcode') != '' && getCookie('_wwcode') != null) {
         var dmacode = $(this).val();
-        let mainData = []
-        mainData.push({
-            $_dmacode: dmacode,
-            $_remote_name: $(this).attr('data-remote'),
-            $_wwcode: getCookie('_wwcode')
-        })
-        Setvariableapi(mainData);
+        //let mainData = []
+        //mainData.push({
+        //    $_dmacode: dmacode,
+        //    $_remote_name: $(this).attr('data-remote'),
+        //    $_wwcode: getCookie('_wwcode')
+        //})
+        //Setvariableapi(mainData);
+        SetSessionstorage_(getCookie('_wwcode'), dmacode, $(this).attr('data-remote'), datatype)
+
         //element.style.display = null;
         if (datatype == 2) {
             $('#Modal_edit_bv').modal('show');
@@ -156,8 +174,10 @@ $(document).on("click", ".addvalva", function () {
 
                    $('#m_usereditor').text(obj.fullname)
                    $('#m_lastupdate').text(obj.last_upd_dtm)
+                   SetSessionstorage_(getCookie('_wwcode'), dmacode, '','')
                    showPage_content_modal();
                }).catch((error) => {
+                   ClearSessionstorage()
                    swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')
                    //SomethingWrong('เกิดความผิด !', 'เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ')
                })
@@ -266,6 +286,7 @@ function getJsontp(dvtype_service) {
     return clstp;
 }
 
+/////////////////////////Gen html from api//////////////////////////////////
 function generateHtml_prv(dmacode, datatype) {
     return new Promise((resolve, reject) => {
         hidePage_content_modal()
@@ -361,7 +382,7 @@ function generateHtml_prvstepping(dmacode, datatype) {
         })
     })
 }
-
+//////////////////////////////////////////////////////////
 
 
 function Popup(id, type) {
@@ -393,7 +414,7 @@ var seconds = 0
 function GetCommandTimeOut() {
     var isdata = false;
     CallAPI('/service/api.aspx/GetCommandTimeOut',
-            ''
+            JSON.stringify({ remote_name: sessionStorage.getItem('cacheremotename') })
     ).then((data) => {
         $.each(data, function (i, item) {
             document.getElementById("counter_s").style.display = "block";
@@ -449,6 +470,8 @@ function add_valva_modal() {
 
     let mainData = []
     mainData.push({
+        m_wwcode: sessionStorage.getItem('cachewwcode'),
+        m_dmacode: sessionStorage.getItem('cachedmacode'),
         m_dvtypeddl: $('#m_dvtypeddl').val(),
         m_totlepilot: $('#m_totlepilot').val(),
         m_controltype: $('#m_controltype').val(),

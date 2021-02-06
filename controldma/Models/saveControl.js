@@ -45,6 +45,9 @@ function Post_prvt_manual() {
 
     let mainData = []
     mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
         solenoid: document.getElementById("txtSolenoid").value,
         dvtypeid: document.getElementById("txtdvtypeid").value,
         remark: document.getElementById("save_remark").value
@@ -72,6 +75,9 @@ function Post_AutoPrvt() {
     cmdprvtdetail = getDatabeforsave_AutoPrvt();
     let mainData = []
     mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
         cmdprvtdetail: cmdprvtdetail,
         dvtypeid: document.getElementById("txtdvtypeid").value,
         remark: document.getElementById("save_remark").value
@@ -115,6 +121,9 @@ function Post_Bv_manual() {
 
     let mainData = []
     mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
         valve: document.getElementById("txtvalve").value,
         dvtypeid: document.getElementById("txtdvtypeid").value,
         remark: document.getElementById("save_remark").value
@@ -151,6 +160,9 @@ function Post_AutoBv() {
 
     let mainData = []
     mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
         cmdbvhead: cmdbvhead,
         cmdbvdetail: cmdbvdetail,
         dvtypeid: document.getElementById("txtdvtypeid").value,

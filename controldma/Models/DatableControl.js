@@ -45,8 +45,11 @@ function CallApigettable_modal(Id,type) {
         GenerateTablePage20(Id)
          .then((data) => {
              $documentableModal = data
+             var tempdata
+             if (type == '_Realtime') { tempdata = { remote_name: sessionStorage.getItem('cacheremotename') } }
+             else { tempdata = { wwcode: sessionStorage.getItem('cachewwcode'), dmacode: sessionStorage.getItem('cachedmacode'), dvtype: sessionStorage.getItem('cachedvtype') } }
              CallAPI('/service/api.aspx/' + (type == '_Realtime' ? 'GetRealtimeDataCtr002' : 'GetHistoryDataCtr002'),
-                           ''
+                           JSON.stringify(tempdata)
                      ).then((data) => {
                          $documentableModal.clear().rows.add(data).draw(true)
                          resolve()
