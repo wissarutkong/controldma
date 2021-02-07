@@ -237,6 +237,7 @@ function getinfovalva(dmacode) {
                    else { $('#valve_info_runmode').text('Manual'); $('#valve_info_runmode').addClass("bg-danger"); }
                    $('#valve_info_status').text(obj.StatusName != null ? obj.StatusName : '')
                    $('#valve_info_lastupdate').text(obj.LastUpdate != null ? obj.LastUpdate.replace('T', ' ') : 'ไม่มีการอัพเดต')
+                   $('#valve_match_time_no').text(obj.match_time_no)
                    element.style.display = "none";
                }).catch((error) => {
                    swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')

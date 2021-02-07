@@ -162,6 +162,8 @@
                                                                         <tr>
                                                                             <th><i class="fa fa-tags"></i>Last Command Date :</th>
                                                                             <td><span id="valve_info_lastupdate">xx</span></td>
+                                                                            <th><i class="fa fa-tags"></i>Match Time No :</th>
+                                                                            <td><span id="valve_match_time_no">xx</span></td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
