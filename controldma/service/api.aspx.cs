@@ -287,11 +287,11 @@ namespace controldma.service
                     _temp["Flow"] = row["Flow"];
                     _temp["Pressure"] = row["Pressure"];
                     _temp["LastUpdate"] = row["LastUpdate"];
-                    _temp["Detail"] = "<button type=\"button\" id=\"info_" + row["description"] + "\" class=\"btn btn-block btn-info btn-sm infovalva\" value=\"" + row["description"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
-                    _temp["Edit"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-danger btn-sm editvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-cog\"></i>ตั้งค่า</span></button>";
+                    _temp["Detail"] = "<button type=\"button\" id=\"info_" + row["dmacode"] + "\" class=\"btn btn-block btn-info btn-sm btn-flat infovalva\" value=\"" + row["dmacode"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
+                    _temp["Edit"] = "<button type=\"button\" id=\"" + row["dmacode"] + "\" class=\"btn btn-block btn-danger btn-sm btn-flat editvalva\" value=\"" + row["dmacode"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-cog\"></i>ตั้งค่า</span></button>";
                     if (Convert.ToBoolean(user.UserAdmin))
                     {
-                        _temp["Add"] = "<button type=\"button\" id=\"" + row["description"] + "\" class=\"btn btn-block btn-warning btn-sm addvalva\" value=\"" + row["description"] + "\" data-type=\"" + row["dvtype_id"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"far fa-edit\"></i> กำหนดประตูน้ำ</span></button>";
+                        _temp["Add"] = "<button type=\"button\" id=\"" + row["dmacode"] + "\" class=\"btn btn-block btn-warning btn-sm btn-flat addvalva\" value=\"" + row["dmacode"] + "\" data-type=\"" + row["dvtype_id"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"far fa-edit\"></i> กำหนดประตูน้ำ</span></button>";
                     }
 
                     dt_temp.Rows.Add(_temp);
@@ -332,7 +332,7 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
-        public static string GetHistoryDataCtr002(String wwcode , String dmacode , String dvtype)
+        public static string GetHistoryDataCtr002(String wwcode, String dmacode, String dvtype)
         {/*
              * ตรวจสอบว่า User ผ่านการ Login มาหรือยัง
              */
@@ -356,6 +356,13 @@ namespace controldma.service
                     }
 
                     DataTable dt = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        int index = dt.Rows.IndexOf(row);
+                        //dt.Rows[index]["cmd_dtm"] = Convert.ToDateTime(row["cmd_dtm"].ToString());
+                        dt.Rows[index]["cmd_desc"] = "<button type=\"button\" class=\"btn btn-block btn-info btn-sm btn-flat commandinfo\" value=\"" + row["cmd_desc"].ToString().Trim() + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-key\"></i> คลิ๊กเพื่อดู</span></button>";
+                    }
 
                     var resultArr = dt.Rows.Cast<DataRow>().Select(r => r.ItemArray).ToArray();
 
@@ -528,6 +535,7 @@ namespace controldma.service
                     }
                 }
 
+                Html_2 += "<div class=\"table-responsive\">";
                 Html_2 += " <table class=\"table table-striped table-bordered dt-responsive clear-center\" id=\"tblPrvAutomatic\" name=\"tblPrvAutomatic\">";
                 Html_2 += "     <thead>";
                 Html_2 += "         <tr>";
@@ -692,6 +700,7 @@ namespace controldma.service
                 }
                 Html_2 += "     </tbody>";
                 Html_2 += "</table>";
+                Html_2 += " </div>";
                 Html_2 += "<br><button type=\"button\" class=\"btn btn-primary btn-flat col-md-2\" data-toggle=\"modal\" href=\"#aboutModal_save\" onclick=\"Popup(1,'auto')\" ><i class=\"fa fa-floppy-o\"></i>" + Cs_Controlcenter.BtnSave() + "</button>";
                 //Html_2 += " <input type=\"hidden\" id=\"txtRow\" name=\"txtRow\" value=\"" + total + "\" /> ";
                 Html_2 += " <input type=\"hidden\" id=\"txtpilot_num\" value=\"" + pilot_num + "\" />";
@@ -703,7 +712,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_3 += "         <table id=\"dt_grid_realtime\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -726,8 +735,9 @@ namespace controldma.service
                 String Html_4 = string.Empty;
 
                 //Html_4 += "<div style=\"width: 100%;\">";
-                Html_4 += "     <div class=\"table-responsive\">";
-                Html_4 += "         <table id=\"dt_grid_history\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_4 += "    <div class=\"table-responsive Flipped\">";
+                Html_4 += "     <div class=\"Content\">";
+                Html_4 += "         <table id=\"dt_grid_history\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_4 += "             <thead>";
                 Html_4 += "                    <tr>";
                 Html_4 += "                         <th>ลำดับ</th>";
@@ -741,6 +751,7 @@ namespace controldma.service
                 Html_4 += "             </thead>";
                 Html_4 += "         </table>";
                 Html_4 += "     </div>";
+                Html_4 += "    </div>";
                 //Html_4 += "</div>";
 
                 #endregion
@@ -870,6 +881,7 @@ namespace controldma.service
                     }
                 }
 
+                Html_2 += "<div class=\"table-responsive\">";
                 Html_2 += "<table class=\"table table-bordered table-striped table-hover table-condensed\" id=\"tblBvAutomatic\" name=\"tblBvAutomatic\">";
                 Html_2 += "     <thead>";
                 Html_2 += "         <tr>";
@@ -1020,6 +1032,7 @@ namespace controldma.service
 
                 Html_2 += "         </tbody>";
                 Html_2 += "     </table>";
+                Html_2 += " </div>";
                 //Html_2 += " <input type=\"hidden\" id=\"txtRow\" name=\"txtRow\" value=\"" + total + "\" /> ";
                 Html_2 += "";
 
@@ -1030,7 +1043,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -1051,9 +1064,10 @@ namespace controldma.service
                 #region _History
                 String Html_4 = string.Empty;
 
-                Html_4 += "<div style=\"width: 100%;\">";
-                Html_4 += "     <div class=\"table-responsive\">";
-                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                //Html_4 += "<div style=\"width: 100%;\">";
+                Html_4 += "    <div class=\"table-responsive Flipped\">";
+                Html_4 += "     <div class=\"Content\">";
+                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_4 += "             <thead>";
                 Html_4 += "                    <tr>";
                 Html_4 += "                         <th>ลำดับ</th>";
@@ -1067,7 +1081,8 @@ namespace controldma.service
                 Html_4 += "             </thead>";
                 Html_4 += "         </table>";
                 Html_4 += "     </div>";
-                Html_4 += "</div>";
+                Html_4 += "    </div>";
+                //Html_4 += "</div>";
 
                 #endregion
 
@@ -1201,7 +1216,8 @@ namespace controldma.service
                     }
                 }
 
-                Html_2 += "<table class=\"table table-bordered table-striped table-hover table-condensed\" id=\"tblSteppingAutomatic\" name=\"tblSteppingAutomatic\">";
+                Html_2 += "<div class=\"table-responsive\">";
+                Html_2 += "<table class=\"table table-bordered table-striped table-hover table-condensed\" id=\"tblSteppingAutomatic\" name=\"tblSteppingAutomatic\" width=\"100%\">";
                 Html_2 += "     <thead>";
                 Html_2 += "         <tr>";
                 Html_2 += "             <th>No.</th>";
@@ -1359,6 +1375,7 @@ namespace controldma.service
 
                 Html_2 += "         </tbody>";
                 Html_2 += "     </table>";
+                Html_2 += " </div>";
                 //Html_2 += " <input type=\"hidden\" id=\"txtRow\" name=\"txtRow\" value=\"" + total + "\" /> ";
                 Html_2 += "";
 
@@ -1369,7 +1386,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -1390,9 +1407,10 @@ namespace controldma.service
                 #region _History
                 String Html_4 = string.Empty;
 
-                Html_4 += "<div style=\"width: 100%;\">";
-                Html_4 += "     <div class=\"table-responsive\">";
-                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center\" cellspacing=\"0\">";
+                //Html_4 += "<div style=\"width: 100%;\">";
+                Html_4 += "    <div class=\"table-responsive Flipped\">";
+                Html_4 += "     <div class=\"Content\">";
+                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_4 += "             <thead>";
                 Html_4 += "                    <tr>";
                 Html_4 += "                         <th>ลำดับ</th>";
@@ -1406,7 +1424,8 @@ namespace controldma.service
                 Html_4 += "             </thead>";
                 Html_4 += "         </table>";
                 Html_4 += "     </div>";
-                Html_4 += "</div>";
+                Html_4 += "    </div>";
+                //Html_4 += "</div>";
 
                 #endregion
 
@@ -1487,7 +1506,7 @@ namespace controldma.service
                 user = new WebManageUserData(userDetail);
                 Cs_initaldata inl = new Cs_initaldata(user);
                 List<SelectItem> resultList = new List<SelectItem>();
-                string error = "";           
+                string error = "";
                 try
                 {
                     DataTable dt = inl.GetDatabySQL(@"SELECT convert(varchar,180-DATEDIFF(second,[DataDateTime], SYSDATETIME())) as value

@@ -48,7 +48,7 @@
     <!-- Bootstrap Toggle -->
     <link href="plugins/bootstrap-toggle/css/bootstrap2-toggle.min.css" rel="stylesheet" />
     <script src="plugins/bootstrap-toggle/js/bootstrap2-toggle.min.js"></script>
-    
+ 
     <title>PWA Control</title>
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>

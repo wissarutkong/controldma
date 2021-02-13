@@ -17,22 +17,6 @@
     //    console.log($(this).prop('checked'))
     //})
 
-    $('#realtime_prvrefresh').click(() => {
-        $(this).prop("disabled", true)
-        $('dt_grid_realtime').DataTable().clear();
-        CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
-            $(this).prop("disabled", false)
-        })
-    })
-
-    $('#realtime_bvrefresh').click(() => {
-        $(this).prop("disabled", true);
-        $('dt_grid_realtime_bv').DataTable().clear();
-        CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
-            $(this).prop("disabled", false)
-        })
-    })
-
 })
 
 function onchangeddldvtype(value) {
@@ -84,10 +68,43 @@ $(document).on('show.bs.modal', '.modal', function (event) {
     }, 0);
 });
 
+$(document).on("click", "#realtime_prvrefresh", function () {
+    $(this).prop("disabled", true);
+    $(this).html('<i class="spinner-border spinner-border-sm"></i> Loading...');
+    $('dt_grid_realtime').DataTable().clear();
+    CallApigettable_modal('dt_grid_realtime', '_Realtime').then(() => {
+        $(this).html('<i class="fas fa-redo"></i> refresh');
+        $(this).prop("disabled", false);
+    })
+})
+
+
+$(document).on("click", "#realtime_bvrefresh", function () {
+    $(this).prop("disabled", true);
+    $(this).html('<i class="spinner-border spinner-border-sm"></i> Loading...');
+    $('dt_grid_realtime_bv').DataTable().clear();
+    CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
+        $(this).html('<i class="fas fa-redo"></i> refresh');
+        $(this).prop("disabled", false);
+    })
+})
+
 
 $(document).on("click", ".infovalva", function () {
     var dmacode = $(this).val();
     getinfovalva(dmacode)
+})
+
+$(document).on("click", ".commandinfo", function () {
+    $('#Modal_commandinfo').modal('show');
+    var lines = $(this).val().trim().split(',')
+    var temp = ''
+    jQuery.each(lines, function (k) {
+        if (k != -1)
+            temp += 'line[' + k + '] ===> ' + this + ',\n';
+    });
+
+    $('#command_cmd_desc').val(temp)
 })
 
 $(document).on("click", ".editvalva", function () {
@@ -123,7 +140,7 @@ $(document).on("click", ".editvalva", function () {
             })
             //element.style.visibility = "collapse";
         }
-        else if(datatype == 4){
+        else if (datatype == 4) {
             $('#Modal_edit_bv').modal('show');
             generateHtml_prvstepping(dmacode, $('#txtdvtypeid').val()).then(() => {
 
@@ -173,8 +190,8 @@ $(document).on("click", ".addvalva", function () {
                    else { $('#m_smartlogger').removeAttr('checked') }
 
                    $('#m_usereditor').text(obj.fullname)
-                   $('#m_lastupdate').text(obj.last_upd_dtm)
-                   SetSessionstorage_(getCookie('_wwcode'), dmacode, '','')
+                   $('#m_lastupdate').text(obj.last_upd_dtm.replace('T', ' '))
+                   SetSessionstorage_(getCookie('_wwcode'), dmacode, '', '')
                    showPage_content_modal();
                }).catch((error) => {
                    ClearSessionstorage()
@@ -238,6 +255,7 @@ function getinfovalva(dmacode) {
                    $('#valve_info_status').text(obj.StatusName != null ? obj.StatusName : '')
                    $('#valve_info_lastupdate').text(obj.LastUpdate != null ? obj.LastUpdate.replace('T', ' ') : 'ไม่มีการอัพเดต')
                    $('#valve_match_time_no').text(obj.match_time_no)
+                   $('#valve_match_time').text(obj.time_match)
                    element.style.display = "none";
                }).catch((error) => {
                    swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')
@@ -280,7 +298,7 @@ function getJsontp(dvtype_service) {
             break;
         case '5':
             clstp = '';
-            break;      
+            break;
         default:
             // code block
     }

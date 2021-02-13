@@ -21,7 +21,7 @@
 
 function CallApigetdatatable() {
     return new Promise((resolve, reject) => {
-        
+
         GenerateTable('dt_controlvalve')
          .then((data) => {
              $documentable = data
@@ -30,6 +30,7 @@ function CallApigetdatatable() {
                             JSON.stringify({ wwcode_id: getCookie('_wwcode'), dmacode: '' })
                      ).then((data) => {
                          $documentable.clear().rows.add(data).draw(true)
+                         $('#dt_controlvalve').DataTable().columns.adjust().responsive.recalc();
                          resolve()
                      }).catch((error) => {
                          //swalAlert(error, 'error')
@@ -40,7 +41,7 @@ function CallApigetdatatable() {
     })
 }
 
-function CallApigettable_modal(Id,type) {
+function CallApigettable_modal(Id, type) {
     return new Promise((resolve, reject) => {
         GenerateTablePage20(Id)
          .then((data) => {
@@ -52,6 +53,7 @@ function CallApigettable_modal(Id,type) {
                            JSON.stringify(tempdata)
                      ).then((data) => {
                          $documentableModal.clear().rows.add(data).draw(true)
+                         $('#' + Id).DataTable().columns.adjust().responsive.recalc();
                          resolve()
                      }).catch((error) => {
                          //swalAlert(error, 'error')
@@ -79,9 +81,9 @@ function GenerateTable(Id) {
         "ordering": true,
         "fixedHeader": false,
         "info": true,
-        "autoWidth": false,
         "destroy": true,
-        "processing": true
+        "processing": true,
+        "autoWidth": false
     });
 
     return Promise.resolve($table)

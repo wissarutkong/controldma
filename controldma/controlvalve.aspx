@@ -8,6 +8,11 @@
         th {
             background-color: #E2F0FF;
         }
+
+        table.dataTable th {
+            /*white-space: nowrap;*/
+            table-layout: fixed;
+        }
     </style>
     <!-- Content Wrapper. Contains page content -->
 
@@ -42,7 +47,7 @@
                                 <h3 class="card-title">รายการจุดตั้ง Control ประตูน้ำ</h3>
                             </div>
                             <div class="col-6">
-                                <button type="button" id="refresh_table" class="btn btn-block btn-success col-md-2" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                <button type="button" id="refresh_table" class="btn btn-block btn-success btn-flat col-md-2" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
                             </div>
                         </div>
 
@@ -50,29 +55,33 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-body">
-                        <div style="width: 100%;">
+                        <div class="row">
+                            <%--<div class="col-md-12">--%>
                             <div class="table-responsive">
-                                <table id="dt_controlvalve" class="table table-striped table-bordered dt-responsive clear-center" cellspacing="0">
+                                <table id="dt_controlvalve" class="table table-striped table-bordered dt-responsive" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
-                                            <th>จุดติดตั้ง DMA</th>
+                                            <th style="width: 20%;">จุดติดตั้ง DMA</th>
                                             <th>Remote Name</th>
                                             <th>Device Type</th>
                                             <th>Control Mode</th>
                                             <th>Failure Mode</th>
-                                            <th>Flow (m³)</th>
-                                            <th>Pressure (bar)</th>
+                                            <th>Flow<br />
+                                                (m³)</th>
+                                            <th>Pressure<br />
+                                                (bar)</th>
                                             <th>Last Update</th>
-                                            <th style="width: 90px;"></th>
-                                            <th style="width: 90px;"></th>
+                                            <th style="width: 10%;"></th>
+                                            <th style="width: 10%;"></th>
                                             <% if (Convert.ToBoolean(user.UserAdmin))
                                                 {  %>
-                                            <th style="width: 90px;"></th>
+                                            <th style="width: 10%;"></th>
                                             <% }  %>
                                         </tr>
                                     </thead>
                                 </table>
                             </div>
+                            <%--</div>--%>
                         </div>
                     </div>
                     <!-- /.card-body -->
@@ -162,8 +171,11 @@
                                                                         <tr>
                                                                             <th><i class="fa fa-tags"></i>Last Command Date :</th>
                                                                             <td><span id="valve_info_lastupdate">xx</span></td>
+                                                                        </tr>
+                                                                        <tr>
                                                                             <th><i class="fa fa-tags"></i>Match Time No :</th>
                                                                             <td><span id="valve_match_time_no">xx</span></td>
+                                                                            <td><span id="valve_match_time">xx</span></td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
@@ -516,21 +528,21 @@
                                         </div>
                                         <div class="tab-pane fade show" id="tab3_bv" role="tabpanel" aria-labelledby="tab3_bv">
                                             <div class="row">
-                                                <div class="col-md-12 col-12 col-xl-12">
+                                                <div class="col-md-12 col-xl-12 col-12 col-lg-12">
                                                     <h5>Real Time Data</h5>
                                                     <div class="row justify-content-between">
-                                                        <div class="col-4">
+                                                        <div class="col-md-4">
                                                         </div>
-                                                        <div class="col-3">
-                                                           <button type="button" id="realtime_bvrefresh" class="btn btn-block btn-success" data-button-spinner="Processing" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                                        <div class="col-md-3">
+                                                            <button type="button" id="realtime_bvrefresh" class="btn btn-block btn-success btn-flat" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <%-- <div class="col-md-12 col-12">--%>
-                                                        <%--<div style="width: 100%;">--%>
-                                                        <div id="_Realtime_Bv">
+                                                        <div style="width: 100%;">
+                                                            <div id="_Realtime_Bv">
+                                                            </div>
                                                         </div>
-                                                        <%--</div>--%>
                                                         <%--    </div>--%>
                                                     </div>
                                                 </div>
@@ -538,15 +550,15 @@
                                         </div>
                                         <div class="tab-pane fade show" id="tab4_bv" role="tabpanel" aria-labelledby="tab4_bv">
                                             <div class="row">
-                                                <div class="col-md-12 col-12 col-xl-12">
+                                                <div class="col-md-12 col-12 col-lg-12">
                                                     <h5>History Command</h5>
                                                     <div class="row" style="margin-top: 2%;">
-                                                        <%--<div class="col-md-12">--%>
-                                                            <div style="width: 100%;">
-                                                                <div id="_History_bv">
-                                                                </div>
+                                                        <%--   <div class="col-md-12">--%>
+                                                        <div style="width: 100%;">
+                                                            <div id="_History_bv">
                                                             </div>
-                                                        <%--</div>--%>
+                                                        </div>
+                                                        <%-- </div>--%>
                                                     </div>
                                                 </div>
                                             </div>
@@ -644,19 +656,19 @@
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>Real Time Data</h5>
                                                     <div class="row justify-content-between">
-                                                        <div class="col-4">
+                                                        <div class="col-md-4">
                                                         </div>
-                                                        <div class="col-3">
-                                                           <button type="button" id="realtime_prvrefresh" class="btn btn-block btn-success" data-button-spinner="Processing" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                                        <div class="col-md-3">
+                                                            <button type="button" id="realtime_prvrefresh" class="btn btn-block btn-success" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-top: 2%;">
-                                                        <div class="col-md-12 col-12">
-                                                            <%--<div style="width: 100%;">--%>
+                                                        <%--<div class="col-md-12 col-12">--%>
+                                                        <div style="width: 100%;">
                                                             <div id="_Realtime_PRV">
                                                             </div>
-                                                            <%--</div>--%>
                                                         </div>
+                                                        <%--</div>--%>
                                                     </div>
                                                 </div>
                                             </div>
@@ -666,12 +678,12 @@
                                                 <div class="col-md-12 col-12 col-xl-12">
                                                     <h5>History Command</h5>
                                                     <div class="row" style="margin-top: 2%;">
-                                                        <div class="col-md-12">
-                                                            <div style="width: 100%;">
-                                                                <div id="_History_PRV">
-                                                                </div>
+                                                        <%--<div class="col-md-12">--%>
+                                                        <div style="width: 100%;">
+                                                            <div id="_History_PRV">
                                                             </div>
                                                         </div>
+                                                        <%--</div>--%>
                                                     </div>
                                                 </div>
                                             </div>
@@ -694,11 +706,11 @@
     </div>
     <!-- /.modal -->
 
-    <div class="modal fade" id="Modal_warning">
-        <div class="modal-dialog modal-sm">
+    <div class="modal fade" id="Modal_commandinfo">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"></h4>
+                    <h4 class="modal-title">Command history</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -706,14 +718,15 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <span>ไม่พบข้อมูลจุดติดตั้ง</span>
+                            <textarea class="col-md-12" id="command_cmd_desc" style="width: 100%; min-height: 500px" disabled>
+                            </textarea>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
+                <%--                <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-primary">Save changes</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>
+                </div>--%>
             </div>
             <!-- /.modal-content -->
         </div>
