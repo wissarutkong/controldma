@@ -503,7 +503,21 @@ namespace controldma.service
                 foreach (DataRow row in dt_cmdprvtdetail.Rows)
                 {
                     IndexNo += 1;
-                    string pilot_no_value = IndexNo.ToString() + row["pilot_no"].ToString();
+                    string pilot_no_value = string.Empty;
+                    if (row.IsNull("pilot_no") || row["pilot_no"] == "")
+                        pilot_no_value = IndexNo.ToString();
+                    else if(Convert.ToInt32(row["pilot_no"]) > pilot_num)
+                        pilot_no_value = IndexNo.ToString();
+                    else
+                        pilot_no_value = IndexNo.ToString() + row["pilot_no"].ToString();
+
+                    //int pilotnumdetail = row["pilot_no"];
+
+                    //string pilot_no_value = IndexNo.ToString() + row["pilot_no"].ToString();
+                    //if (Convert.ToInt32(row["pilot_no"]) > pilot_num)
+                    //    pilot_no_value = IndexNo.ToString();
+
+
                     switch (IndexNo)
                     {
                         case 1:
@@ -587,7 +601,7 @@ namespace controldma.service
                         Html_2 += "         <td>";
                         Html_2 += "             <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
                         Html_2 += "                 <option value=\"4\" " + selected_dv_4 + ">Enable</option>";
-                        Html_2 += "                 <option value=\"0\" " + selected_dv_0 + ">Disable</option>";
+                        Html_2 += "                 <option value=\"0\" " + selected_dv_0 + " disabled>Disable</option>";
                         Html_2 += "             </select>";
                         Html_2 += "         </td>";
                         Html_2 += "         <td>";
@@ -653,13 +667,13 @@ namespace controldma.service
                         Html_2 += "     <tr>";
                         Html_2 += "         <td align=\"left\">" + IndexNo + "</td>";
                         Html_2 += "         <td>";
-                        Html_2 += "             <select id=\"@selmode\" name=\"@selmode\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
+                        Html_2 += "             <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
                         Html_2 += "                 <option value=\"4\">Enable</option>";
-                        Html_2 += "                 <option value=\"0\">Disable</option>";
+                        Html_2 += "                 <option value=\"0\" disabled>Disable</option>";
                         Html_2 += "             </select>";
                         Html_2 += "         </td>";
                         Html_2 += "         <td>";
-                        Html_2 += "             <select id=\"@txttime\" name=\"@txttime\" class=\"form-control\" disabled=\"true\">";
+                        Html_2 += "             <select id=\"" + txttime + "\" name=\"" + txttime + "\" class=\"form-control\" disabled=\"true\">";
                         foreach (DataRow time in dt_timeList.Rows)
                         {
                             Html_2 += "             <option value=\"" + time["time_objid"] + "\">" + time["time_label_long"] + "</option>";
@@ -952,7 +966,7 @@ namespace controldma.service
                         Html_2 += "      <td align=\"center\">" + @IndexNo + "</td>";
                         Html_2 += "      <td>";
                         Html_2 += "         <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
-                        Html_2 += "             <option value=\"0\"  " + selected_dv_0 + " " + isdisabled + ">Disable</option>";
+                        //Html_2 += "             <option value=\"0\"  " + selected_dv_0 + " " + isdisabled + ">Disable</option>";
                         Html_2 += "             <option value=\"1\" " + selected_dv_1 + ">Pressure</option>";
                         Html_2 += "             <option value=\"2\"  " + selected_dv_2 + ">Flow</option>";
                         Html_2 += "             <option value=\"3\"  " + selected_dv_3 + ">Valve</option>";
@@ -1007,7 +1021,7 @@ namespace controldma.service
                         Html_2 += "     <td align=\"center\">" + IndexNo + "</td>";
                         Html_2 += "     <td>";
                         Html_2 += "     <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
-                        Html_2 += "         <option value=\"0\" " + isdisabled + ">Disable</option>";
+                        //Html_2 += "         <option value=\"0\" " + isdisabled + ">Disable</option>";
                         Html_2 += "         <option value=\"1\">Pressure</option>";
                         Html_2 += "         <option value=\"2\">Flow</option>";
                         Html_2 += "         <option value=\"3\">Valve</option>";
@@ -1260,7 +1274,6 @@ namespace controldma.service
                         if (failure_mode == 0)
                             selected_dv_0 = "selected";
 
-
                         if (failure_mode == 1)
                             selected_dv_1 = "selected";
 
@@ -1287,7 +1300,7 @@ namespace controldma.service
                         Html_2 += "      <td align=\"center\">" + @IndexNo + "</td>";
                         Html_2 += "      <td>";
                         Html_2 += "         <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
-                        Html_2 += "             <option value=\"0\"  " + selected_dv_0 + " " + isdisabled + ">Disable</option>";
+                        //Html_2 += "             <option value=\"0\"  " + selected_dv_0 + " " + isdisabled + ">Disable</option>";
                         Html_2 += "             <option value=\"1\" " + selected_dv_1 + ">Pressure</option>";
                         Html_2 += "             <option value=\"2\"  " + selected_dv_2 + ">Flow</option>";
                         //Html_2 += "             <option value=\"3\"  " + selected_dv_3 + ">Valve</option>";
@@ -1342,7 +1355,7 @@ namespace controldma.service
                         Html_2 += "     <td align=\"center\">" + IndexNo + "</td>";
                         Html_2 += "     <td>";
                         Html_2 += "     <select id=\"" + selmode + "\" name=\"" + selmode + "\" class=\"form-control\" onchange=\"ChangeMode(this.id);\">";
-                        Html_2 += "         <option value=\"0\" " + isdisabled + ">Disable</option>";
+                        //Html_2 += "         <option value=\"0\" " + isdisabled + ">Disable</option>";
                         Html_2 += "         <option value=\"1\">Pressure</option>";
                         Html_2 += "         <option value=\"2\">Flow</option>";
                         //Html_2 += "         <option value=\"3\">Valve</option>";
@@ -1754,6 +1767,9 @@ namespace controldma.service
                                         flow_value + "/" +
                                         valve_value + "/" +
                                         row["pilot_no"].ToString() + ",";
+
+                                    if (row.IsNull("pilot_no") || row["pilot_no"] == "")
+                                        row["pilot_no"] = "null";
 
                                     #region sql insert to tb_ctr_cmdprvtdetail
                                     strSQL = string.Empty;

@@ -18,6 +18,7 @@ namespace controldma.App_Code
         public string UserBranch_defualt;
         public string UserCons;
         public string UserCons_PortalDB;
+        public string UserTokenAuthen;
 
         public WebManageUserData(Hashtable data)
         {
@@ -40,6 +41,8 @@ namespace controldma.App_Code
             UserZone = data["UserZone"] != null ? data["UserZone"].ToString().Trim() : "";
 
             UserBranch_defualt = data["UserBranch_defualt"] != null ? data["UserBranch_defualt"].ToString().Trim() : "";
+
+            UserTokenAuthen = data["UserTokenAuthen"] != null ? data["UserTokenAuthen"].ToString().Trim() : "";
         }
     }
 }

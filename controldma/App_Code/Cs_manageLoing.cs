@@ -11,7 +11,7 @@ namespace controldma.App_Code
     public class Cs_manageLoing
     {
         public String AlertType, txtAlert;
-        public String UserID, UserName, Userposition , UserAccess_level, User_Admin , _region , _zone , _wwcode ;
+        public String UserID, UserName, Userposition , UserAccess_level, User_Admin , _region , _zone , _wwcode , stoken_authen;
         public Cs_manageLoing()
         {
             //
@@ -26,13 +26,14 @@ namespace controldma.App_Code
             //json = json.Replace("(", "");
             //json = json.Replace(")", "");
             //json = json.Replace(";", "");
-            //var JSONObj = new JavaScriptSerializer().Deserialize<Dictionary<string, string>>(json);
+            //var JSONObj = new JavaScriptSerializer().Deserialize<Dictionary<string, string>>(json);         
         }
 
         public Boolean ManageLoginC(String sUsername, String sPassword, String sCon , bool flaglogin)
         {
             Boolean bLogin = false;
             SqlConnection cons = new SqlConnection(sCon);
+            Cs_Controlcenter cls = new Cs_Controlcenter();
             try
             {
                 cons.Open();
@@ -40,7 +41,7 @@ namespace controldma.App_Code
                 if (dtUser.Rows.Count > 0)
                 {
                     if (DoesPasswordMatch(dtUser.Rows[0]["password"].ToString(), sPassword.ToString(), flaglogin))
-                    {
+                    {      
                         if ((bool)dtUser.Rows[0]["is_controllable"])
                         {
                             DataTable dtRole = ChkRole(sUsername, cons);
@@ -54,6 +55,8 @@ namespace controldma.App_Code
                                 _region = dtUser.Rows[0]["sector_id"].ToString() != "" ? dtUser.Rows[0]["sector_id"].ToString() : "";
                                 _zone = dtUser.Rows[0]["district_id"].ToString() != "" ? dtUser.Rows[0]["district_id"].ToString() : "";
                                 _wwcode = dtUser.Rows[0]["branch_id"].ToString() != "" ? dtUser.Rows[0]["branch_id"].ToString() : "";
+                                //stoken_authen = cls.POST("http://122.155.27.175/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
+                                stoken_authen = cls.POST("http://localhost/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
                             }                          
                         }
                         else {

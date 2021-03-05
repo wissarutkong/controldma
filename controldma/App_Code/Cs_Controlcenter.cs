@@ -74,8 +74,9 @@ namespace controldma
             }
         }
 
+        private Stream dataStream;
         // POST a JSON string
-        public void POST(string url, string jsonContent)
+        public string POST(string url, string jsonContent)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
@@ -84,7 +85,8 @@ namespace controldma
             Byte[] byteArray = encoding.GetBytes(jsonContent);
 
             request.ContentLength = byteArray.Length;
-            request.ContentType = @"application/json";
+            //request.ContentType = @"application/json";
+            request.ContentType = "application/x-www-form-urlencoded";
 
             using (Stream dataStream = request.GetRequestStream())
             {
@@ -95,11 +97,19 @@ namespace controldma
             {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
+                    dataStream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(dataStream);
+                    string responseFromServer = reader.ReadToEnd();
                     length = response.ContentLength;
+                    reader.Close();
+                    dataStream.Close();
+                    response.Close();
+                    return responseFromServer;
                 }
             }
             catch (WebException ex)
             {
+                throw;
                 // Log exception and throw as for GET example above
             }
         }

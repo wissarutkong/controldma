@@ -81,6 +81,7 @@ namespace controldma
                     htbUser.Add("UserBranch_defualt", Mgs._wwcode);
                     htbUser.Add("UserCons", sCon);
                     htbUser.Add("UserCons_PortalDB", sCon_portaldb);
+                    htbUser.Add("UserTokenAuthen", Mgs.stoken_authen);
                     Session["USER"] = htbUser;
 
                     //Server.Transfer("index.aspx");
