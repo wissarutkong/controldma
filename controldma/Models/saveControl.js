@@ -24,13 +24,24 @@ function Modal_save() {
 
     var type = document.getElementById('typepopup').value;
     if (type == "manual") {
-        if (document.getElementById("txtdvtypeid").value == "2" || document.getElementById("txtdvtypeid").value == "4") {
+        if (document.getElementById("txtdvtypeid").value == "2") {
             Post_Bv_manual();
         } else if (document.getElementById("txtdvtypeid").value == "3") {
             Post_prvt_manual();
         }
+        else if (document.getElementById("txtdvtypeid").value == "4") {
+            Post_stepping_manual();
+        }
+        else if (document.getElementById("txtdvtypeid").value == "6") {
+            Post_Afv_manual();
+        }
     } else if (type == "auto") {
-        Post_AutoBv();
+        if (document.getElementById("txtdvtypeid").value == "2")
+            Post_AutoBv();
+        else if (document.getElementById("txtdvtypeid").value == "4")
+            Post_Autostepping();
+        else
+            Post_AutoAfv();
     } else if (type == "auto_prv") {
         Post_AutoPrvt();
     }
@@ -42,7 +53,7 @@ function Post_prvt_manual() {
     if (document.getElementById("txtSolenoid").value == "") {
         document.getElementById("txtSolenoid").value = "0";
     }
-
+    var template = sessionStorage.getItem('cycle_counter')
     let mainData = []
     mainData.push({
         wwcode: sessionStorage.getItem('cachewwcode'),
@@ -53,7 +64,7 @@ function Post_prvt_manual() {
         remark: document.getElementById("save_remark").value
     })
 
-    CallAPI('/service/api.aspx/AddManualPrvt',
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddManualPrvt' : 'AddManualPrvt_Template'),
        JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             $("#aboutModal_save").modal("hide");
@@ -70,6 +81,7 @@ function Post_prvt_manual() {
 
 //Save auto prv
 function Post_AutoPrvt() {
+    var template = sessionStorage.getItem('cycle_counter')
     var cmdbvhead = [];
     var cmdbvdetail = [];
     cmdprvtdetail = getDatabeforsave_AutoPrvt();
@@ -80,10 +92,11 @@ function Post_AutoPrvt() {
         remote_name: sessionStorage.getItem('cacheremotename'),
         cmdprvtdetail: cmdprvtdetail,
         dvtypeid: document.getElementById("txtdvtypeid").value,
-        remark: document.getElementById("save_remark").value
+        remark: document.getElementById("save_remark").value,
+        template: template
     })
 
-    CallAPI('/service/api.aspx/AddAutoPrvt',
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddAutoPrvt' : 'AddAutoPrvt_Template'),
    JSON.stringify({ mainDataText: JSON.stringify(mainData) })
     ).then((data) => {
         $("#aboutModal_save").modal("hide");
@@ -119,6 +132,7 @@ function Post_Bv_manual() {
         return;
     }
 
+    var template = sessionStorage.getItem('cycle_counter')
     let mainData = []
     mainData.push({
         wwcode: sessionStorage.getItem('cachewwcode'),
@@ -129,7 +143,7 @@ function Post_Bv_manual() {
         remark: document.getElementById("save_remark").value
     })
 
-    CallAPI('/service/api.aspx/AddManualBv',
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddManualBv' : 'AddManualBv_Template'),
        JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             $("#aboutModal_save").modal("hide");
@@ -140,23 +154,35 @@ function Post_Bv_manual() {
         }).catch((error) => {
             swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
         })
-
-
 }
-
 
 //Save auto bv
 function Post_AutoBv() {
+    var template = sessionStorage.getItem('cycle_counter')
     var cmdbvhead = [];
     var cmdbvdetail = [];
-    if (document.getElementById("txtdvtypeid").value == "2") {
-        cmdbvdetail = getDatabeforsave_AutoBv();
-    } else { cmdbvdetail = getDatabeforsave_AutoStepping(); }
-    cmdbvhead[0] = {
-        "failure_mode": document.getElementById("failure_mode").value, "step_control_delay": document.getElementById("step_control_delay").value,
-        "time_loop": document.getElementById("time_loop").value, "limit_min": document.getElementById("limit_min").value,
-        "deadband_pressure": document.getElementById("deadband_pressure").value, "deadband_flow": document.getElementById("deadband_flow").value
-    };
+    cmdbvdetail = getDatabeforsave_AutoBv();
+    if (template == 6) {
+        cmdbvhead[0] = {
+            "failure_mode": document.getElementById("failure_mode").value,
+            "step_control_delay": document.getElementById("step_control_delay").value,
+            "time_loop": document.getElementById("time_loop").value,
+            "limit_min": document.getElementById("limit_min").value,
+            "deadband_pressure": document.getElementById("deadband_pressure").value,
+            "deadband_flow": document.getElementById("deadband_flow").value
+        };
+    } else {
+        cmdbvhead[0] = {
+            //"failure_mode": document.getElementById("failure_mode").value,
+            "step_control_delay": document.getElementById("step_control_delay").value,
+            "time_loop": document.getElementById("time_loop").value,
+            "limit_min": document.getElementById("limit_min").value,
+            "deadband_pressure": document.getElementById("deadband_pressure").value,
+            "deadband_flow": document.getElementById("deadband_flow").value,
+            "template": sessionStorage.getItem('cycle_counter')
+        };
+    }
+
 
     let mainData = []
     mainData.push({
@@ -169,18 +195,18 @@ function Post_AutoBv() {
         remark: document.getElementById("save_remark").value
     })
 
-    CallAPI('/service/api.aspx/AddAutoBv',
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddAutoBv' : 'AddAutoBv_Template'),
    JSON.stringify({ mainDataText: JSON.stringify(mainData) })
     ).then((data) => {
         $("#aboutModal_save").modal("hide");
         swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
-        generateHtml_bv(data.dmacode, $('#txtdvtypeid').val()).then(() => {
-
-        })
+        generateHtml_bv(data.dmacode, $('#txtdvtypeid').val(), sessionStorage.getItem('cycle_counter')).then(() => { })
     }).catch((error) => {
         swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
     })
 }
+
+//====================Detail=========================================================
 
 function getDatabeforsave_AutoBv() {
     var allRow = document.getElementById("txtRow").value
@@ -201,6 +227,7 @@ function getDatabeforsave_AutoBv() {
     return cmdbvdetail;
 }
 
+
 function getDatabeforsave_AutoStepping() {
     var allRow = document.getElementById("txtRow").value
     var cmdbvdetail = [];
@@ -218,6 +245,189 @@ function getDatabeforsave_AutoStepping() {
         };
     }
     return cmdbvdetail;
+}
+
+function getDatabeforsave_AutoAfv() {
+    var allRow = document.getElementById("txtRow").value
+    var cmdafvdetail = [];
+    for (var i = 1; i <= allRow; i++) {
+        cmdafvdetail[i - 1] = {
+            "order_time": i,
+            "date_worker": document.getElementById("txtdate" + i).value,
+            "time_start": document.getElementById("txttime" + i).value,
+            "time_end": document.getElementById("txttime" + i).value,
+            "txtMode": document.getElementById("txtMode" + i).value,
+            "time_worker": document.getElementById("txttimer" + i).value,
+            "flow_worker": document.getElementById("txtFlow" + i).value
+        };
+    }
+    return cmdafvdetail;
+}
+
+//====================Detail=========================================================
+
+//====================Head=========================================================
+function getDatabeforesave_cmdbvheadStepping(template) {
+    var cmdbvhead = []
+    if (template == 6) {
+        cmdbvhead[0] = {
+            "failure_mode": document.getElementById("failure_mode").value,
+            "step_control_delay": document.getElementById("step_control_delay").value,
+            "time_loop": document.getElementById("time_loop").value,
+            "limit_min": document.getElementById("limit_min").value,
+            "deadband_pressure": document.getElementById("deadband_pressure").value,
+            "deadband_flow": document.getElementById("deadband_flow").value
+        };
+    } else {
+        cmdbvhead[0] = {
+            //"failure_mode": document.getElementById("failure_mode").value,
+            "step_control_delay": document.getElementById("step_control_delay").value,
+            "time_loop": document.getElementById("time_loop").value,
+            "limit_min": document.getElementById("limit_min").value,
+            "headlost": document.getElementById("headlost").value,
+            "deadband_pressure": document.getElementById("deadband_pressure").value,
+            "deadband_flow": document.getElementById("deadband_flow").value,
+            "template": sessionStorage.getItem('cycle_counter')
+        };
+    }
+
+    return cmdbvhead;
+}
+
+//====================Head=========================================================
+
+//Save manual Stepping
+function Post_stepping_manual() {
+
+    var template = sessionStorage.getItem('cycle_counter')
+    if (template == 6) {
+        if (document.getElementById("txtvalve").value > 100) {
+            swalAlert('ค่า valve(%) เกิน 100', 'warning')
+            console.log("step6")
+            return;
+        }
+    }
+
+    let mainData = []
+    mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
+        valve: (template == 6 ? document.getElementById("txtvalve").value : $('#txtvalva_ct8').prop('checked')),
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddManualBv' : 'AddManualStepping_Template'),
+       JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+        ).then((data) => {
+            $("#aboutModal_save").modal("hide");
+            swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+            generateHtml_prvstepping(data.dmacode, $('#txtdvtypeid').val(), sessionStorage.getItem('cycle_counter')).then(() => { })
+        }).catch((error) => {
+            swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+        })
+}
+
+//Save auto Stepping
+function Post_Autostepping() {
+    var template = sessionStorage.getItem('cycle_counter')
+    var cmdbvhead = [];
+    var cmdbvdetail = [];
+    cmdbvdetail = getDatabeforsave_AutoStepping();
+    cmdbvhead = getDatabeforesave_cmdbvheadStepping(template);
+
+    let mainData = []
+    mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
+        cmdbvhead: cmdbvhead,
+        cmdbvdetail: cmdbvdetail,
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    CallAPI('/service/api.aspx/' + (template == '6' ? 'AddAutoBv' : 'AddAutoStepping_Template'),
+   JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+    ).then((data) => {
+        $("#aboutModal_save").modal("hide");
+        swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+        generateHtml_prvstepping(data.dmacode, $('#txtdvtypeid').val(), sessionStorage.getItem('cycle_counter')).then(() => { })
+    }).catch((error) => {
+        swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+    })
+}
+
+//Save manual Afv
+function Post_Afv_manual() {
+    if ($('#txtvalva_afv').prop('checked')) {
+        if ($('#txtafv_timeoutmin').val() == 0 || $('#txtafv_timeoutmin').val() == null) {
+            swalAlert('กรุณากรอกเวลาปิด', 'warning')
+            console.log($('#txtvalva_afv').prop('checked'))
+            return;
+        }
+    }
+
+    let mainData = []
+    mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
+        valve: $('#txtvalva_afv').prop('checked'),
+        timeout_min: $('#txtafv_timeoutmin').val(),
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    console.log(mainData)
+
+    CallAPI('/service/api.aspx/AddManualAfv_Template',
+       JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+        ).then((data) => {
+            $("#aboutModal_save").modal("hide");
+            swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+            generateHtml_Afv(data.dmacode, $('#txtdvtypeid').val(), sessionStorage.getItem('cycle_counter')).then(() => { })
+        }).catch((error) => {
+            swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+        })
+}
+
+//Save auto Afv
+function Post_AutoAfv() {
+    var template = sessionStorage.getItem('cycle_counter')
+    var cmdafvhead = [];
+    var cmdafvdetail = [];
+    cmdafvdetail = getDatabeforsave_AutoAfv();
+
+    cmdafvhead[0] = {
+        "pipe_size": document.getElementById("pipe_size").value,
+        "time_out_min_afv": document.getElementById("time_out_min_afv").value,
+        "template": sessionStorage.getItem('cycle_counter')
+    };
+
+    let mainData = []
+    mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
+        cmdafvhead: cmdafvhead,
+        cmdafvdetail: cmdafvdetail,
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    console.log(mainData)
+
+    CallAPI('/service/api.aspx/AddAutoAfv_Template',
+    JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+     ).then((data) => {
+         $("#aboutModal_save").modal("hide");
+         swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+         generateHtml_Afv(data.dmacode, $('#txtdvtypeid').val(), sessionStorage.getItem('cycle_counter')).then(() => { })
+     }).catch((error) => {
+         swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+     })
 }
 
 
@@ -251,7 +461,7 @@ function delRow(r) {
 
 //ทำการ ADD แถวใหม่่ prv
 function insertRow(r) {
-    if (document.getElementById("txtRow").value == "6") {
+    if (document.getElementById("txtRow").value == sessionStorage.getItem('cycle_counter')) {
         document.getElementById("btnAdd_prv").disabled = true;
         //document.getElementById("btnAdd").style.backgroundColor = "red";
         return;
@@ -309,7 +519,7 @@ function delRow_bv(r) {
 }
 //ทำการ ADD แถวใหม่่ bv
 function insertRow_bv(r) {
-    if (document.getElementById("txtRow").value == "6") {
+    if (document.getElementById("txtRow").value == sessionStorage.getItem('cycle_counter')) {
         document.getElementById("btnAdd_bv").disabled = true;
         //document.getElementById("btnAdd").style.backgroundColor = "red";
         return;
@@ -334,7 +544,7 @@ function insertRow_bv(r) {
         var c5 = row.insertCell(4);
         var c6 = row.insertCell(5);
 
-        c1.innerHTML = '<div style="align:center"  id = "txtRef' + r + '">' + r + '</div>';
+        c1.innerHTML = '<div style="text-align: center;"  id = "txtRef' + r + '">' + r + '</div>';
         c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="1">Pressure</option><option value="2">Flow</option><option value="3">Valve</option></select>';
         c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
 
@@ -362,7 +572,7 @@ function insertRow_bv(r) {
         var c5 = row.insertCell(4);
         //var c6 = row.insertCell(5);
 
-        c1.innerHTML = '<div style="align:center"  id = "txtRef' + r + '">' + r + '</div>';
+        c1.innerHTML = '<div style="text-align: center;"  id = "txtRef' + r + '">' + r + '</div>';
         c2.innerHTML = '<select id = "selmode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="1">Pressure</option><option value="2">Flow</option></select>';
         c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control"><option value="00:00">00:00</option><option value="00:30">00:30</option><option value="01:00">01:00</option><option value="01:30">01:30</option><option value="02:00">02:00</option><option value="02:30">02:30</option><option value="03:00">03:00</option><option value="03:30">03:30</option><option value="04:00">04:00</option><option value="04:30">04:30</option><option value="05:00">05:00</option><option value="05:30">05:30</option><option value="06:00">06:00</option><option value="06:30">06:30</option><option value="07:00">07:00</option><option value="07:30">07:30</option><option value="08:00">08:00</option><option value="08:30">08:30</option><option value="09:00">09:00</option><option value="09:30">09:30</option><option value="10:00">10:00</option><option value="10:30">10:30</option><option value="11:00">11:00</option><option value="11:30">11:30</option><option value="12:00">12:00</option><option value="12:30">12:30</option><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option><option value="16:30">16:30</option><option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option><option value="18:30">18:30</option><option value="19:00">19:00</option><option value="19:30">19:30</option><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option><option value="22:30">22:30</option><option value="23:00">23:00</option><option value="23:30">23:30</option></select>';
 
@@ -372,6 +582,51 @@ function insertRow_bv(r) {
 
         ChangeMode("selmode" + r);
     }
+}
+
+// ทำการ delete แถว afv
+function delRow_afv(r) {
+    if (parseInt(document.getElementById("txtRow").value) > 1) {
+        document.getElementById("tblAfvAutomatic").deleteRow(parseInt(document.getElementById("txtRow").value));
+        document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) - 1;
+        document.getElementById("btnAdd_afv").disabled = false;
+    }
+}
+
+//ทำการ ADD แถวใหม่่ afv
+function insertRow_afv(r) {
+    if (document.getElementById("txtRow").value == sessionStorage.getItem('cycle_counter')) {
+        document.getElementById("btnAdd_afv").disabled = true;
+        //document.getElementById("btnAdd").style.backgroundColor = "red";
+        return;
+    }
+
+    var searchStr = "btnAdd";
+    var replaceStr = "";
+    var re = new RegExp(searchStr, "g");
+    var result = document.getElementById("txtRow").value;
+
+    document.getElementById("txtRow").value = parseInt(document.getElementById("txtRow").value) + 1;
+    var allRow = document.getElementById("txtRow").value;
+    r = parseInt(result) + 1;
+
+    var row = document.getElementById("tblAfvAutomatic").insertRow(r);
+
+    var c1 = row.insertCell(0);
+    var c2 = row.insertCell(1);
+    var c3 = row.insertCell(2);
+    var c4 = row.insertCell(3);
+    var c5 = row.insertCell(4);
+    var c6 = row.insertCell(5);
+
+    c1.innerHTML = '<div style="text-align: center;"  id = "txtRef' + r + '">' + r + '</div>';
+    c2.innerHTML = '<select id="txtdate' + r + '"  name="txtdate' + r + '"  class="form-control">' + localStorage.getItem("DateOpt") + '</select>';
+    c3.innerHTML = '<select id="txttime' + r + '"  name="txttime' + r + '"  class="form-control">' + localStorage.getItem("timeOpt") + '</select>';
+    c4.innerHTML = '<select id = "txtMode' + r + '" class="form-control" onchange="ChangeMode(this.id);"><option value="1" selected>Timer</option><option value="2">Flow</option></select>';
+    c5.innerHTML = '<input type="text" onkeypress="return isNumberKey(event)"  class="form-control"  id="txttimer' + r + '" style="width:90%" maxlength="8" value="" >';
+    c6.innerHTML = '<input type="text"  onkeypress="return isNumberKey(event)" class="form-control"  id="txtFlow' + r + '" style="width:90%" maxlength="8" >';
+
+    ChangeMode("txtMode" + r);
 }
 
 //จัดเรียงแถวใหม่ก่อนทำการ insert แถว
@@ -448,6 +703,24 @@ function ChangeMode(id) {
                 break;
             case "2":
                 txtPressure.style.backgroundColor = "#CCCCCC";
+                txtFlow.focus();
+                break;
+        }
+    }
+    else if ($('#txtdvtypeid').val() == 6) {
+        var i = id.replace("txtMode", "");
+        console.log(i)
+        var txttimer = document.getElementById("txttimer" + i);
+        var txtFlow = document.getElementById("txtFlow" + i);
+        txttimer.style.backgroundColor = "#FFFFFF";
+        txtFlow.style.backgroundColor = "#FFFFFF";
+        switch (document.getElementById(id).value) {
+            case "1":
+                txtFlow.style.backgroundColor = "#CCCCCC";
+                txttimer.focus();
+                break;
+            case "2":
+                txttimer.style.backgroundColor = "#CCCCCC";
                 txtFlow.focus();
                 break;
         }

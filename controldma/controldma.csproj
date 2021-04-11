@@ -2000,6 +2000,11 @@
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="service\api.asmx" />
     <Content Include="service\api.aspx" />
+    <Content Include="template\afv_manual.htm" />
+    <Content Include="template\bv_footer_2.htm" />
+    <Content Include="template\afv_footer.htm" />
+    <Content Include="template\prvstepping_footer_2.htm" />
+    <Content Include="template\prvstepping_footer_1.htm" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -285,14 +285,21 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-12 col-sm-12">
+                                        <label for="m_Templatecontrol">Template Control</label>
+                                        <select id="m_Templatecontrol" class="form-control select2bs4" data-dropdown-css-class="select2-info">
+                                        </select>
+                                    </div>
+                                </div>
                                 <hr />
                                 <div class="form-row">
                                     <div class="form-group col-md-6 col-12 col-sm-12">
-                                        <h5 for="deadband_pressure"><i class="fas fa-user-check"></i>ผู้แก้ไข</h5>
+                                        <h5 for="m_usereditor"><i class="fas fa-user-check"></i>ผู้แก้ไข</h5>
                                         <label id="m_usereditor">xxx</label>
                                     </div>
                                     <div class="form-group col-md-6 col-12 col-sm-12">
-                                        <h5 for="deadband_flow"><i class="fas fa-user-clock"></i>วันที่แก้ไข</h5>
+                                        <h5 for="m_lastupdate"><i class="fas fa-user-clock"></i>วันที่แก้ไข</h5>
                                         <label id="m_lastupdate">xxx</label>
                                     </div>
                                 </div>
@@ -310,88 +317,6 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
-
-    <%--<div class="modal fade Modal_edit" id="Modal_edit_bv">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div id="overlay_modal" class="overlay d-flex justify-content-center align-items-center">
-                    <i class="fas fa-2x fa-sync fa-spin"></i>
-                </div>
-                <div class="modal-header">
-                    <h4 class="modal-title modal_title_setting">xx</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-primary card-outline card-outline-tabs">
-                                <div class="card-header p-0 border-bottom-0">
-                                    <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="tab1_bv_normal" data-toggle="pill" href="#tab1_bv" role="tab" aria-controls="tab1_bv" aria-selected="true">Manual Command</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="tab2_bv_normal" data-toggle="pill" href="#tab2_bv" role="tab" aria-controls="tab2_bv" aria-selected="false">Automatic Command</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="tab3_bv_normal" data-toggle="pill" href="#tab3_bv" role="tab" aria-controls="tab3_bv" aria-selected="false">Real Time Data</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="tab4_bv_normal" data-toggle="pill" href="#tab4_bv" role="tab" aria-controls="tab4_bv" aria-selected="false">History Command</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="card-body">
-                                    <div class="tab-content" id="tabs_bv">
-                                        <div class="tab-pane fade show active" id="tab1_bv" role="tabpanel" aria-labelledby="tab1_bv">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <span>tab1</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade show" id="tab2_bv" role="tabpanel" aria-labelledby="tab2_bv">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <span>tab2</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade show" id="tab3_bv" role="tabpanel" aria-labelledby="tab3_bv">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <span>tab3</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade show" id="tab4_bv" role="tabpanel" aria-labelledby="tab4_bv">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <span>tab4</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.card -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->--%>
-
 
     <div class="modal fade Modal_edit" id="Modal_edit_bv">
         <div class="modal-dialog modal-dialog-scrollable modal-xl">
@@ -478,7 +403,9 @@
                                                                 <div class="card-body">
                                                                     <div class="row">
                                                                         <div class="col-md-12">
-                                                                            <div class="form-row">
+                                                                            <div id="_Automatic_Bv_footer">
+                                                                            </div>
+                                                                            <%--<div class="form-row">
                                                                                 <div class="form-group col-md-6">
                                                                                     <label for="failure_mode">Mode :</label>
                                                                                     <select id="failure_mode" name="failure_mode" class="form-control">
@@ -512,7 +439,7 @@
                                                                                     <label for="deadband_flow">Deadband Flow (m³/hr):</label>
                                                                                     <input value="" type="text" id="deadband_flow" name="deadband_flow" class="form-control" onkeypress="return isNumberKey(event)">
                                                                                 </div>
-                                                                            </div>
+                                                                            </div>--%>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -684,6 +611,172 @@
                                                             </div>
                                                         </div>
                                                         <%--</div>--%>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%--                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                </div>--%>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal fade Modal_edit" id="Modal_edit_afv">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title modal_title_setting">xx</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card card-primary card-outline card-outline-tabs">
+                                <div class="card-header p-0 border-bottom-0">
+                                    <ul class="nav nav-tabs" id="custom-tabs-five-tab-afv" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="tab1_afv_normal" data-toggle="pill" href="#tab1_afv" role="tab" aria-controls="tab1_afv" aria-selected="true">Manual Command</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab2_afv_normal" data-toggle="pill" href="#tab2_afv" role="tab" aria-controls="tab2_afv" aria-selected="false">Automatic Command</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab3_afv_normal" data-toggle="pill" href="#tab3_afv" role="tab" aria-controls="tab3_afv" aria-selected="false">Real Time Data</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab4_afv_normal" data-toggle="pill" href="#tab4_afv" role="tab" aria-controls="tab4_afv" aria-selected="false">History Command</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <%--id="div_content_modal_load"--%>
+                                <div class="card-body">
+                                    <div class="loader_content_modal"></div>
+                                    <div class="tab-content" id="tabs_afv">
+                                        <div class="tab-pane fade show active" id="tab1_afv" role="tabpanel" aria-labelledby="tab1_afv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>ตั้งค่าควบคุม Valve </h5>
+                                                    <hr />
+                                                    <div id="_Manual_afv">
+                                                        <%--                                                        <div class="list-group-item">
+                                                            <div class="row">
+                                                                <div class="form-group col-lg-2" style="margin-top: 10px">
+                                                                    <label for="txtvalva_afv">ตั้งค่า เปิด / ปิด FV</label><br>
+                                                                    <label class="switch">
+                                                                        <input type="checkbox" id="txtvalva_afv">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                </div>
+                                                                <div id="dvtxtafv_timeoutmin" class="form-group col-lg-3" style="margin-top: 10px; display: none" >
+                                                                    <label for="txtafv_timeoutmin">เปิดแล้วปิดใน (นาที)</label><br>
+                                                                    <input id="txtafv_timeoutmin" type="text" value=""  class="form-control"  onkeypress="return isNumberKey(event)" maxlength="3">
+                                                                </div>                                                             
+                                                            </div>
+                                                        </div>--%>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab2_afv" role="tabpanel" aria-labelledby="tab2_afv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-xl-12">
+                                                    <h5>ตั้งค่าควบคุมอัตโนมัติ</h5>
+                                                    <hr />
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <button type="button" id="btnAdd_afv" class="btn btn-primary btn-flat col-md-2" onclick="insertRow_afv(this.id);"><i class="fas fa-plus"></i>เพิ่ม</button>
+                                                            <button type="button" id="btnDelete_afv" class="btn btn-warning btn-flat col-md-2" onclick="delRow_afv(this.id);"><i class="fas fa-trash-alt"></i>ลบ</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12">
+                                                            <div style="width: 100%;">
+                                                                <div id="_Automatic_afv">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <div class="col-md-12">
+                                                            <div class="card">
+                                                                <div class="card-header bg-info">
+                                                                    <h3 class="card-title">Option</h3>
+                                                                    <div class="card-tools">
+                                                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                                            <i class="fas fa-minus"></i>
+                                                                        </button>
+                                                                        <%--                                                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                                                            <i class="fas fa-times"></i>
+                                                                        </button>--%>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /.card-header -->
+                                                                <div class="card-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div id="_Automatic_Afv_footer">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /.card-body -->
+                                                            </div>
+                                                            <!-- /.card -->
+                                                        </div>
+                                                        <br />
+                                                        <button type="button" class="btn btn-primary btn-flat col-md-2" data-toggle="modal" onclick="Popup(0,'auto')"><i class="fa fa-floppy-o"></i>บันทึก</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab3_afv" role="tabpanel" aria-labelledby="tab3_afv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-xl-12 col-12 col-lg-12">
+                                                    <h5>Real Time Data</h5>
+                                                    <div class="row justify-content-between">
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <button type="button" id="realtime_afvrefresh" class="btn btn-block btn-success btn-flat" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <%-- <div class="col-md-12 col-12">--%>
+                                                        <div style="width: 100%;">
+                                                            <div id="_Realtime_afv">
+                                                            </div>
+                                                        </div>
+                                                        <%--    </div>--%>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade show" id="tab4_afv" role="tabpanel" aria-labelledby="tab4_afv">
+                                            <div class="row">
+                                                <div class="col-md-12 col-12 col-lg-12">
+                                                    <h5>History Command</h5>
+                                                    <div class="row" style="margin-top: 2%;">
+                                                        <%--   <div class="col-md-12">--%>
+                                                        <div style="width: 100%;">
+                                                            <div id="_History_afv">
+                                                            </div>
+                                                        </div>
+                                                        <%-- </div>--%>
                                                     </div>
                                                 </div>
                                             </div>

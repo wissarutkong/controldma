@@ -89,6 +89,16 @@ $(document).on("click", "#realtime_bvrefresh", function () {
     })
 })
 
+$(document).on("click", "#realtime_afvrefresh", function () {
+    $(this).prop("disabled", true);
+    $(this).html('<i class="spinner-border spinner-border-sm"></i> Loading...');
+    $('dt_grid_realtime_afv').DataTable().clear();
+    CallApigettable_modal('dt_grid_realtime_afv', '_Realtime').then(() => {
+        $(this).html('<i class="fas fa-redo"></i> refresh');
+        $(this).prop("disabled", false);
+    })
+})
+
 
 $(document).on("click", ".infovalva", function () {
     var dmacode = $(this).val();
@@ -116,6 +126,7 @@ $(document).on("click", ".editvalva", function () {
     //element.style.visibility = null;
     if ($(this).val() != '' && $(this).val() != null && getCookie('_wwcode') != '' && getCookie('_wwcode') != null) {
         var dmacode = $(this).val();
+        var _templateCycle = $(this).attr('data-template')
         //let mainData = []
         //mainData.push({
         //    $_dmacode: dmacode,
@@ -123,26 +134,32 @@ $(document).on("click", ".editvalva", function () {
         //    $_wwcode: getCookie('_wwcode')
         //})
         //Setvariableapi(mainData);
-        SetSessionstorage_(getCookie('_wwcode'), dmacode, $(this).attr('data-remote'), datatype)
-
+        SetSessionstorage_(getCookie('_wwcode'), dmacode, $(this).attr('data-remote'), datatype, _templateCycle)
+        document.getElementById("btnAdd_bv").disabled = false;
         //element.style.display = null;
         if (datatype == 2) {
             $('#Modal_edit_bv').modal('show');
-            generateHtml_bv(dmacode, $('#txtdvtypeid').val()).then(() => {
+            generateHtml_bv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
 
             })
             //element.style.visibility = "collapse";
         }
         else if (datatype == 3) {
             $('#Modal_edit_prv').modal('show');
-            generateHtml_prv(dmacode, $('#txtdvtypeid').val()).then(() => {
+            generateHtml_prv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
 
             })
             //element.style.visibility = "collapse";
         }
         else if (datatype == 4) {
             $('#Modal_edit_bv').modal('show');
-            generateHtml_prvstepping(dmacode, $('#txtdvtypeid').val()).then(() => {
+            generateHtml_prvstepping(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
+
+            })
+        }
+        else if (datatype == 6) {
+            $('#Modal_edit_afv').modal('show');
+            generateHtml_Afv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
 
             })
         }
@@ -162,42 +179,44 @@ $(document).on("click", ".addvalva", function () {
         $('#_divtotlepilot').hide();
         AjaxGetddl('m_dvtypeddl').then(() => {
             AjaxGetddl('m_controltype').then(() => {
-                var dmacode = $(this).val();
-                $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : " + dmacode)
-                $('#Modal_add_valva').modal('show');
-                let mainData = []
-                mainData.push({
-                    $_dmacode: dmacode,
-                    $_wwcode: getCookie('_wwcode')
+                AjaxGetddl('m_Templatecontrol').then(() => {
+                    var dmacode = $(this).val();
+                    $('.modal_title_add_valva').text("กำหนดจุดติดตั้งประตูน้ำ : " + dmacode)
+                    $('#Modal_add_valva').modal('show');
+                    let mainData = []
+                    mainData.push({
+                        $_dmacode: dmacode,
+                        $_wwcode: getCookie('_wwcode')
+                    })
+                    CallAPI('/service/api.aspx/GetCtr003_All',
+                       JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+                   ).then((data) => {
+                       let obj = data[0];
+                       $('.modal_subtital_add_valva').text(obj.name)
+                       $('#m_dvtypeddl').val(obj.dvtype_id).trigger('change');
+                       $('#m_totlepilot').val(obj.pilot_num).trigger('change');
+                       for (var i = 1; i <= obj.pilot_num; i++) {
+                           var objpilotnum = obj.pilot_pressure + i;
+                           $('#pilot_pressure' + i + '').val(obj['pilot_pressure' + i])
+                           //console.log(obj['pilot_pressure' + i])
+                       }
+                       $('#m_controltype').val(obj.control_type).trigger('change');
+
+                       $('#m_Templatecontrol').val(obj.cycle_id).trigger('change');
+
+                       if (obj.is_smartlogger) { $('#m_smartlogger').attr('checked', true); }
+                       else { $('#m_smartlogger').removeAttr('checked') }
+
+                       $('#m_usereditor').text(obj.fullname == null ? 'ไม่มีการแก้ไข' : obj.fullname)
+                       $('#m_lastupdate').text(obj.last_upd_dtm == null ? 'ไม่มีการแก้ไข' : obj.last_upd_dtm.replace('T', ' '))
+                       SetSessionstorage_(getCookie('_wwcode'), dmacode, '', '')
+                       showPage_content_modal();
+                   }).catch((error) => {
+                       ClearSessionstorage()
+                       swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')
+                       //SomethingWrong('เกิดความผิด !', 'เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ')
+                   })
                 })
-                CallAPI('/service/api.aspx/GetCtr003_All',
-                   JSON.stringify({ mainDataText: JSON.stringify(mainData) })
-               ).then((data) => {
-                   //console.log(data)
-                   let obj = data[0];
-                   //console.log(obj)
-                   $('.modal_subtital_add_valva').text(obj.name)
-                   $('#m_dvtypeddl').val(obj.dvtype_id).trigger('change');
-                   $('#m_totlepilot').val(obj.pilot_num).trigger('change');
-                   for (var i = 1; i <= obj.pilot_num; i++) {
-                       var objpilotnum = obj.pilot_pressure + i;
-                       $('#pilot_pressure' + i + '').val(obj['pilot_pressure' + i])
-                       //console.log(obj['pilot_pressure' + i])
-                   }
-                   $('#m_controltype').val(obj.control_type).trigger('change');
-
-                   if (obj.is_smartlogger) { $('#m_smartlogger').attr('checked', true); }
-                   else { $('#m_smartlogger').removeAttr('checked') }
-
-                   $('#m_usereditor').text(obj.fullname)
-                   $('#m_lastupdate').text(obj.last_upd_dtm.replace('T', ' '))
-                   SetSessionstorage_(getCookie('_wwcode'), dmacode, '', '')
-                   showPage_content_modal();
-               }).catch((error) => {
-                   ClearSessionstorage()
-                   swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')
-                   //SomethingWrong('เกิดความผิด !', 'เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ')
-               })
             })
         })
 
@@ -264,7 +283,7 @@ function getinfovalva(dmacode) {
     }
 }
 
-function getHtml(_wwcode, dmacode, datatype) {
+function getHtml(_wwcode, dmacode, datatype, _templateCycle) {
     return new Promise((resolve, reject) => {
         let mainData = []
         mainData.push({
@@ -272,7 +291,7 @@ function getHtml(_wwcode, dmacode, datatype) {
             $_dmacode: dmacode,
             $_datatype: datatype
         })
-        CallAPI('/service/api.aspx/' + getJsontp(datatype),
+        CallAPI('/service/api.aspx/' + getJsontp(datatype, _templateCycle),
                 JSON.stringify({ mainDataText: JSON.stringify(mainData) })
         ).then((data) => {
             resolve(data)
@@ -284,33 +303,58 @@ function getHtml(_wwcode, dmacode, datatype) {
     })
 }
 
-function getJsontp(dvtype_service) {
+function getJsontp(dvtype_service, _templateCycle) {
     var clstp = '';
-    switch (dvtype_service) {
-        case '2':
-            clstp = 'Getdata_bv';
-            break;
-        case '3':
-            clstp = 'Getdata_prv';
-            break;
-        case '4':
-            clstp = 'Getdata_PrvStepping';
-            break;
-        case '5':
-            clstp = '';
-            break;
-        default:
-            // code block
+    if (_templateCycle == 6) {
+        switch (dvtype_service) {
+            case '2':
+                clstp = 'Getdata_bv';
+                break;
+            case '3':
+                clstp = 'Getdata_prv';
+                break;
+            case '4':
+                clstp = 'Getdata_PrvStepping';
+                break;
+            case '5':
+                clstp = '';
+                break;
+            case '6':
+                clstp = 'Getdata_Afv';
+                break;
+            default:
+                // code block
+        }
+    } else {
+        switch (dvtype_service) {
+            case '2':
+                clstp = 'Getdata_bv_new';
+                break;
+            case '3':
+                clstp = 'Getdata_prv';
+                break;
+            case '4':
+                clstp = 'Getdata_PrvStepping_new';
+                break;
+            case '5':
+                clstp = '';
+                break;
+            case '6':
+                clstp = 'Getdata_Afv';
+                break;
+            default:
+                // code block
+        }
     }
     return clstp;
 }
 
 /////////////////////////Gen html from api//////////////////////////////////
-function generateHtml_prv(dmacode, datatype) {
+function generateHtml_prv(dmacode, datatype, _templateCycle) {
     return new Promise((resolve, reject) => {
         hidePage_content_modal()
         $('.modal_title_setting').text("PRV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+        getHtml(getCookie('_wwcode'), dmacode, datatype, _templateCycle).then((data) => {
             $('#_Manual_PRV').html(data._manual)
             $('#_Automatic_PRV').html(data._Automatic)
             $('#_Realtime_PRV').html(data._Realtime)
@@ -334,22 +378,24 @@ function generateHtml_prv(dmacode, datatype) {
     })
 }
 
-function generateHtml_bv(dmacode, datatype) {
+function generateHtml_bv(dmacode, datatype, _templateCycle) {
     return new Promise((resolve, reject) => {
         hidePage_content_modal()
         $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+        getHtml(getCookie('_wwcode'), dmacode, datatype, _templateCycle).then((data) => {
             $('#_Manual_Bv').html(data._manual)
             $('#_Automatic_Bv').html(data._Automatic)
             $('#_Realtime_Bv').html(data._Realtime)
             $('#_History_bv').html(data._History)
             $('#txtRow').val(data._txtRow)
-            $("#failure_mode").val(data._failure_mode);
-            $("#step_control_delay").val(data._step_control_delay);
-            $("#time_loop").val(data._time_loop);
-            $("#limit_min").val(data._limit_min);
-            $("#deadband_pressure").val(data._deadband_pressure);
-            $("#deadband_flow").val(data._deadband_flow);
+            $('#_Automatic_Bv_footer').html(data._bodyfooter)
+            if (_templateCycle == 6) { $("#failure_mode").val(data._failure_mode); }
+            //$("#step_control_delay").val(data._step_control_delay);
+            //$("#time_loop").val(data._time_loop);
+            //$("#limit_min").val(data._limit_min);
+            //$("#deadband_pressure").val(data._deadband_pressure);
+            //$("#deadband_flow").val(data._deadband_flow);
+            //sessionStorage.setItem('cycle_counter', data._template_counter_cycle);
             GeneratePRV('tblBvAutomatic')
         }).then(() => {
             CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
@@ -368,26 +414,59 @@ function generateHtml_bv(dmacode, datatype) {
     })
 }
 
-function generateHtml_prvstepping(dmacode, datatype) {
+function generateHtml_prvstepping(dmacode, datatype, _templateCycle) {
     return new Promise((resolve, reject) => {
         hidePage_content_modal()
         $('.modal_title_setting').text("PRV Stepping - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
-        getHtml(getCookie('_wwcode'), dmacode, datatype).then((data) => {
+        getHtml(getCookie('_wwcode'), dmacode, datatype, _templateCycle).then((data) => {
             $('#_Manual_Bv').html(data._manual)
             $('#_Automatic_Bv').html(data._Automatic)
             $('#_Realtime_Bv').html(data._Realtime)
             $('#_History_bv').html(data._History)
             $('#txtRow').val(data._txtRow)
-            $("#failure_mode").val(data._failure_mode);
-            $("#step_control_delay").val(data._step_control_delay);
-            $("#time_loop").val(data._time_loop);
-            $("#limit_min").val(data._limit_min);
-            $("#deadband_pressure").val(data._deadband_pressure);
-            $("#deadband_flow").val(data._deadband_flow);
+            $('#_Automatic_Bv_footer').html(data._bodyfooter)
+            if (_templateCycle == 6) $("#failure_mode").val(data._failure_mode);
+            //$("#step_control_delay").val(data._step_control_delay);
+            //$("#time_loop").val(data._time_loop);
+            //$("#limit_min").val(data._limit_min);
+            //$("#deadband_pressure").val(data._deadband_pressure);
+            //$("#deadband_flow").val(data._deadband_flow);
+            //sessionStorage.setItem('cycle_counter', data._template_counter_cycle);
             GeneratePRV('tblSteppingAutomatic')
         }).then(() => {
             CallApigettable_modal('dt_grid_realtime_bv', '_Realtime').then(() => {
                 CallApigettable_modal('dt_grid_history_bv', '_History').then(() => {
+                    resolve()
+                    showPage_content_modal();
+                }).catch((error) => {
+                    swalAlert(error.status, 'error')
+                    reject()
+                })
+            })
+        }).catch((error) => {
+            swalAlert('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง', 'error')
+            reject()
+        })
+    })
+}
+
+// AFV
+function generateHtml_Afv(dmacode, datatype, _templateCycle) {
+    return new Promise((resolve, reject) => {
+        hidePage_content_modal()
+        $('.modal_title_setting').text("AFV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
+        getHtml(getCookie('_wwcode'), dmacode, datatype, _templateCycle).then((data) => {
+            $('#_Manual_afv').html(data._manual)
+            $('#_Automatic_afv').html(data._Automatic)
+            $('#_Realtime_afv').html(data._Realtime)
+            $('#_History_afv').html(data._History)
+            $('#txtRow').val(data._txtRow)
+            $('#_Automatic_Afv_footer').html(data._bodyfooter)
+            GeneratePRV('tblAfvAutomatic')
+            showPage_content_modal();
+        }).then(() => {
+            CallApigettable_modal('dt_grid_realtime_afv', '_Realtime').then(() => {
+                CallApigettable_modal('dt_grid_history_afv', '_History').then(() => {
                     resolve()
                     showPage_content_modal();
                 }).catch((error) => {
@@ -495,6 +574,7 @@ function add_valva_modal() {
         m_totlepilot: $('#m_totlepilot').val(),
         m_controltype: $('#m_controltype').val(),
         m_smartlogger: $('#m_smartlogger').prop('checked'),
+        m_Templatecontrol: $('#m_Templatecontrol').val(),
         dmaconfigpressure: dmaconfigpressure
     })
 

@@ -132,7 +132,7 @@
         CallApigetdatatable().then(() => { showPage_content() })
     })
 
-
+    initalOption()
 })
 
 function _selectedautokhet(wwcode) {
@@ -211,6 +211,7 @@ function hidePage_content_modal() {
     //document.getElementById("loader_content_modal").style.display = "block";
     document.getElementById("tabs_prv").style.display = "none";
     document.getElementById("tabs_bv").style.display = "none";
+    document.getElementById("tabs_afv").style.display = "none";
     document.getElementById("tabs_editvalva").style.display = "none";
 }
 
@@ -219,6 +220,7 @@ function showPage_content_modal() {
     //document.getElementById("loader_content_modal").style.display = "none";
     document.getElementById("tabs_prv").style.display = "block";
     document.getElementById("tabs_bv").style.display = "block";
+    document.getElementById("tabs_afv").style.display = "block";
     document.getElementById("tabs_editvalva").style.display = "block";
 }
 
@@ -257,7 +259,7 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-$(document).on("click", "input:checkbox", function () {
+$(document).on("click", "#tabs_prv input:checkbox", function () {
     document.getElementById("txtSolenoid").value = "0";
     var $box = $(this);
     if ($box.is(":checked")) {
@@ -267,6 +269,14 @@ $(document).on("click", "input:checkbox", function () {
         $box.prop("checked", true);
     } else {
         $box.prop("checked", false);
+    }
+})
+
+$(document).on("click", "#txtvalva_afv", function () {
+    if ($(this).is(":checked")) {
+        $("#dvtxtafv_timeoutmin").show();
+    } else {
+        $("#dvtxtafv_timeoutmin").hide();
     }
 })
 
@@ -281,12 +291,20 @@ function Setvariableapi(mainData) {
         })
 }
 
-function SetSessionstorage_(wwcode,dmacode,remotename,dvtypeid) {
+function SetSessionstorage_(wwcode,dmacode,remotename,dvtypeid,template_counter) {
     sessionStorage.setItem('cachewwcode', wwcode);
     sessionStorage.setItem('cachedmacode', dmacode);
     sessionStorage.setItem('cacheremotename', remotename);
     sessionStorage.setItem('cachedvtype', dvtypeid);
+    sessionStorage.setItem('cycle_counter', template_counter);
+
 }
+
+function initalOption() {
+    AjaxGetOption('GetddlTimer').then((data) => { localStorage.setItem('timeOpt', data); })
+    AjaxGetOption('GetddlDateOption').then((data) => { localStorage.setItem('DateOpt', data); })
+}
+
 
 function ClearSessionstorage() {
     sessionStorage.clear();

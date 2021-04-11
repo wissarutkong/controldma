@@ -10,7 +10,7 @@ namespace controldma.App_Code
     public class Cs_initaldata
     {
         public WebManageUserData user;
-        public enum Feild { ID , NAME, time_objid, time_label_long, dvtype_id , dvtype_name , control_type_id , control_type_name }
+        public enum Feild { ID , NAME, time_objid, time_label_long, dvtype_id , dvtype_name , control_type_id , control_type_name , template_id , desc_template }
         public Cs_initaldata(WebManageUserData user) {
             this.user = user;
         }

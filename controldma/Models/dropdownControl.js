@@ -59,6 +59,19 @@ function AjaxGetddl(Id) {
     })
 }
 
+function AjaxGetOption(Id) {
+    return new Promise((resolve, reject) => {
+        CallAPI('/service/api.aspx/' + Id,
+           ''
+        ).then((data) => {
+            resolve(data.option)
+        }).catch((error) => {
+            swalAlert(error.status, 'error')
+            reject()
+        })
+    })
+}
+
 
 
 function selectElement(id, valueToSelect) {

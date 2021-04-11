@@ -1,0 +1,38 @@
+﻿<div class="col-md-12">
+    <div class="form-row">
+        <!--<div class="form-group col-md-6">
+            <label for="failure_mode">Mode :</label>
+            <select id="failure_mode" name="failure_mode" class="form-control">
+                <option value="0">Pressure</option>
+                <option value="1">Flow</option>
+                <option value="2">Valve</option>
+                <option value="4">SAME_Auto_normal</option>
+            </select>
+        </div>-->
+        <div class="form-group col-md-6">
+            <label for="step_control_delay">Step Valve (%):</label>
+            <input value="{step_control_delay}" type="text" id="step_control_delay" name="step_control_delay" class="form-control" onkeypress="return isNumberKey(event)">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="time_loop">Time Loop Min (minute) :</label>
+            <input value="{time_loop}" type="text" id="time_loop" name="time_loop" class="form-control" onkeypress="return isNumberKey(event)">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="limit_min">Limit Valve Min (%) :</label>
+            <input value="{limit_min}" type="text" id="limit_min" name="limit_min" class="form-control" onkeypress="return isNumberKey(event)">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="deadband_pressure">Deadband Pressure (bar) :</label>
+            <input value="{deadband_pressure}" type="text" id="deadband_pressure" name="deadband_pressure" class="form-control" onkeypress="return isNumberKey(event)">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="deadband_flow">Deadband Flow (m³/hr):</label>
+            <input value="{deadband_flow}" type="text" id="deadband_flow" name="deadband_flow" class="form-control" onkeypress="return isNumberKey(event)">
+        </div>
+    </div>
+</div>
+
