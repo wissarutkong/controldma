@@ -303,7 +303,6 @@ function Post_stepping_manual() {
     if (template == 6) {
         if (document.getElementById("txtvalve").value > 100) {
             swalAlert('ค่า valve(%) เกิน 100', 'warning')
-            console.log("step6")
             return;
         }
     }
@@ -364,7 +363,6 @@ function Post_Afv_manual() {
     if ($('#txtvalva_afv').prop('checked')) {
         if ($('#txtafv_timeoutmin').val() == 0 || $('#txtafv_timeoutmin').val() == null) {
             swalAlert('กรุณากรอกเวลาปิด', 'warning')
-            console.log($('#txtvalva_afv').prop('checked'))
             return;
         }
     }
@@ -380,7 +378,6 @@ function Post_Afv_manual() {
         remark: document.getElementById("save_remark").value
     })
 
-    console.log(mainData)
 
     CallAPI('/service/api.aspx/AddManualAfv_Template',
        JSON.stringify({ mainDataText: JSON.stringify(mainData) })
@@ -417,7 +414,6 @@ function Post_AutoAfv() {
         remark: document.getElementById("save_remark").value
     })
 
-    console.log(mainData)
 
     CallAPI('/service/api.aspx/AddAutoAfv_Template',
     JSON.stringify({ mainDataText: JSON.stringify(mainData) })
@@ -709,7 +705,6 @@ function ChangeMode(id) {
     }
     else if ($('#txtdvtypeid').val() == 6) {
         var i = id.replace("txtMode", "");
-        console.log(i)
         var txttimer = document.getElementById("txttimer" + i);
         var txtFlow = document.getElementById("txtFlow" + i);
         txttimer.style.backgroundColor = "#FFFFFF";
