@@ -14,6 +14,15 @@
     //    });
     //});
 
+    pdfMake.fonts = {
+        THSarabun: {
+            normal: 'THSarabun.ttf',
+            bold: 'THSarabun-Bold.ttf',
+            italics: 'THSarabun-Italic.ttf',
+            bolditalics: 'THSarabun-BoldItalic.ttf'
+        }
+    }
+
     GenerateTable('tblPrvAutomatic')
     GenerateTable('tblbvAutomatic')
 
@@ -83,7 +92,85 @@ function GenerateTable(Id) {
         "info": true,
         "destroy": true,
         "processing": true,
-        "autoWidth": false
+        "autoWidth": false,
+        dom: 'Bfrtip',
+        buttons: [
+           {
+               extend: 'excel',
+               exportOptions: {
+                   columns: [0, 1, 2, 3, 4, 5, 6, 7],
+                   text: 'รายงานจุดติดตั้ง Dma Control',
+               }
+           },
+           {
+               extend: 'csv',
+               exportOptions: {
+                   columns: [0, 1, 2, 3, 4, 5, 6, 7]
+               }
+           },
+           {
+               extend: 'pdfHtml5',
+               "pageSize": 'A4',
+               orientation: 'landscape',
+               pageSize: 'LEGAL',
+               exportOptions: {
+                   columns: [0, 1, 2, 3, 4, 5, 6, 7]
+               },
+               "customize": function (doc) {
+                   doc.defaultStyle = {
+                       font: 'THSarabun',
+                       fontSize: 15
+                   };
+
+
+                   doc.content[1].table.widths = ['auto', 'auto', 'auto', 'auto', 'auto', 70, 70, '*'];
+                   doc.styles.tableHeader.fontSize = 16;
+
+                   var objLayout = {};
+                   objLayout['hLineWidth'] = function (i) { return .5; };
+                   objLayout['vLineWidth'] = function (i) { return .5; };
+                   objLayout['hLineColor'] = function (i) { return '#aaa'; };
+                   objLayout['vLineColor'] = function (i) { return '#aaa'; };
+                   objLayout['paddingLeft'] = function (i) { return 4; };
+                   objLayout['paddingRight'] = function (i) { return 4; };
+                   doc.content[1].layout = objLayout;
+                   var obj = {};
+                   obj['hLineWidth'] = function (i) { return .5; };
+                   obj['hLineColor'] = function (i) { return '#aaa'; };
+               }
+
+           },
+           {
+               extend: "print",
+               exportOptions: {
+                   columns: [0, 1, 2, 3, 4, 5, 6, 7],
+                   text: 'รายงานจุดติดตั้ง Dma Control',
+               },
+               customize: function (win) {
+
+                   var last = null;
+                   var current = null;
+                   var bod = [];
+
+                   var css = '@page { size: landscape; }',
+                       head = win.document.head || win.document.getElementsByTagName('head')[0],
+                       style = win.document.createElement('style');
+                    
+
+                   style.type = 'text/css';
+                   style.media = 'print';
+
+                   if (style.styleSheet) {
+                       style.styleSheet.cssText = css;
+                   }
+                   else {
+                       style.appendChild(win.document.createTextNode(css));
+                   }
+
+                   head.appendChild(style);
+               }
+           }
+        ]
     });
 
     return Promise.resolve($table)
@@ -106,7 +193,39 @@ function GenerateTablePage20(Id) {
         "searching": false,
         "info": true,
         "ordering": true,
-        "paging": true
+        "paging": true,
+        dom: 'Bfrtip',
+        buttons: [
+          {
+              extend: 'excel'
+          },
+          {
+              extend: "print",
+              customize: function (win) {
+
+                  var last = null;
+                  var current = null;
+                  var bod = [];
+
+                  var css = '@page { size: landscape; }',
+                      head = win.document.head || win.document.getElementsByTagName('head')[0],
+                      style = win.document.createElement('style');
+
+
+                  style.type = 'text/css';
+                  style.media = 'print';
+
+                  if (style.styleSheet) {
+                      style.styleSheet.cssText = css;
+                  }
+                  else {
+                      style.appendChild(win.document.createTextNode(css));
+                  }
+
+                  head.appendChild(style);
+              }
+          }
+        ]
     });
 
     return Promise.resolve($table)

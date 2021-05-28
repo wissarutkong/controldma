@@ -346,7 +346,7 @@ namespace controldma.service
                     _temp["Flow"] = row["Flow"];
                     _temp["Pressure"] = row["Pressure"];
                     _temp["LastUpdate"] = row["LastUpdate"];
-                    _temp["Detail"] = "<button type=\"button\" id=\"info_" + row["dmacode"] + "\" class=\"btn btn-block btn-info btn-sm btn-flat infovalva\" value=\"" + row["dmacode"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
+                    _temp["Detail"] = "<button type=\"button\" id=\"info_" + row["dmacode"] + "\" class=\"btn btn-block btn-info btn-sm btn-flat infovalva\" value=\"" + row["dmacode"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\" data-toggle=\"modal\" data-target=\"#Modal_info_valva\" ><span><i class=\"fas fa-info-circle\"></i> รายละเอียด</span></button>";
 
                     if (Convert.ToBoolean(user.UserAdmin))
                     {
@@ -358,7 +358,7 @@ namespace controldma.service
 
                     if ((Boolean)row["is_smartlogger"])
                     {
-                        _temp["Edit"] = "<a href=\"http://164.115.22.31/#/redirect?pagename=prv_config&token=" + user.UserTokenAuthen + "&dmacode=" + row["dmacode"] + "\" id=\"" + row["dmacode"] + "\" class=\"btn btn-block btn-primary btn-sm btn-flat\" role=\"button\" target=\"_blank\"><i class=\"fas fa-cog\"></i>SmartLogger</a>";
+                        _temp["Edit"] = "<a href=\"http://smartlogger.pwa.co.th/#/redirect?pagename=prv_config&token=" + user.UserTokenAuthen + "&dmacode=" + row["dmacode"] + "\" id=\"" + row["dmacode"] + "\" class=\"btn btn-block btn-primary btn-sm btn-flat\" role=\"button\" target=\"_blank\"><i class=\"fas fa-cog\"></i>SmartLogger</a>";
                     }
                     else {
                         _temp["Edit"] = "<button type=\"button\" id=\"" + row["dmacode"] + "\" class=\"btn btn-block btn-danger btn-sm btn-flat editvalva\" value=\"" + row["dmacode"] + "\" data-type=\"" + row["dvtype_id"] + "\" data-remote=\"" + row["remote_name"] + "\" data-template=\"" + row["counter_template"] + "\"  data-toggle=\"modal\" data-target=\"\" ><span><i class=\"fas fa-cog\"></i>ตั้งค่า</span></button>";
@@ -807,7 +807,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -1140,7 +1140,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -1489,7 +1489,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -1845,7 +1845,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -2212,7 +2212,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -2587,7 +2587,7 @@ namespace controldma.service
 
                 //Html_3 += "<div style=\"width: 100%;\">";
                 Html_3 += "     <div class=\"table-responsive\">";
-                Html_3 += "         <table id=\"dt_grid_realtime_afv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_afv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
                 Html_3 += "             <thead>";
                 Html_3 += "                    <tr>";
                 Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
@@ -3493,7 +3493,7 @@ namespace controldma.service
                         if (cmdbvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "Mode=2," + remote_name + "," + mainData["valve"].ToString() + ",0,0,0,0,0";
+                            string cmd_desc = "manual=2," + remote_name + "," + mainData["valve"].ToString() + ",0,0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -3637,7 +3637,7 @@ namespace controldma.service
                                 //+ deadband_pressure.ToString("##0.00") + ","
                                 //+ deadband_flow.ToString("##0.00") + ",";
 
-                                string cmd_desc = "Sync=2," + remote_name + ","
+                                string cmd_desc = "auto=2," + remote_name + ","
                                 + row["time_loop"].ToString() + ","
                                 + step_control_delay.ToString("##0.00") + ","
                                 + limit_min.ToString() + ","
@@ -3861,7 +3861,7 @@ namespace controldma.service
                         if (cmdbvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "Mode=4," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ",0,0,0,0,0";
+                            string cmd_desc = "manual=4," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ",0,0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -4009,7 +4009,7 @@ namespace controldma.service
                                 //+ deadband_pressure.ToString("##0.00") + ","
                                 //+ deadband_flow.ToString("##0.00") + ",";
 
-                                string cmd_desc = "Sync=4," + remote_name + ","
+                                string cmd_desc = "auto=4," + remote_name + ","
                                 + row["time_loop"].ToString() + ","
                                 + step_control_delay.ToString("##0.00") + ","
                                 + limit_min.ToString() + ","
@@ -4238,7 +4238,7 @@ namespace controldma.service
                         if (cmdprvthead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "Mode=3," + remote_name + "," + mainData["solenoid"] + ",0,0,0,0,0";
+                            string cmd_desc = "manual=3," + remote_name + "," + mainData["solenoid"] + ",0,0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -4357,7 +4357,7 @@ namespace controldma.service
                         if (cmdprvthead_id != 0)
                         {
                             int template_cycle = Convert.ToInt32(mainData["template"]);
-                            string cmd_desc = "Sync=3," + remote_name + ","
+                            string cmd_desc = "auto=3," + remote_name + ","
                                + "0,"
                                + "0,"
                                + "0,"
@@ -4561,7 +4561,7 @@ namespace controldma.service
                         if (cmdafvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "Mode="+ dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ","+ myTimeoutmin + ",0,0,0,0";
+                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ","+ myTimeoutmin + ",0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -4673,7 +4673,7 @@ namespace controldma.service
                             {
                                 int template_cycle = Convert.ToInt32(row["template"]);
 
-                                string cmd_desc = "Sync="+ dvtypeid + "," + remote_name + ","
+                                string cmd_desc = "auto=" + dvtypeid + "," + remote_name + ","
                                 + row["pipe_size"].ToString() + ","
                                 + row["time_out_min_afv"].ToString() + ","
                                 + "0,"

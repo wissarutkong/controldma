@@ -11,7 +11,7 @@
     window.setInterval(function () {
         var dmacode = $('.modal_title_ml').attr('dmacode')
         getinfovalva(dmacode)
-    }, 5000);
+    }, 10000);
 
     //$('#m_smartlogger').change(function () {
     //    console.log($(this).prop('checked'))
@@ -102,6 +102,18 @@ $(document).on("click", "#realtime_afvrefresh", function () {
 
 $(document).on("click", ".infovalva", function () {
     var dmacode = $(this).val();
+    var datatype = $(this).attr("data-type")
+    var x = $('.afv_smartloggermqtt_info')
+    var divmodeldialog = $('#Modal_info_valva').find('div.modal-dialog')
+    if (datatype == 6) {
+        divmodeldialog.removeClass("modal-lg").addClass("modal-xl");
+        x.show();
+        document.getElementById('afv_iframe_mqtt').src += 'http://smartlogger.pwa.co.th/afv/index.php?device=' + $(this).attr("data-remote");
+    }
+    else {
+        x.hide();
+        divmodeldialog.removeClass("modal-xl").addClass("modal-lg");
+    }
     getinfovalva(dmacode)
 })
 
@@ -115,6 +127,7 @@ $(document).on("click", ".commandinfo", function () {
     });
 
     $('#command_cmd_desc').val(temp)
+    $('#command_cmd_desc_real').val($(this).val().trim())
 })
 
 $(document).on("click", ".editvalva", function () {
@@ -275,6 +288,10 @@ function getinfovalva(dmacode) {
                    $('#valve_info_lastupdate').text(obj.LastUpdate != null ? obj.LastUpdate.replace('T', ' ') : 'ไม่มีการอัพเดต')
                    $('#valve_match_time_no').text(obj.match_time_no)
                    $('#valve_match_time').text(obj.time_match)
+                   $('#valva_p1').text(obj.pressure1)
+                   $('#valva_p2').text(obj.Pressure)
+                   $('#valva_flow').text(obj.Flow)
+                   $('#valva_valva_percent').text(obj.Valve)
                    element.style.display = "none";
                }).catch((error) => {
                    swalAlert('เกิดข้อผิดพลาด กรุณาติดต่อผู้ดูแลระบบ', 'error')

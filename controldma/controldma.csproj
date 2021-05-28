@@ -155,6 +155,7 @@
     <Content Include="dist\img\avatar2.png" />
     <Content Include="dist\img\avatar3.png" />
     <Content Include="dist\img\avatar5.png" />
+    <Content Include="dist\img\banner-service-save-mobile.jpg" />
     <Content Include="dist\img\boxed-bg.jpg" />
     <Content Include="dist\img\boxed-bg.png" />
     <Content Include="dist\img\credit\american-express.png" />
@@ -357,6 +358,10 @@
     <Fakes Include="Fakes\EnCrypt_DeCrypt.fakes" />
     <Content Include="plugins\bootstrap-toggle\js\bootstrap-toggle.min.js.map" />
     <Content Include="plugins\bootstrap-toggle\js\bootstrap2-toggle.min.js.map" />
+    <Content Include="plugins\pdfmake\THSarabun-BoldItalic.ttf" />
+    <Content Include="plugins\pdfmake\THSarabun-Bold.ttf" />
+    <Content Include="plugins\pdfmake\THSarabun-Italic.ttf" />
+    <Content Include="plugins\pdfmake\THSarabun.ttf" />
     <None Include="Properties\PublishProfiles\controldma.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

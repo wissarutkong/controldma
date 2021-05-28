@@ -5,13 +5,17 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <style>
+
         th {
-            background-color: #E2F0FF;
+            background-color: lightblue;
         }
 
         table.dataTable th {
             /*white-space: nowrap;*/
             table-layout: fixed;
+        }
+        table.dataTable td {
+            border-right: 0.5px solid #dddddd;
         }
     </style>
     <!-- Content Wrapper. Contains page content -->
@@ -44,7 +48,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-6">
-                                <h3 class="card-title">รายการจุดตั้ง Control ประตูน้ำ</h3>
+                                <h3 class="card-title">รายการจุดติดตั้งระบบ Control</h3>
                             </div>
                             <div class="col-6">
                                 <button type="button" id="refresh_table" class="btn btn-block btn-success btn-flat col-md-2" style="float: right;"><i class="fas fa-redo"></i>refresh</button>
@@ -58,7 +62,7 @@
                         <div class="row">
                             <%--<div class="col-md-12">--%>
                             <div class="table-responsive">
-                                <table id="dt_controlvalve" class="table table-striped table-bordered dt-responsive" cellspacing="0" width="100%">
+                                <table id="dt_controlvalve" class="table dt-responsive table-hover table-sm" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
                                             <th style="width: 20%;">จุดติดตั้ง DMA</th>
@@ -66,10 +70,8 @@
                                             <th>Device Type</th>
                                             <th>Control Mode</th>
                                             <th>Failure Mode</th>
-                                            <th>Flow<br />
-                                                (m³)</th>
-                                            <th>Pressure<br />
-                                                (bar)</th>
+                                            <th>Flow<br />(m³)</th>
+                                            <th>Pressure<br />(bar)</th>
                                             <th>Last Update</th>
                                             <th style="width: 10%;"></th>
                                             <th style="width: 10%;"></th>
@@ -99,7 +101,7 @@
     <input type="hidden" id="auto_dmacode" value="<%=this.dmacode %>" />
 
     <div class="modal fade" id="Modal_info_valva">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title modal_title_ml" dmacode="">xx</h4>
@@ -172,6 +174,12 @@
                                                                             <th><i class="fa fa-tags"></i>Last Command Date :</th>
                                                                             <td><span id="valve_info_lastupdate">xx</span></td>
                                                                         </tr>
+                                                                         <tr>
+                                                                            <td><i class="fas fa-random"></i> P1(In) : <span id="valva_p1">xx</span></td>
+                                                                            <td><i class="fas fa-random"></i> P2(Out) : <span id="valva_p2">xx</span></td>
+                                                                            <td><i class="fas fa-random"></i> Flow : <span id="valva_flow">xx</span></td>
+                                                                            <td><i class="fas fa-random"></i> Valva(%) : <span id="valva_valva_percent">xx</span></td>
+                                                                        </tr>
                                                                         <tr>
                                                                             <th><i class="fa fa-tags"></i>Match Time No :</th>
                                                                             <td><span id="valve_match_time_no">xx</span></td>
@@ -194,6 +202,9 @@
                   <div class="tab-pane fade" id="custom-tabs-five-normal" role="tabpanel" aria-labelledby="custom-tabs-five-normal-tab">
                     
                   </div>--%>
+                                    </div>
+                                    <div class="afv_smartloggermqtt_info embed-responsive embed-responsive-4by3">
+                                        <iframe class="embed-responsive-item" id="afv_iframe_mqtt" height="100%" allowfullscreen></iframe>
                                     </div>
                                 </div>
                                 <!-- /.card -->
@@ -800,7 +811,7 @@
     <!-- /.modal -->
 
     <div class="modal fade" id="Modal_commandinfo">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Command history</h4>
@@ -810,8 +821,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-12">
-                            <textarea class="col-md-12" id="command_cmd_desc" style="width: 100%; min-height: 500px" disabled>
+                        <div class="col-md-6 col-sm-12">
+                            <label>Command spilt line</label>
+                            <textarea id="command_cmd_desc" style="width: 100%; min-height: 500px" disabled>
+                            </textarea>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label>Command Real</label>
+                            <textarea id="command_cmd_desc_real" style="width: 100%; min-height: 500px" disabled>
                             </textarea>
                         </div>
                     </div>
