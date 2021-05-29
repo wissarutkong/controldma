@@ -5,7 +5,6 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <style>
-
         th {
             background-color: lightblue;
         }
@@ -14,6 +13,7 @@
             /*white-space: nowrap;*/
             table-layout: fixed;
         }
+
         table.dataTable td {
             border-right: 0.5px solid #dddddd;
         }
@@ -70,8 +70,10 @@
                                             <th>Device Type</th>
                                             <th>Control Mode</th>
                                             <th>Failure Mode</th>
-                                            <th>Flow<br />(m³)</th>
-                                            <th>Pressure<br />(bar)</th>
+                                            <th>Flow<br />
+                                                (m³)</th>
+                                            <th>Pressure<br />
+                                                (bar)</th>
                                             <th>Last Update</th>
                                             <th style="width: 10%;"></th>
                                             <th style="width: 10%;"></th>
@@ -174,7 +176,7 @@
                                                                             <th><i class="fa fa-tags"></i>Last Command Date :</th>
                                                                             <td><span id="valve_info_lastupdate">xx</span></td>
                                                                         </tr>
-                                                                         <tr>
+                                                                        <tr>
                                                                             <td><i class="fas fa-random"></i> P1(In) : <span id="valva_p1">xx</span></td>
                                                                             <td><i class="fas fa-random"></i> P2(Out) : <span id="valva_p2">xx</span></td>
                                                                             <td><i class="fas fa-random"></i> Flow : <span id="valva_flow">xx</span></td>
@@ -489,7 +491,14 @@
                                         <div class="tab-pane fade show" id="tab4_bv" role="tabpanel" aria-labelledby="tab4_bv">
                                             <div class="row">
                                                 <div class="col-md-12 col-12 col-lg-12">
-                                                    <h5>History Command</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-11">
+                                                            <h5>History Command</h5>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <label>Status upload...</label><h3><span class="badge badge-info" name="realtime_cmd_status">Wait...</span></h3>
+                                                        </div>
+                                                    </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <%--   <div class="col-md-12">--%>
                                                         <div style="width: 100%;">
@@ -614,7 +623,14 @@
                                         <div class="tab-pane fade show" id="tab4_prv" role="tabpanel" aria-labelledby="tab4_prv">
                                             <div class="row">
                                                 <div class="col-md-12 col-12 col-xl-12">
-                                                    <h5>History Command</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-11">
+                                                            <h5>History Command</h5>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <label>Status upload...</label><h3><span class="badge badge-info" name="realtime_cmd_status">Wait...</span></h3>
+                                                        </div>
+                                                    </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <%--<div class="col-md-12">--%>
                                                         <div style="width: 100%;">
@@ -780,7 +796,14 @@
                                         <div class="tab-pane fade show" id="tab4_afv" role="tabpanel" aria-labelledby="tab4_afv">
                                             <div class="row">
                                                 <div class="col-md-12 col-12 col-lg-12">
-                                                    <h5>History Command</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-11">
+                                                            <h5>History Command</h5>
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <label>Status upload...</label><h3><span class="badge badge-info" name="realtime_cmd_status">Wait...</span></h3>
+                                                        </div>
+                                                    </div>
                                                     <div class="row" style="margin-top: 2%;">
                                                         <%--   <div class="col-md-12">--%>
                                                         <div style="width: 100%;">

@@ -236,6 +236,21 @@ $(document).on("click", ".addvalva", function () {
     }
 })
 
+var interval = null
+$(document).on('show.bs.modal', '.Modal_edit ', function (event) {
+    interval = setInterval(function () {
+        //do somethings
+        GetSyncRealtime()
+    }, 5000)
+})
+
+$(document).on('hidden.bs.modal', '.Modal_edit ', function (event) {
+    $('span[name="realtime_cmd_status"]').text("Wait...")
+    window.clearInterval(interval)
+})
+
+
+
 function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : event.keyCode;
     if (charCode != 46 && charCode > 31
@@ -617,4 +632,17 @@ function getDatabeforsave_getPressure() {
         };
     }
     return dmaconfigpressure;
+}
+
+function GetSyncRealtime() {
+    CallAPI('/service/api.aspx/GetDataCommandqueue',
+            JSON.stringify({ remote_name: sessionStorage.getItem('cacheremotename') })
+    ).then((data) => {
+        let obj = data[0];
+        if(obj != null)
+            $('span[name="realtime_cmd_status"]').text(obj.StatusName)
+        else $('span[name="realtime_cmd_status"]').text("non-data")
+    }).catch((error) => {
+        swalAlert(error.status, 'error')
+    })
 }

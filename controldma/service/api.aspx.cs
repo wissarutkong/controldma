@@ -421,7 +421,8 @@ namespace controldma.service
                     {
                         strSQL = "EXEC sp_ctrl_get_bvcmdlog_dmama2 @wwcode = '" + wwcode + "',@dmacode= '" + dmacode + "';";
                     }
-                    else if (dvtype == "6") {
+                    else if (dvtype == "6")
+                    {
                         strSQL = "EXEC sp_ctrl_get_afvcmdlog_dmama2 @wwcode = '" + wwcode + "',@dmacode= '" + dmacode + "';";
                     }
                     else {
@@ -2465,7 +2466,7 @@ namespace controldma.service
                                 Html_2 += "             <option value=\"" + i + "\" selected>" + i + "</option>";
                             }
                             else {
-                                Html_2 += "             <option value=\"" + i + "\">" + i + "</option>";                               
+                                Html_2 += "             <option value=\"" + i + "\">" + i + "</option>";
                             }
                         }
                         Html_2 += "         </select>";
@@ -2483,7 +2484,7 @@ namespace controldma.service
                             }
                             else {
                                 Html_2 += "<option value=\"" + time["time_objid"] + "\">" + time["time_label_long"] + "</option>";
-                                
+
                             }
                         }
 
@@ -2746,6 +2747,30 @@ namespace controldma.service
                     return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
                 }
 
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetDataCommandqueue(String remote_name)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                try
+                {
+                    DataTable dt = inl.GetDatabySQL(@"SELECT StatusName from [RTU].[dbo].[commandqueue] WHERE RemoteName = '" + remote_name + @"'", user.UserCons_PortalDB);
+                    return JsonConvert.SerializeObject(dt);
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
             }
             return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
         }
@@ -4534,7 +4559,8 @@ namespace controldma.service
                 {
                     if (!string.IsNullOrEmpty(wwcode) && !string.IsNullOrEmpty(dmacode) && !string.IsNullOrEmpty(remote_name))
                     {
-                        if ((Boolean)mainData["valve"]) {
+                        if ((Boolean)mainData["valve"])
+                        {
                             myTimeoutmin = Convert.ToInt32(mainData["timeout_min"]);
                         }
                         #region sql insert tb_ctr_cmdbvhead
@@ -4549,7 +4575,7 @@ namespace controldma.service
                         strSQL += " '" + remote_name + "', "; //remote_name 
                         strSQL += " '0', "; //control_mode
                         strSQL += " '" + mainData["valve"] + "', "; //manual_valva_control
-                        strSQL += " '"+ myTimeoutmin + "', "; //timeout_min
+                        strSQL += " '" + myTimeoutmin + "', "; //timeout_min
                         strSQL += " N'" + mainData["remark"].ToString() + "', "; //remark
                         strSQL += "  'N', "; //record_status 
                         strSQL += " '" + user.UserID + "', "; //create_user
@@ -4561,7 +4587,7 @@ namespace controldma.service
                         if (cmdafvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ","+ myTimeoutmin + ",0,0,0,0";
+                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + "," + myTimeoutmin + ",0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
