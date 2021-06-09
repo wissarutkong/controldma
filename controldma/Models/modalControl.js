@@ -249,8 +249,6 @@ $(document).on('hidden.bs.modal', '.Modal_edit ', function (event) {
     window.clearInterval(interval)
 })
 
-
-
 function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : event.keyCode;
     if (charCode != 46 && charCode > 31

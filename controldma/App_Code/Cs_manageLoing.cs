@@ -55,8 +55,8 @@ namespace controldma.App_Code
                                 _region = dtUser.Rows[0]["sector_id"].ToString() != "" ? dtUser.Rows[0]["sector_id"].ToString() : "";
                                 _zone = dtUser.Rows[0]["district_id"].ToString() != "" ? dtUser.Rows[0]["district_id"].ToString() : "";
                                 _wwcode = dtUser.Rows[0]["branch_id"].ToString() != "" ? dtUser.Rows[0]["branch_id"].ToString() : "";
-                                stoken_authen = cls.POST("http://122.155.27.175/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
-                                //stoken_authen = cls.POST("http://localhost/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
+                                //stoken_authen = cls.POST("http://122.155.27.175/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
+                                stoken_authen = cls.POST("http://localhost/api/authenDma.php", "action=get_token&user=" + sUsername + "&pass=" + sPassword.ToString() + "");
                             }                          
                         }
                         else {

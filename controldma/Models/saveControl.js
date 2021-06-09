@@ -725,4 +725,47 @@ function ChangeMode(id) {
     }
 }
 
+//ปุ่มปิดการทำงาน
+$(document).on("click", '.btncloseAllconfig', () => {
+    swalConfirmation("คุณต้องการสั่งปิดโหมดควบคุมอัตโนมัติ?", "การทำงานอัตโนมัติของจุดติดตั้ง" + sessionStorage.getItem('cachedmacode') + "จะถูกปิด").then((result) => {
+        let mainData = []
+        mainData.push({
+            wwcode: sessionStorage.getItem('cachewwcode'),
+            dmacode: sessionStorage.getItem('cachedmacode'),
+            remote_name: sessionStorage.getItem('cacheremotename'),
+            dvtypeid: document.getElementById("txtdvtypeid").value,
+            remark: result
+        })
+        CallAPI('/service/api.aspx/AddCloseLoggerAll',
+           JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+            ).then((data) => {
+                swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+                CallFuncGenerateHtmlbydvtype(document.getElementById("txtdvtypeid").value, data.dmacode)
+            }).catch((error) => {
+                swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+            })
+    })
+})
+
+//function call function generateHtml 
+function CallFuncGenerateHtmlbydvtype(dvtype_service,dmacode) {
+    switch (dvtype_service) {
+        case '2':
+            generateHtml_bv(dmacode, dvtype_service).then(() => { })
+            break;
+        case '3':
+            generateHtml_prv(dmacode, dvtype_service).then(() => { })
+            break;
+        case '4':
+            generateHtml_prvstepping(dmacode, dvtype_service, sessionStorage.getItem('cycle_counter')).then(() => { })
+            break;
+        case '5':           
+            break;
+        case '6':
+            generateHtml_Afv(dmacode, dvtype_service, sessionStorage.getItem('cycle_counter')).then(() => { })
+            break;
+        default:
+            // code block
+    }
+}
 

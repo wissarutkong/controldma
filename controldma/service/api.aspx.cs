@@ -4852,6 +4852,173 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string AddCloseLoggerAll(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+                string wwcode = mainData["wwcode"].ToString();
+                string dmacode = mainData["dmacode"].ToString();
+                string remote_name = mainData["remote_name"].ToString();
+                string dvtypeid = mainData["dvtypeid"].ToString();
+                wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
+                try
+                {
+                    String strSQL = string.Empty;
+                    string cmd_desc = "manual=1," + remote_name + ",0,0,0,0,0,0";
+                    switch (dvtypeid)
+                    {
+                        case "2":
+                            #region sql insert tb_ctr_cmdbvhead
+                            strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode, ";
+                            strSQL += " step_control_delay,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm ";
+                            strSQL += " ) output INSERTED.cmdbvhead_id ";
+                            strSQL += " VALUES ( ";
+                            strSQL += " '" + wwcode + "', ";
+                            strSQL += " '" + dmacode + "', ";
+                            strSQL += "  GETDATE(),";
+                            strSQL += " '" + remote_name + "', ";
+                            strSQL += " '3', "; //control_mode
+                            strSQL += " 0, "; //step_control_delay
+                            strSQL += " 0, "; //limit_min
+                            strSQL += " 0, "; //deadband_pressure
+                            strSQL += " 0, "; //deadband_flow
+                            strSQL += " N'" + mainData["remark"].ToString() + "', ";
+                            strSQL += "  'N', ";
+                            strSQL += " '" + user.UserID + "', ";
+                            strSQL += "  GETDATE() ";
+                            strSQL += " ) ";
+                            #endregion
+                            break;
+                        case "3":
+                            #region sql insert tb_ctr_cmdprvthead
+                            strSQL += " INSERT INTO tb_ctr_cmdprvthead (wwcode,dmacode,cmd_data_dtm,remote_name ";
+                            strSQL += " ,control_mode ";
+                            strSQL += " ,pilot_pressure ";
+                            strSQL += " ,remark ";
+                            strSQL += " ,record_status ";
+                            strSQL += " ,create_user ";
+                            strSQL += " ,create_dtm ";
+                            strSQL += " ) output INSERTED.cmdprvthead_id ";
+                            strSQL += " VALUES ( ";
+                            strSQL += " '" + wwcode + "', ";
+                            strSQL += " '" + dmacode + "', ";
+                            strSQL += "  GETDATE(),";
+                            strSQL += " '" + remote_name + "', ";
+                            strSQL += " '3', "; //control_mode
+                            strSQL += " 0, "; //pilot_pressure
+                            strSQL += " N'" + mainData["remark"].ToString() + "', "; //remark
+                            strSQL += "  'N', "; //record_status
+                            strSQL += " '" + user.UserID + "', "; //create_user
+                            strSQL += "  GETDATE() "; //create_dtm
+                            strSQL += " ) ";
+                            #endregion
+                            break;
+                        case "4":
+                            #region sql insert tb_ctr_cmdbvhead
+                            strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode, ";
+                            strSQL += " step_control_delay,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm ";
+                            strSQL += " ) output INSERTED.cmdbvhead_id ";
+                            strSQL += " VALUES ( ";
+                            strSQL += " '" + wwcode + "', ";
+                            strSQL += " '" + dmacode + "', ";
+                            strSQL += "  GETDATE(),";
+                            strSQL += " '" + remote_name + "', ";
+                            strSQL += " '3', "; //control_mode
+                            strSQL += " 0, "; //step_control_delay
+                            strSQL += " 0, "; //limit_min
+                            strSQL += " 0, "; //deadband_pressure
+                            strSQL += " 0, "; //deadband_flow
+                            strSQL += " N'" + mainData["remark"].ToString() + "', ";
+                            strSQL += "  'N', ";
+                            strSQL += " '" + user.UserID + "', ";
+                            strSQL += "  GETDATE() ";
+                            strSQL += " ) ";
+                            #endregion
+                            break;
+                        case "6":
+                            #region sql insert tb_ctr_cmdafvhead
+                            strSQL += " INSERT INTO tb_ctr_cmdafvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode, ";
+                            strSQL += " remark,record_status,create_user,create_dtm ";
+                            strSQL += " ) output INSERTED.cmdafvhead_id ";
+                            strSQL += " VALUES ( ";
+                            strSQL += " '" + wwcode + "', "; // wwcode
+                            strSQL += " '" + dmacode + "', "; // dmacode
+                            strSQL += "  GETDATE(),"; // cmd_date_dtm
+                            strSQL += " '" + remote_name + "', "; //remote_name 
+                            strSQL += " '3', "; //control_mode
+                            strSQL += " N'" + mainData["remark"].ToString() + "', "; //remark
+                            strSQL += "  'N', "; //record_status 
+                            strSQL += " '" + user.UserID + "', "; //create_user
+                            strSQL += "  GETDATE() "; //create_dtm
+                            strSQL += " ) ";
+                            #endregion
+                            break;
+                        default:
+                            break;
+                    }
+                    int cmdhead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                    if (cmdhead_id != 0)
+                    {
+                        #region sql insert tb_ctr_cmdlog                       
+                        strSQL = string.Empty;
+                        strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                        strSQL += " wwcode, ";
+                        strSQL += " dmacode, ";
+                        strSQL += " cmd_dtm, ";
+                        strSQL += " cmd_dvtypeid, ";
+                        strSQL += " cmd_headid, ";
+                        strSQL += " cmd_desc, ";
+                        strSQL += " record_status, ";
+                        strSQL += " create_user, ";
+                        strSQL += " create_dtm ";
+                        strSQL += " ) VALUES ";
+                        strSQL += " ( ";
+                        strSQL += " '" + wwcode + "', ";
+                        strSQL += " '" + dmacode + "', ";
+                        strSQL += " GETDATE(), ";
+                        strSQL += " " + Convert.ToInt32(dvtypeid) + ", ";
+                        strSQL += " " + cmdhead_id + ", ";
+                        strSQL += " '" + cmd_desc + "', ";
+                        strSQL += " 'N', ";
+                        strSQL += " '" + user.UserID + "', ";
+                        strSQL += " GETDATE() ";
+                        strSQL += " ) ";
+                        #endregion
+                        Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
+                        if (status)
+                        {
+                            return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                        }
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "fail" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string GetCtr003_All(String mainDataText)
         {
             /*

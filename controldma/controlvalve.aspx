@@ -345,7 +345,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card card-primary card-outline card-outline-tabs">
@@ -517,10 +516,9 @@
                         </div>
                     </div>
                 </div>
-                <%--                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>--%>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btncloseAllconfig"><i class="fas fa-exclamation-triangle"></i>ปิดการทำงานอัตโนมัติ</button>
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -649,10 +647,9 @@
                         </div>
                     </div>
                 </div>
-                <%--                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>--%>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btncloseAllconfig"><i class="fas fa-exclamation-triangle"></i>ปิดการทำงานอัตโนมัติ</button>
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -822,10 +819,9 @@
                         </div>
                     </div>
                 </div>
-                <%--                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
-                </div>--%>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btncloseAllconfig"><i class="fas fa-exclamation-triangle"></i>ปิดการทำงานอัตโนมัติ</button>
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -866,7 +862,6 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
 
     <div class="modal fade" id="aboutModal_save">
         <div class="modal-dialog modal-lg">
