@@ -108,13 +108,20 @@ $(document).on("click", ".infovalva", function () {
     if (datatype == 6) {
         divmodeldialog.removeClass("modal-lg").addClass("modal-xl");
         x.show();
-        document.getElementById('afv_iframe_mqtt').src += 'http://smartlogger.pwa.co.th/afv/index.php?device=' + $(this).attr("data-remote");
+        //document.getElementById('afv_iframe_mqtt').src = 'https://dmama.pwa.co.th/app';
+        //document.getElementById('afv_iframe_mqtt').src = 'http://164.115.22.222:4004/#/' + $(this).attr("data-remote");
+        //document.getElementById('afv_iframe_mqtt').contentWindow.location.reload();
+        $('#div-iframe-mqtt').html('<iframe class="embed-responsive-item" id="afv_iframe_mqtt" src="' + 'http://164.115.22.222:4004/#/' + $(this).attr("data-remote") + '" height="100%" allowfullscreen></iframe>');
     }
     else {
         x.hide();
         divmodeldialog.removeClass("modal-xl").addClass("modal-lg");
     }
     getinfovalva(dmacode)
+})
+
+$(document).on('hidden.bs.modal', '.Model_info ', function (event) {
+    reload_iframe('afv_iframe_mqtt')
 })
 
 $(document).on("click", ".commandinfo", function () {
@@ -150,6 +157,7 @@ $(document).on("click", ".editvalva", function () {
         SetSessionstorage_(getCookie('_wwcode'), dmacode, $(this).attr('data-remote'), datatype, _templateCycle)
         document.getElementById("btnAdd_bv").disabled = false;
         //element.style.display = null;
+        showElementbyid('tab2_bv_normal')
         if (datatype == 2) {
             $('#Modal_edit_bv').modal('show');
             generateHtml_bv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
@@ -173,6 +181,12 @@ $(document).on("click", ".editvalva", function () {
         else if (datatype == 6) {
             $('#Modal_edit_afv').modal('show');
             generateHtml_Afv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
+
+            })
+        }
+        else if (datatype == 7) {
+            $('#Modal_edit_bv').modal('show');
+            generateHtml_bv(dmacode, $('#txtdvtypeid').val(), _templateCycle).then(() => {
 
             })
         }
@@ -352,6 +366,9 @@ function getJsontp(dvtype_service, _templateCycle) {
             case '6':
                 clstp = 'Getdata_Afv';
                 break;
+            case '7':
+                clstp = 'Getdata_bv_onoff';
+                break;
             default:
                 // code block
         }
@@ -371,6 +388,9 @@ function getJsontp(dvtype_service, _templateCycle) {
                 break;
             case '6':
                 clstp = 'Getdata_Afv';
+                break;
+            case '7':
+                clstp = 'Getdata_bv_onoff';
                 break;
             default:
                 // code block
@@ -414,6 +434,9 @@ function generateHtml_bv(dmacode, datatype, _templateCycle) {
         $('.modal_title_setting').text("BV - ตั้งค่าควบคุมประตูน้ำจุดติดตั้ง : " + dmacode)
         getHtml(getCookie('_wwcode'), dmacode, datatype, _templateCycle).then((data) => {
             $('#_Manual_Bv').html(data._manual)
+            if (datatype == 7) {
+                hideElementbyid('tab2_bv_normal')
+            }
             $('#_Automatic_Bv').html(data._Automatic)
             $('#_Realtime_Bv').html(data._Realtime)
             $('#_History_bv').html(data._History)
@@ -511,7 +534,6 @@ function generateHtml_Afv(dmacode, datatype, _templateCycle) {
     })
 }
 //////////////////////////////////////////////////////////
-
 
 function Popup(id, type) {
     GetCommandTimeOut()
@@ -643,4 +665,8 @@ function GetSyncRealtime() {
     }).catch((error) => {
         swalAlert(error.status, 'error')
     })
+}
+
+function reload_iframe(id) {
+    document.getElementById(id).src += '';
 }

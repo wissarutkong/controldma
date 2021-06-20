@@ -170,7 +170,6 @@ function findbuttonandclick() {
     })
 }
 
-
 function initalselect_info() {
     return new Promise((resolve, reject) => {
         AjaxGetddlkhet('_khet').then(() => {
@@ -189,7 +188,6 @@ function initalselect_info() {
         })
     })
 }
-
 
 function showPage() {
     document.getElementById("loader").style.display = "none";
@@ -235,6 +233,14 @@ function setCookie(cname, cvalue) {
     var expires = "expires=" + now.toUTCString();
 
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function hideElementbyid(id) {
+    $('#' + id).hide();
+}
+
+function showElementbyid(id) {
+    $('#' + id).show();
 }
 
 //function getCookie(cname) {
@@ -304,7 +310,6 @@ function initalOption() {
     AjaxGetOption('GetddlTimer').then((data) => { localStorage.setItem('timeOpt', data); })
     AjaxGetOption('GetddlDateOption').then((data) => { localStorage.setItem('DateOpt', data); })
 }
-
 
 function ClearSessionstorage() {
     sessionStorage.clear();

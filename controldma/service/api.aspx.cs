@@ -417,7 +417,7 @@ namespace controldma.service
                 {
                     wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
                     String strSQL = string.Empty;
-                    if (dvtype == "2" || dvtype == "4")
+                    if (dvtype == "2" || dvtype == "4" || dvtype == "7")
                     {
                         strSQL = "EXEC sp_ctrl_get_bvcmdlog_dmama2 @wwcode = '" + wwcode + "',@dmacode= '" + dmacode + "';";
                     }
@@ -895,7 +895,7 @@ namespace controldma.service
                 DataTable dt_percent_valva = new DataTable();
                 string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.percent_valve,0) percent_valve , cy.counter_template
                         FROM tb_ctr_dmavalvetype vt
-                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' AND dvtype_id = " + _dvtype_id + " order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode AND vt.dvtype_id = hbv.dvtype_id INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
                 DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                 if (dt_ctr_bvmanual.Rows.Count > 0)
                 {
@@ -903,7 +903,7 @@ namespace controldma.service
                     template_counter = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["counter_template"]);
                 }
                 else {
-                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND dvtype_id = " + _dvtype_id + " AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
                     dt_percent_valva = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                     if (dt_percent_valva.Rows.Count > 0) percent_valve = Convert.ToInt32(dt_percent_valva.Rows[0]["percent_valve"]);
                 }
@@ -1244,7 +1244,7 @@ namespace controldma.service
                 DataTable dt_percent_valva = new DataTable();
                 string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.percent_valve,0) percent_valve , cy.counter_template
                         FROM tb_ctr_dmavalvetype vt
-                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' AND dvtype_id = " + _dvtype_id + " order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode AND vt.dvtype_id = hbv.dvtype_id INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
                 DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                 if (dt_ctr_bvmanual.Rows.Count > 0)
                 {
@@ -1252,7 +1252,7 @@ namespace controldma.service
                     template_counter = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["counter_template"]);
                 }
                 else {
-                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name, percent_valve  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND dvtype_id = " + _dvtype_id + " AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
                     dt_percent_valva = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                     if (dt_percent_valva.Rows.Count > 0) percent_valve = Convert.ToInt32(dt_percent_valva.Rows[0]["percent_valve"]);
                 }
@@ -1950,7 +1950,7 @@ namespace controldma.service
                 DataTable dt_percent_valva = new DataTable();
                 string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.percent_valve,0) percent_valve , ISNULL(hbv.manual_valva_control,0) manual_valva_control, cy.counter_template
                         FROM tb_ctr_dmavalvetype vt
-                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' AND dvtype_id = " + _dvtype_id + " order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode AND vt.dvtype_id = hbv.dvtype_id INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
                 DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                 if (dt_ctr_bvmanual.Rows.Count > 0)
                 {
@@ -1959,7 +1959,7 @@ namespace controldma.service
                     manual_valva_control = Convert.ToBoolean(dt_ctr_bvmanual.Rows[0]["manual_valva_control"]);
                 }
                 else {
-                    strSQL = @" SELECT wwcode , dmacode ,remote_name, manual_valva_control  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name, manual_valva_control  FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND dvtype_id = " + _dvtype_id + " AND percent_valve is not null ORDER BY cmd_data_dtm desc ";
                     dt_percent_valva = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
                     if (dt_percent_valva.Rows.Count > 0) manual_valva_control = Convert.ToBoolean(dt_percent_valva.Rows[0]["manual_valva_control"]);
                 }
@@ -2662,6 +2662,143 @@ namespace controldma.service
         }
 
         [System.Web.Services.WebMethod]
+        public static string Getdata_bv_onoff(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+                Cs_initaldata inl = new Cs_initaldata(user);
+                Cs_Controlcenter cs = new Cs_Controlcenter();
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                String wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + mainData["$_wwcode"].ToString() + "'", user.UserCons);
+                //set global variable _dvtype_id type of bv / prv 
+                _dvtype_id = mainData["$_datatype"].ToString();
+                String unit_percent = cs.unit_percent();
+                #region _manual
+                Boolean manual_valva_control = false;
+                int time_on_bv = 0;
+                int time_off_bv = 0;
+                int template_counter = 0;
+                DataTable dt_bvonoff = new DataTable();
+                string strSQL = @"SELECT vt.wwcode, vt.dmacode,vt.remote_name,vt.dvtype_id,ISNULL(hbv.manual_valva_control, 0) manual_valva_control,ISNULL(hbv.time_on_bv,0) time_on_bv,ISNULL(hbv.time_off_bv,0) time_off_bv , cy.counter_template
+                        FROM tb_ctr_dmavalvetype vt
+                        left join (select top 1 * from tb_ctr_cmdbvhead where wwcode = '" + wwcode + "' And dmacode = '" + mainData["$_dmacode"].ToString() + "'  and control_mode = '0' AND dvtype_id = " + _dvtype_id + " order by cmdbvhead_id desc) hbv on vt.dmacode = hbv.dmacode AND vt.dvtype_id = hbv.dvtype_id INNER JOIN tb_ctr_cycle_counter cy on cy.id = vt.cycle_id where vt.wwcode = '" + wwcode + "' and vt.dmacode = '" + mainData["$_dmacode"].ToString() + "' ";
+                DataTable dt_ctr_bvmanual = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                if (dt_ctr_bvmanual.Rows.Count > 0)
+                {
+                    manual_valva_control = Convert.ToBoolean(dt_ctr_bvmanual.Rows[0]["manual_valva_control"]);
+                    time_on_bv = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["time_on_bv"]);
+                    time_off_bv = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["time_off_bv"]);
+                    template_counter = Convert.ToInt32(dt_ctr_bvmanual.Rows[0]["counter_template"]);
+                }
+                else {
+                    strSQL = @" SELECT wwcode , dmacode ,remote_name , ISNULL(manual_valva_control, 0) manual_valva_control, time_on_bv , time_off_bv FROM tb_ctr_cmdbvhead WHERE wwcode = '" + wwcode + "' AND dmacode = '" + mainData["$_dmacode"].ToString() + "' AND dvtype_id = " + _dvtype_id + " AND time_on_bv is not null AND time_off_bv is not null ORDER BY cmd_data_dtm desc ";
+                    dt_bvonoff = inl.GetDatabySQL(strSQL, user.UserCons_PortalDB);
+                    if (dt_bvonoff.Rows.Count > 0)
+                    {
+                        manual_valva_control = Convert.ToBoolean(dt_bvonoff.Rows[0]["manual_valva_control"]);
+                        time_on_bv = Convert.ToInt32(dt_bvonoff.Rows[0]["time_on_bv"]);
+                        time_off_bv = Convert.ToInt32(dt_bvonoff.Rows[0]["time_off_bv"]);
+                    }
+                }
+
+                String Html = string.Empty;
+                string status_manual_valva = string.Empty;
+                if (manual_valva_control) { status_manual_valva = "checked=\"checked\""; }
+                string body_manual = string.Empty;
+                using (StreamReader reader = new StreamReader(context.Server.MapPath("~/template/bv_onoff_manual.htm")))
+                {
+                    body_manual = reader.ReadToEnd();
+                }
+                body_manual = body_manual.Replace("{checked_chk}", status_manual_valva);
+                body_manual = body_manual.Replace("{time_on_bv}", time_on_bv.ToString());
+                body_manual = body_manual.Replace("{time_off_bv}", time_off_bv.ToString());
+                body_manual = body_manual.Replace("{btnsave}", Cs_Controlcenter.BtnSave());
+                Html += body_manual;
+                #endregion
+
+                String Html_2 = string.Empty;
+
+                #region _Realtime
+                String Html_3 = string.Empty;
+
+                //Html_3 += "<div style=\"width: 100%;\">";
+                Html_3 += "     <div class=\"table-responsive\">";
+                Html_3 += "         <table id=\"dt_grid_realtime_bv\" class=\"table table-hover table-sm table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_3 += "             <thead>";
+                Html_3 += "                    <tr>";
+                Html_3 += "                         <th>พื้นที่เฝ้าระวัง</th>";
+                Html_3 += "                         <th>Remote Name</th>";
+                Html_3 += "                         <th>วันเวลา</th>";
+                Html_3 += "                         <th>แรงดัน (ออก)(บาร์)</th>";
+                Html_3 += "                         <th>แรงดัน (เข้า)(บาร์)</th>";
+                Html_3 += "                         <th>Valve (%)</th>";
+                Html_3 += "                         <th>อัตราการไหล (ลบ.ม.)</th>";
+                Html_3 += "                     </tr>";
+                Html_3 += "             </thead>";
+                Html_3 += "         </table>";
+                Html_3 += "     </div>";
+                //Html_3 += "</div>";
+
+                #endregion
+
+                #region _History
+                String Html_4 = string.Empty;
+
+                //Html_4 += "<div style=\"width: 100%;\">";
+                Html_4 += "    <div class=\"table-responsive Flipped\">";
+                Html_4 += "     <div class=\"Content\">";
+                Html_4 += "         <table id=\"dt_grid_history_bv\" class=\"table table-striped table-bordered dt-responsive clear-center nowrap\" cellspacing=\"0\" style=\"width: 100%\">";
+                Html_4 += "             <thead>";
+                Html_4 += "                    <tr>";
+                Html_4 += "                         <th>ลำดับ</th>";
+                Html_4 += "                         <th>พื้นที่เฝ้าระวัง</th>";
+                Html_4 += "                         <th>วันที่ตั้งค่า</th>";
+                Html_4 += "                         <th>รายละเอียด</th>";
+                Html_4 += "                         <th>สั่งโดย</th>";
+                //Html_4 += "                         <th>ไฟล์</th>";
+                Html_4 += "                         <th>หมายเหตุ</th>";
+                Html_4 += "                     </tr>";
+                Html_4 += "             </thead>";
+                Html_4 += "         </table>";
+                Html_4 += "     </div>";
+                Html_4 += "    </div>";
+                //Html_4 += "</div>";
+
+                #endregion
+
+
+                var keyValues = new Dictionary<string, string>
+               {
+                   { "_manual", Html },
+                   { "_Automatic", Html_2 },
+                   { "_Realtime", Html_3 },
+                   { "_History", Html_4 },
+                   { "_txtRow" , string.Empty},
+                   { "_bodyfooter" , string.Empty },
+                   { "_failure_mode" , string.Empty }
+                   //{ "_step_control_delay" , cmdbvheadstep_control_delay },
+                   //{ "_time_loop" , cmdbvheadtime_loop },
+                   //{ "_limit_min" , cmdbvheadlimit_min },
+                   //{ "_deadband_pressure" , cmdbvheaddeadband_pressure },
+                   //{ "_deadband_flow" , cmdbvheaddeadband_flow }
+               };
+                return JsonConvert.SerializeObject(keyValues);
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
         public static string Get_Automatic_prv(String mainDataText)
         {
             HttpContext context = HttpContext.Current;
@@ -3125,6 +3262,7 @@ namespace controldma.service
                 string wwcode = mainData["wwcode"].ToString();
                 string dmacode = mainData["dmacode"].ToString();
                 string remote_name = mainData["remote_name"].ToString();
+                string dvtypeid = mainData["dvtypeid"].ToString();
                 wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
                 try
                 {
@@ -3132,7 +3270,7 @@ namespace controldma.service
                     {
                         #region sql insert tb_ctr_cmdbvhead
                         String strSQL = string.Empty;
-                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";
+                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode,dvtype_id, ";
                         strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
                         strSQL += " last_upd_user,last_upd_dtm ";
                         strSQL += " ) output INSERTED.cmdbvhead_id ";
@@ -3145,6 +3283,7 @@ namespace controldma.service
                         strSQL += " '0', ";
                         strSQL += " " + Convert.ToInt32(mainData["valve"]) + ", ";
                         strSQL += " null, ";
+                        strSQL += " " + Convert.ToInt32(dvtypeid) + ", "; //dvtype_id
                         strSQL += " 0, ";
                         strSQL += " null, ";
                         strSQL += " 0, ";
@@ -3480,6 +3619,7 @@ namespace controldma.service
                 string wwcode = mainData["wwcode"].ToString();
                 string dmacode = mainData["dmacode"].ToString();
                 string remote_name = mainData["remote_name"].ToString();
+                string dvtypeid = mainData["dvtypeid"].ToString();
                 wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
                 try
                 {
@@ -3487,7 +3627,7 @@ namespace controldma.service
                     {
                         #region sql insert tb_ctr_cmdbvhead
                         String strSQL = string.Empty;
-                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode, ";
+                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,percent_valve,failure_mode,dvtype_id, ";
                         strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
                         strSQL += " last_upd_user,last_upd_dtm ";
                         strSQL += " ) output INSERTED.cmdbvhead_id ";
@@ -3500,6 +3640,7 @@ namespace controldma.service
                         strSQL += " '0', ";
                         strSQL += " " + Convert.ToInt32(mainData["valve"]) + ", ";
                         strSQL += " null, ";
+                        strSQL += " " + Convert.ToInt32(dvtypeid) + ", "; //dvtype_id
                         strSQL += " 0, ";
                         strSQL += " null, ";
                         strSQL += " 0, ";
@@ -3518,7 +3659,7 @@ namespace controldma.service
                         if (cmdbvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "manual=2," + remote_name + "," + mainData["valve"].ToString() + ",0,0,0,0,0";
+                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + mainData["valve"].ToString() + ",0,0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -3535,7 +3676,7 @@ namespace controldma.service
                             strSQL += " '" + wwcode + "', ";
                             strSQL += " '" + dmacode + "', ";
                             strSQL += " GETDATE(), ";
-                            strSQL += " " + Convert.ToInt32(mainData["dvtypeid"]) + ", ";
+                            strSQL += " " + Convert.ToInt32(dvtypeid) + ", ";
                             strSQL += " " + cmdbvhead_id + ", ";
                             strSQL += " '" + cmd_desc + "', ";
                             strSQL += " 'N', ";
@@ -3848,6 +3989,7 @@ namespace controldma.service
                 string wwcode = mainData["wwcode"].ToString();
                 string dmacode = mainData["dmacode"].ToString();
                 string remote_name = mainData["remote_name"].ToString();
+                string dvtypeid = mainData["dvtypeid"].ToString();
                 wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
                 try
                 {
@@ -3855,7 +3997,7 @@ namespace controldma.service
                     {
                         #region sql insert tb_ctr_cmdbvhead
                         String strSQL = string.Empty;
-                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,manual_valva_control,failure_mode, ";
+                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,manual_valva_control,failure_mode,dvtype_id, ";
                         strSQL += " step_control_delay,time_loop,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm, ";
                         strSQL += " last_upd_user,last_upd_dtm ";
                         strSQL += " ) output INSERTED.cmdbvhead_id ";
@@ -3868,6 +4010,7 @@ namespace controldma.service
                         strSQL += " '0', ";
                         strSQL += " '" + mainData["valve"] + "', ";
                         strSQL += " null, ";
+                        strSQL += " " + Convert.ToInt32(dvtypeid) + ", "; //dvtype_id
                         strSQL += " 0, ";
                         strSQL += " null, ";
                         strSQL += " 0, ";
@@ -3886,7 +4029,7 @@ namespace controldma.service
                         if (cmdbvhead_id != 0)
                         {
                             #region sql insert tb_ctr_cmdlog
-                            string cmd_desc = "manual=4," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ",0,0,0,0,0";
+                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + ",0,0,0,0,0";
                             strSQL = string.Empty;
                             strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
                             strSQL += " wwcode, ";
@@ -4563,7 +4706,7 @@ namespace controldma.service
                         {
                             myTimeoutmin = Convert.ToInt32(mainData["timeout_min"]);
                         }
-                        #region sql insert tb_ctr_cmdbvhead
+                        #region sql insert tb_ctr_cmdafvhead
                         String strSQL = string.Empty;
                         strSQL += " INSERT INTO tb_ctr_cmdafvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,manual_valva_control,timeout_min, ";
                         strSQL += " remark,record_status,create_user,create_dtm ";
@@ -4881,6 +5024,7 @@ namespace controldma.service
                     switch (dvtypeid)
                     {
                         case "2":
+                        case "7":
                             #region sql insert tb_ctr_cmdbvhead
                             strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode, ";
                             strSQL += " step_control_delay,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm ";
@@ -5006,6 +5150,119 @@ namespace controldma.service
                     else {
                         context.Response.StatusCode = 500;
                         return JsonConvert.SerializeObject(new { status = "fail" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = ex.Message.ToString() });
+                }
+
+            }
+            return JsonConvert.SerializeObject(new { redirec = new Cs_manageLoing().GetLoginPage() });
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string AddManualBvovoff_Template(String mainDataText)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session["USER"] != null)
+            {
+                Hashtable userDetail = new Hashtable();
+                userDetail = (Hashtable)context.Session["USER"];
+                user = new WebManageUserData(userDetail);
+
+                var tempMainData = JsonConvert.DeserializeObject<DataTable>(mainDataText);
+                if (tempMainData.Rows.Count == 0)
+                {
+                    context.Response.StatusCode = 500;
+                    return JsonConvert.SerializeObject(new { status = "fail" });
+                }
+                var mainData = tempMainData.Rows[0];
+                Cs_initaldata inl = new Cs_initaldata(user);
+                string wwcode = mainData["wwcode"].ToString();
+                string dmacode = mainData["dmacode"].ToString();
+                string remote_name = mainData["remote_name"].ToString();
+                string dvtypeid = mainData["dvtypeid"].ToString();
+                int myTimeonBV = 0;
+                int myTimeOffBV = 0;
+                wwcode = inl.GetStringbySQL("SELECT code FROM branches WHERE id ='" + wwcode + "'", user.UserCons);
+                try
+                {
+                    if (!string.IsNullOrEmpty(wwcode) && !string.IsNullOrEmpty(dmacode) && !string.IsNullOrEmpty(remote_name))
+                    {
+                        myTimeonBV = Convert.ToInt32(mainData["time_on_bv"]);
+                        myTimeOffBV = Convert.ToInt32(mainData["time_off_bv"]);
+                        #region sql insert tb_ctr_cmdbvhead
+                        String strSQL = string.Empty;
+                        strSQL += " INSERT INTO tb_ctr_cmdbvhead (wwcode,dmacode,cmd_data_dtm,remote_name,control_mode,manual_valva_control,time_on_bv,time_off_bv,dvtype_id, ";
+                        strSQL += " step_control_delay,limit_min,deadband_pressure,deadband_flow,remark,record_status,create_user,create_dtm ";
+                        strSQL += " ) output INSERTED.cmdbvhead_id ";
+                        strSQL += " VALUES ( ";
+                        //strSQL += " '" + newCmdprvhead_id + "', ";
+                        strSQL += " '" + wwcode + "', ";
+                        strSQL += " '" + dmacode + "', ";
+                        strSQL += "  GETDATE(),";
+                        strSQL += " '" + remote_name + "', "; //remote_name
+                        strSQL += " '0', "; //control_mode
+                        strSQL += " '" + mainData["valve"] + "', "; //manual_valva_control
+                        strSQL += " '" + myTimeonBV + "', "; //time_on_bv
+                        strSQL += " '" + myTimeOffBV + "', "; //time_off_bv
+                        strSQL += " " + Convert.ToInt32(dvtypeid) + ", "; //dvtype_id
+                        strSQL += " 0, "; //step_control_delay
+                        strSQL += " 0, "; //limit_min
+                        strSQL += " 0, "; //deadband_pressure
+                        strSQL += " 0, "; //deadband_flow
+                        strSQL += " N'" + mainData["remark"].ToString() + "', ";
+                        strSQL += "  'N', ";
+                        strSQL += " '" + user.UserID + "', ";
+                        strSQL += "  GETDATE() ";
+                        strSQL += " ) ";
+                        #endregion
+
+                        int cmdbvhead_id = inl.executeSQLreturnint(strSQL, user.UserCons_PortalDB);
+                        if (cmdbvhead_id != 0)
+                        {
+                            #region sql insert tb_ctr_cmdlog
+                            string cmd_desc = "manual=" + dvtypeid + "," + remote_name + "," + ((Boolean)mainData["valve"] ? "1" : "0") + "," + myTimeonBV + "," + myTimeOffBV + ",0,0,0";
+                            strSQL = string.Empty;
+                            strSQL += " INSERT INTO tb_ctr_cmdlog ( ";
+                            strSQL += " wwcode, ";
+                            strSQL += " dmacode, ";
+                            strSQL += " cmd_dtm, ";
+                            strSQL += " cmd_dvtypeid, ";
+                            strSQL += " cmd_headid, ";
+                            strSQL += " cmd_desc, ";
+                            strSQL += " record_status, ";
+                            strSQL += " create_user, ";
+                            strSQL += " create_dtm ";
+                            strSQL += " ) VALUES ";
+                            strSQL += " ( ";
+                            strSQL += " '" + wwcode + "', ";
+                            strSQL += " '" + dmacode + "', ";
+                            strSQL += " GETDATE(), ";
+                            strSQL += " " + Convert.ToInt32(dvtypeid) + ", ";
+                            strSQL += " " + cmdbvhead_id + ", ";
+                            strSQL += " '" + cmd_desc + "', ";
+                            strSQL += " 'N', ";
+                            strSQL += " '" + user.UserID + "', ";
+                            strSQL += " GETDATE() ";
+                            strSQL += " ) ";
+                            #endregion
+                            Boolean status = inl.executeSQLreturn(strSQL, user.UserCons_PortalDB);
+                            if (status)
+                            {
+                                return JsonConvert.SerializeObject(new { dmacode = dmacode });
+                            }
+                        }
+                        else {
+                            context.Response.StatusCode = 500;
+                            return JsonConvert.SerializeObject(new { status = "fail" });
+                        }
+                    }
+                    else {
+                        context.Response.StatusCode = 500;
+                        return JsonConvert.SerializeObject(new { status = "Error:ไม่พบตำแหน่งจุดติดตั้งกรุณาลองใหม่" });
                     }
                 }
                 catch (Exception ex)

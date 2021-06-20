@@ -1,0 +1,21 @@
+﻿<div class="list-group-item">
+    <div class="row">
+        <div class="form-group col-lg-2" style="margin-top: 10px; ">
+            <label for="txtvalva_bv_onoff">ตั้งค่า On / Off</label><br>
+            <label class="switch">
+                <input type="checkbox" id="txtvalva_bv_onoff" {checked_chk}>
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div id="dvtime_on_bv" class="form-group col-lg-3" style="margin-top: 10px;">
+            <label for="time_on_bv">On (วินาที)</label><br>
+            <input id="time_on_bv" type="text" value="{time_on_bv}" class="form-control" onkeypress="return isNumberKey(event)" maxlength="3">
+        </div>
+        <div id="dvtime_off_bv" class="form-group col-lg-3" style="margin-top: 10px;">
+            <label for="time_off_bv">Off (วินาที)</label><br>
+            <input id="time_off_bv" type="text" value="{time_off_bv}" class="form-control" onkeypress="return isNumberKey(event)" maxlength="3">
+        </div>
+    </div>
+</div>
+<br>
+<button type="button" class="btn btn-primary btn-flat col-md-2" data-toggle="modal" href="#aboutModal_save" onclick="Popup(2,'manual')"><i class="fa fa-floppy-o"></i>{btnsave}</button>

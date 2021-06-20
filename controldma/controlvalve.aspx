@@ -102,7 +102,7 @@
     <input type="hidden" id="auto_wwcode" value="<%=this.wwcode %>" />
     <input type="hidden" id="auto_dmacode" value="<%=this.dmacode %>" />
 
-    <div class="modal fade" id="Modal_info_valva">
+    <div class="modal fade Model_info" id="Modal_info_valva">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -206,7 +206,9 @@
                   </div>--%>
                                     </div>
                                     <div class="afv_smartloggermqtt_info embed-responsive embed-responsive-4by3">
-                                        <iframe class="embed-responsive-item" id="afv_iframe_mqtt" height="100%" allowfullscreen></iframe>
+                                        <div id="div-iframe-mqtt">
+                                        </div>
+                                        <%--<iframe class="embed-responsive-item" id="afv_iframe_mqtt" height="100%" allowfullscreen></iframe>--%>
                                     </div>
                                 </div>
                                 <!-- /.card -->

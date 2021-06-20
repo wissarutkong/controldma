@@ -35,6 +35,9 @@ function Modal_save() {
         else if (document.getElementById("txtdvtypeid").value == "6") {
             Post_Afv_manual();
         }
+        else if (document.getElementById("txtdvtypeid").value == "7") {
+            Post_Bvonoff_manual();
+        }
     } else if (type == "auto") {
         if (document.getElementById("txtdvtypeid").value == "2")
             Post_AutoBv();
@@ -426,6 +429,48 @@ function Post_AutoAfv() {
      })
 }
 
+//Save manual BV on-off
+function Post_Bvonoff_manual() {
+
+    if ($('#txtvalva_bv_onoff').prop('checked')) {
+        if ($('#time_on_bv').val() == 0 || $('#time_on_bv').val() == null) {
+            swalAlert('กรุณากรอกเวลาเปิด', 'warning')
+            return;
+        }
+        if ($('#time_off_bv').val() == 0 || $('#time_off_bv').val() == null) {
+            swalAlert('กรุณากรอกเวลาปิด', 'warning')
+            return;
+        }
+    }
+
+    var template = sessionStorage.getItem('cycle_counter')
+    let mainData = []
+    mainData.push({
+        wwcode: sessionStorage.getItem('cachewwcode'),
+        dmacode: sessionStorage.getItem('cachedmacode'),
+        remote_name: sessionStorage.getItem('cacheremotename'),
+        valve: $('#txtvalva_bv_onoff').prop('checked'),
+        time_on_bv: $('#time_on_bv').val(),
+        time_off_bv: $('#time_off_bv').val(),
+        dvtypeid: document.getElementById("txtdvtypeid").value,
+        remark: document.getElementById("save_remark").value
+    })
+
+    console.log(mainData)
+
+    CallAPI('/service/api.aspx/AddManualBvovoff_Template',
+       JSON.stringify({ mainDataText: JSON.stringify(mainData) })
+        ).then((data) => {
+            $("#aboutModal_save").modal("hide");
+            swalAlert('บันทึกข้อมูลสำเร็จ', 'success')
+            generateHtml_bv(data.dmacode, $('#txtdvtypeid').val()).then(() => {
+
+            })
+        }).catch((error) => {
+            swalAlert('บันทึกข้อมูลไม่สำเร็จ โปรดลองใหม่', 'error')
+        })
+}
+
 
 $(document).on("click", "#_Automatic_PRV input[type='checkbox']", function () {
     var $box = $(this);
@@ -751,6 +796,7 @@ $(document).on("click", '.btncloseAllconfig', () => {
 function CallFuncGenerateHtmlbydvtype(dvtype_service,dmacode) {
     switch (dvtype_service) {
         case '2':
+        case '7':
             generateHtml_bv(dmacode, dvtype_service).then(() => { })
             break;
         case '3':
